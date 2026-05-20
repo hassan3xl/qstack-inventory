@@ -14,7 +14,7 @@ from src.config import (
 )
 SECRET_KEY = SECRET_KEY
 
-ALLOWED_HOSTS = ALLOWED_HOSTS.split(",") if ALLOWED_HOSTS else []
+ALLOWED_HOSTS = ALLOWED_HOSTS
 
 
 DATABASES = {

@@ -22,9 +22,11 @@ ALLOWED_HOSTS = ALLOWED_HOSTS
 ALLOWED_ORIGINS = ALLOWED_ORIGINS
 
 DATABASES = {
-    'default': parse(PRODUCTION_DB)
-    # "default": parse(PRODUCTION_DB, conn_max_age=600)
-
+    "default": dj_database_url.config(
+        default=os.environ.get("PRODUCTION_DB"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 STORAGES = {

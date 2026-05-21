@@ -5,21 +5,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEBUG = False
-
 from src.config import (
-    DATABASE_URL,
+    PRODUCTION_DB,
     SECRET_KEY,
     ALLOWED_HOSTS,
+    DEBUG,
 )
+
 SECRET_KEY = SECRET_KEY
-
+DEBUG = DEBUG
 ALLOWED_HOSTS = ALLOWED_HOSTS
-
 
 DATABASES = {
 
-    "default": dj_database_url.config(DATABASE_URL)
+    "default": dj_database_url.config(PRODUCTION_DB)
 }
 
 

@@ -14,6 +14,7 @@ from src.config import (
     ALLOWED_HOSTS, 
     DATABASE_URL,
     SECRET_KEY as CONFIG_SECRET_KEY,
+    PRODUCTION_DB,
 )
 
 # Use config values (SECRET_KEY from base is a default, override with env if needed)
@@ -22,7 +23,7 @@ ALLOWED_HOSTS = ALLOWED_HOSTS
 ALLOWED_ORIGINS = ALLOWED_ORIGINS
 
 DATABASES = {
-    'default': parse(DATABASE_URL)
+    'default': parse(PRODUCTION_DB)
     # "default": parse(PRODUCTION_DB, conn_max_age=600)
 
 }

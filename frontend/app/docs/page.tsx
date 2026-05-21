@@ -15,6 +15,7 @@ import {
   Building2,
   CheckCircle2,
   Loader2,
+  Info,
 } from "lucide-react";
 import { apiService } from "@/lib/services/apiService";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,10 @@ export default function DocsPage() {
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("general");
   const [adminEmail, setAdminEmail] = useState("");
-  const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -58,7 +62,10 @@ export default function DocsPage() {
       setAdminEmail("");
       setBusinessType("general");
     } catch (err: any) {
-      const errorText = err?.response?.data?.error || err?.response?.data?.detail || "Registration failed. Please try again.";
+      const errorText =
+        err?.response?.data?.error ||
+        err?.response?.data?.detail ||
+        "Registration failed. Please try again.";
       setStatusMsg({
         type: "error",
         text: errorText,
@@ -294,31 +301,49 @@ export default function DocsPage() {
                   Get the QStack App
                 </h2>
               </div>
-              
+
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                Register your business profile below to request a tenant instance. 
-                Upon registration, your account is created in an <strong>inactive</strong> state. 
-                Our provisioning team will configure your workspace and email activation steps to your address.
+                Register your business profile below to request a tenant
+                instance. Upon registration, your account is created in an{" "}
+                <strong>inactive</strong> state. Our provisioning team will
+                configure your workspace and email activation steps to your
+                address.
               </p>
 
               {statusMsg && (
-                <div className={`p-4 rounded-2xl border text-sm flex gap-3 items-start animate-in fade-in duration-300 ${
-                  statusMsg.type === "success" 
-                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600" 
-                    : "bg-destructive/10 border-destructive/20 text-destructive-foreground"
-                }`}>
-                  {statusMsg.type === "success" ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <Info className="w-5 h-5 shrink-0" />}
+                <div
+                  className={`p-4 rounded-2xl border text-sm flex gap-3 items-start animate-in fade-in duration-300 ${
+                    statusMsg.type === "success"
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                      : "bg-destructive/10 border-destructive/20 text-destructive-foreground"
+                  }`}
+                >
+                  {statusMsg.type === "success" ? (
+                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <Info className="w-5 h-5 shrink-0" />
+                  )}
                   <div>
-                    <p className="font-bold">{statusMsg.type === "success" ? "Registration Submitted" : "Registration Error"}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{statusMsg.text}</p>
+                    <p className="font-bold">
+                      {statusMsg.type === "success"
+                        ? "Registration Submitted"
+                        : "Registration Error"}
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {statusMsg.text}
+                    </p>
                   </div>
                 </div>
               )}
 
-              <form onSubmit={handleRegister} className="space-y-4 max-w-lg mt-4">
+              <form
+                onSubmit={handleRegister}
+                className="space-y-4 max-w-lg mt-4"
+              >
                 <div className="space-y-1">
                   <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <Building2 size={12} className="text-muted-foreground" /> Business / Store Name
+                    <Building2 size={12} className="text-muted-foreground" />{" "}
+                    Business / Store Name
                   </label>
                   <input
                     type="text"
@@ -331,7 +356,9 @@ export default function DocsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">Business Type</label>
+                  <label className="text-xs font-semibold text-foreground">
+                    Business Type
+                  </label>
                   <select
                     value={businessType}
                     onChange={(e) => setBusinessType(e.target.value)}
@@ -346,7 +373,8 @@ export default function DocsPage() {
 
                 <div className="space-y-1">
                   <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <Mail size={12} className="text-muted-foreground" /> Owner / Admin Email Address
+                    <Mail size={12} className="text-muted-foreground" /> Owner /
+                    Admin Email Address
                   </label>
                   <input
                     type="email"

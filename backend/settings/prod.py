@@ -10,17 +10,17 @@ from src.config import (
     SECRET_KEY,
     ALLOWED_HOSTS,
     DEBUG,
+    CORS_ALLOWED_ORIGINS,
 )
 
 SECRET_KEY = SECRET_KEY
 DEBUG = DEBUG
 ALLOWED_HOSTS = ALLOWED_HOSTS
+CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS
 
 DATABASES = {
-
     "default": dj_database_url.config(PRODUCTION_DB)
 }
-
 
 # Free-tier friendly cache
 CACHES = {

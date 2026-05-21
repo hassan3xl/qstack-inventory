@@ -23,15 +23,6 @@ SQLITE_DB = os.getenv("SQLITE_DB")
 DOCKER_DB = os.getenv("DOCKER_DB")
 PRODUCTION_DB = os.getenv("PRODUCTION_DB")
 
-IS_DOCKER = os.path.exists('/.dockerenv') or os.getenv("RUNNING_ON_DOCKER", "false").lower() == "true"
-
-if ENVIRONMENT == "production":
-    DATABASE_URL = PRODUCTION_DB
-elif IS_DOCKER:
-    DATABASE_URL = DOCKER_DB
-else:
-    DATABASE_URL = LOCAL_DB
-
 # 5. Core Application Settings
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-secret-in-production")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
@@ -45,6 +36,7 @@ CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
 # Load and parse ALLOWED_ORIGINS
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = (
     os.getenv("ALLOWED_HOSTS") or "localhost,127.0.0.1"
@@ -52,4 +44,7 @@ ALLOWED_HOSTS = (
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
 ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "").split(",") if origin.strip()]
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS", ""
+).split(",")

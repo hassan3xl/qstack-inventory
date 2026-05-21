@@ -12,7 +12,6 @@ INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1"]
 from src.config import (
     ALLOWED_ORIGINS, 
     ALLOWED_HOSTS, 
-    DATABASE_URL,
     SECRET_KEY as CONFIG_SECRET_KEY,
     PRODUCTION_DB,
 )

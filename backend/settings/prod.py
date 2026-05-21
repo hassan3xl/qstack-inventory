@@ -19,7 +19,11 @@ ALLOWED_HOSTS = ALLOWED_HOSTS
 CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS
 
 DATABASES = {
-    "default": dj_database_url.config(PRODUCTION_DB)
+    "default": dj_database_url.config(
+        default=os.environ.get("PRODUCTION_DB"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 # Free-tier friendly cache

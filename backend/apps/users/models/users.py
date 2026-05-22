@@ -61,7 +61,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     class Meta:
-        db_table = "users"
+        # db_table = "users"
+        pass
 
     def __str__(self):
         return self.email

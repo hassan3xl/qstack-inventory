@@ -23,7 +23,7 @@ interface HeaderProps {
 
 const StatCard = ({ title, value, icon, trend }: StatCardData) => {
   return (
-    <div className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md hover:border-ring transition-all">
+    <div className="bg-card rounded-md p-6 shadow-sm border border-border hover:shadow-md hover:border-ring transition-all">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-primary mb-1">{title}</p>

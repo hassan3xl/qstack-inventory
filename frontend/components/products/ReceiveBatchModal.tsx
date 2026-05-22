@@ -42,7 +42,9 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
           const prodDate = new Date(updated.production_date);
           const days = parseInt(updated.best_before_days);
           if (!isNaN(prodDate.getTime()) && !isNaN(days)) {
-            const expDate = new Date(prodDate.getTime() + days * 24 * 60 * 60 * 1000);
+            const expDate = new Date(
+              prodDate.getTime() + days * 24 * 60 * 60 * 1000,
+            );
             updated.expiry_date = expDate.toISOString().split("T")[0];
           }
         }
@@ -63,7 +65,11 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "production_date" || name === "expiry_date" || name === "best_before_days") {
+    if (
+      name === "production_date" ||
+      name === "expiry_date" ||
+      name === "best_before_days"
+    ) {
       handleDateChange(name, value);
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -114,7 +120,8 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
     } catch (error: any) {
       addToast({
         title: "Error",
-        description: error?.error || error?.detail || "Failed to receive stock batch.",
+        description:
+          error?.error || error?.detail || "Failed to receive stock batch.",
         type: "error",
       });
     }
@@ -143,7 +150,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
               required
               min="1"
               placeholder="e.g. 100"
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
           </div>
 
@@ -158,7 +165,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
               value={formData.batch_number}
               onChange={handleChange}
               placeholder="e.g. LOT-2026-A (Auto-generated if left blank)"
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
           </div>
 
@@ -174,7 +181,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
                 name="production_date"
                 value={formData.production_date}
                 onChange={handleChange}
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
 
@@ -190,7 +197,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
                 onChange={handleChange}
                 min="0"
                 placeholder="e.g. 30"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
           </div>
@@ -205,7 +212,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
               name="expiry_date"
               value={formData.expiry_date}
               onChange={handleChange}
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
           </div>
         </div>
@@ -215,13 +222,13 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
             type="button"
             variant="outline"
             onClick={closeModal}
-            className="rounded-xl px-6"
+            className="rounded-lg px-6"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            className="rounded-xl px-8 shadow-lg shadow-primary/20"
+            className="rounded-lg px-8 shadow-lg shadow-primary/20"
             disabled={receiveBatchMutation.isPending}
           >
             {receiveBatchMutation.isPending ? "Saving..." : "Receive Stock"}

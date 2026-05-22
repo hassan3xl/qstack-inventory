@@ -19,7 +19,7 @@ const ProductMerchantCard = ({ product }: ProductMerchantCardProps) => {
   return (
     <div className="mt-6">
       {/* Merchant Card */}
-      <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm hover:shadow-md transition-all duration-200 group">
+      <div className="relative overflow-hidden rounded-lg border border-border bg-card shadow-sm hover:shadow-md transition-all duration-200 group">
         <div className="p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             {/* Merchant Info */}

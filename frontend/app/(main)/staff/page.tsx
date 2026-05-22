@@ -132,7 +132,7 @@ export default function StaffPage() {
         actions={
           <Button
             onClick={() => setIsAdding(true)}
-            className="rounded-2xl shadow-lg shadow-primary/20 h-11 px-5 font-bold"
+            className="rounded-lg shadow-lg shadow-primary/20 h-11 px-5 font-bold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add New Staff
@@ -224,7 +224,7 @@ export default function StaffPage() {
                           setSelectedStaff(member);
                           setIsEditing(true);
                         }}
-                        className="rounded-xl text-xs font-bold"
+                        className="rounded-lg text-xs font-bold"
                       >
                         Manage
                       </Button>
@@ -266,7 +266,7 @@ export default function StaffPage() {
                     <input
                       name="first_name"
                       required
-                      className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="space-y-1">
@@ -276,7 +276,7 @@ export default function StaffPage() {
                     <input
                       name="last_name"
                       required
-                      className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -289,7 +289,7 @@ export default function StaffPage() {
                     name="email"
                     type="email"
                     required
-                    className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
 
@@ -299,7 +299,7 @@ export default function StaffPage() {
                   </label>
                   <select
                     name="role"
-                    className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="staff">Staff Member</option>
                     <option value="cashier">Cashier</option>
@@ -313,14 +313,14 @@ export default function StaffPage() {
                     type="button"
                     variant="outline"
                     onClick={() => setIsAdding(false)}
-                    className="flex-1 rounded-2xl h-11"
+                    className="flex-1 rounded-lg h-11"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={addStaffMutation.isPending}
-                    className="flex-1 rounded-2xl h-11 shadow-lg shadow-primary/10 font-bold"
+                    className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold"
                   >
                     {addStaffMutation.isPending ? (
                       <Loader2 className="animate-spin" />
@@ -371,7 +371,7 @@ export default function StaffPage() {
                         selectedStaff.full_name?.split(" ")[0] || ""
                       }
                       required
-                      className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="space-y-1">
@@ -387,7 +387,7 @@ export default function StaffPage() {
                           .join(" ") || ""
                       }
                       required
-                      className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -400,7 +400,7 @@ export default function StaffPage() {
                     name="role"
                     defaultValue={selectedStaff.role}
                     disabled={selectedStaff.role === "owner"}
-                    className="w-full bg-muted/40 border border-border/80 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   >
                     {selectedStaff.role === "owner" && (
                       <option value="owner">Owner</option>
@@ -421,14 +421,14 @@ export default function StaffPage() {
                         setIsEditing(false);
                         setSelectedStaff(null);
                       }}
-                      className="flex-1 rounded-2xl h-11"
+                      className="flex-1 rounded-lg h-11"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={editStaffMutation.isPending}
-                      className="flex-1 rounded-2xl h-11 shadow-lg shadow-primary/10 font-bold"
+                      className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold"
                     >
                       {editStaffMutation.isPending ? (
                         <Loader2 className="animate-spin" />
@@ -443,7 +443,7 @@ export default function StaffPage() {
                       // variant="destructive"
                       onClick={handleRemoveStaff}
                       disabled={removeStaffMutation.isPending}
-                      className="rounded-2xl h-11 w-full font-bold flex items-center justify-center gap-1.5 mt-2"
+                      className="rounded-lg h-11 w-full font-bold flex items-center justify-center gap-1.5 mt-2"
                     >
                       {removeStaffMutation.isPending ? (
                         <Loader2 className="animate-spin" />

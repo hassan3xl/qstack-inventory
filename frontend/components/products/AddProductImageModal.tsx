@@ -71,7 +71,7 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
       size="md"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl p-6 bg-muted/50">
+        <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-6 bg-muted/50">
           {preview ? (
             <div className="relative w-full aspect-square max-w-[200px] rounded-lg overflow-hidden border">
               <Image

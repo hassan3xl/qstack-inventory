@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from apps.tenants.models import Tenant, TenantUser
 from apps.tenants.permissions.tenant_roles import HasTenantAccess, IsTenantAdmin, IsTenantManager
 from apps.tenants.serializers import TenantSerializer, TenantDashboardSerializer
+from utils.resend import EmailSender
 
 class BusinessProfileAPIView(APIView):
     permission_classes = [IsAuthenticated, HasTenantAccess]
@@ -125,8 +126,8 @@ class StaffAddAPIView(APIView):
                     password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                     user.set_password(password)
                     user.save()
-                    # TODO: send welcome/invite email with temp password
-                    print(f"DEBUG: Provisioned staff {email} with password: {password}")
+                else:
+                    password = None
 
                 # 2. Create or Update Profile
                 Profile.objects.update_or_create(
@@ -143,6 +144,27 @@ class StaffAddAPIView(APIView):
 
                 # 4. Link to Tenant with the requested in-store role
                 TenantUser.objects.create(user=user, tenant=tenant, role=store_role)
+
+                # 5. Send email with login details if new user
+                if created and password:
+                    try:
+                        user_display_name = f"{first_name} {last_name}".strip() or email.split('@')[0]
+                        
+                        EmailSender.send_notification(
+                            to=email,
+                            name=user_display_name,
+                            title=f"Welcome to {tenant.name}",
+                            message=f"You have been added to {tenant.name} as a {store_role}.<br><br>"
+                                    f"<strong>Login Details:</strong><br>"
+                                    f"Email: {email}<br>"
+                                    f"Temporary Password: <code>{password}</code><br><br>"
+                                    f"Please log in and change your password immediately for security.",
+                            cta_text="Login Now",
+                            cta_link="https://qstack-inventory.com/login"  # Update with your frontend URL
+                        )
+                    except Exception as email_error:
+                        print(f"Warning: Failed to send email to {email}: {str(email_error)}")
+                        # Continue even if email fails
 
                 return Response({
                     "message": "Staff member added successfully",

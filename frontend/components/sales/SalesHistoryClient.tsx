@@ -5,25 +5,25 @@ import { useGetSales } from "@/lib/hooks/sales.hook";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatNaira } from "@/lib/utils";
-import { 
-  Search, 
-  History, 
-  Calendar, 
-  User, 
-  Printer, 
+import {
+  Search,
+  History,
+  Calendar,
+  User,
+  Printer,
   CheckCircle,
   Tag,
   TrendingUp,
   FileText,
   DollarSign,
-  PackageCheck
+  PackageCheck,
 } from "lucide-react";
 
 export default function SalesHistoryClient() {
   const { data: sales, isLoading } = useGetSales();
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("all");
-  
+
   // Selected sale for receipt recall view
   const [selectedSale, setSelectedSale] = useState<any>(null);
 
@@ -32,7 +32,10 @@ export default function SalesHistoryClient() {
     if (!sales || !Array.isArray(sales)) {
       return { totalRevenue: 0, totalCount: 0, averageValue: 0 };
     }
-    const totalRevenue = sales.reduce((sum, s) => sum + Number(s.total_amount), 0);
+    const totalRevenue = sales.reduce(
+      (sum, s) => sum + Number(s.total_amount),
+      0,
+    );
     const totalCount = sales.length;
     const averageValue = totalCount > 0 ? totalRevenue / totalCount : 0;
     return { totalRevenue, totalCount, averageValue };
@@ -43,11 +46,11 @@ export default function SalesHistoryClient() {
     if (!sales || !Array.isArray(sales)) return [];
     const query = searchTerm.trim().toLowerCase();
     return sales.filter((s) => {
-      const matchesSearch = 
-        s.sale_number.toLowerCase().includes(query) || 
+      const matchesSearch =
+        s.sale_number.toLowerCase().includes(query) ||
         (s.cashier_email && s.cashier_email.toLowerCase().includes(query));
-      
-      const matchesPayment = 
+
+      const matchesPayment =
         paymentFilter === "all" || s.payment_method === paymentFilter;
 
       return matchesSearch && matchesPayment;
@@ -64,21 +67,24 @@ export default function SalesHistoryClient() {
             POS Sales Register History
           </h1>
           <p className="text-sm text-muted-foreground font-medium mt-1">
-            Browse and recall past transactions, print duplicates, and monitor store turnover.
+            Browse and recall past transactions, print duplicates, and monitor
+            store turnover.
           </p>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="rounded-3xl border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
+        <Card className="rounded-lg border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
               <DollarSign className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">Total Sales Turnover</p>
+              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
+                Total Sales Turnover
+              </p>
               <h2 className="text-2xl font-black text-foreground mt-1">
                 {formatNaira(stats.totalRevenue)}
               </h2>
@@ -86,14 +92,16 @@ export default function SalesHistoryClient() {
           </div>
         </Card>
 
-        <Card className="rounded-3xl border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
+        <Card className="rounded-lg border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <PackageCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">Total Transactions</p>
+              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
+                Total Transactions
+              </p>
               <h2 className="text-2xl font-black text-foreground mt-1">
                 {stats.totalCount} orders
               </h2>
@@ -101,14 +109,16 @@ export default function SalesHistoryClient() {
           </div>
         </Card>
 
-        <Card className="rounded-3xl border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
+        <Card className="rounded-lg border-primary/10 shadow-xl shadow-primary/5 p-6 relative group overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-r from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">Average Ticket Value</p>
+              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
+                Average Ticket Value
+              </p>
               <h2 className="text-2xl font-black text-foreground mt-1">
                 {formatNaira(stats.averageValue)}
               </h2>
@@ -126,14 +136,14 @@ export default function SalesHistoryClient() {
             placeholder="Search by receipt number, cashier email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-muted/40 border border-transparent rounded-2xl focus:bg-background focus:border-primary/20 transition-all text-sm font-medium"
+            className="w-full pl-11 pr-4 py-3 bg-muted/40 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-medium"
           />
         </div>
 
         <select
           value={paymentFilter}
           onChange={(e) => setPaymentFilter(e.target.value)}
-          className="px-4 py-3 bg-muted/40 border border-transparent rounded-2xl focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
+          className="px-4 py-3 bg-muted/40 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
         >
           <option value="all">All Payment Methods</option>
           <option value="cash">Cash Only</option>
@@ -146,11 +156,15 @@ export default function SalesHistoryClient() {
       <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-20 font-bold text-muted-foreground">Loading sales registers...</div>
+            <div className="text-center py-20 font-bold text-muted-foreground">
+              Loading sales registers...
+            </div>
           ) : filteredSales.length === 0 ? (
             <div className="text-center py-20 bg-muted/10">
               <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-2" />
-              <p className="font-bold text-muted-foreground text-sm">No sales records registered</p>
+              <p className="font-bold text-muted-foreground text-sm">
+                No sales records registered
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -167,8 +181,13 @@ export default function SalesHistoryClient() {
                 </thead>
                 <tbody className="divide-y divide-border/30">
                   {filteredSales.map((sale: any) => (
-                    <tr key={sale.id} className="hover:bg-accent/15 transition-colors">
-                      <td className="px-6 py-4 font-bold text-sm text-foreground">{sale.sale_number}</td>
+                    <tr
+                      key={sale.id}
+                      className="hover:bg-accent/15 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-bold text-sm text-foreground">
+                        {sale.sale_number}
+                      </td>
                       <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">
                         {sale.cashier_email || "System"}
                       </td>
@@ -177,18 +196,18 @@ export default function SalesHistoryClient() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="capitalize text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
-                          {sale.payment_method.replace('_', ' ')}
+                          {sale.payment_method.replace("_", " ")}
                         </span>
                       </td>
                       <td className="px-6 py-4 font-black text-sm text-foreground">
                         {formatNaira(sale.total_amount)}
                       </td>
                       <td className="px-6 py-4">
-                        <Button 
+                        <Button
                           onClick={() => setSelectedSale(sale)}
-                          variant="outline" 
-                          size="sm" 
-                          className="rounded-xl text-xs font-black"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg text-xs font-black"
                         >
                           View Receipt
                         </Button>
@@ -205,19 +224,25 @@ export default function SalesHistoryClient() {
       {/* POS Receipt Recall Modal */}
       {selectedSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <Card className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-border/50">
+          <Card className="w-full max-w-md rounded-lg overflow-hidden shadow-2xl border border-border/50">
             <div className="bg-primary/5 p-6 border-b border-border/50 text-center relative">
               <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-              <CardTitle className="text-xl font-black">Recall Receipt</CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">Invoice duplicate viewer</p>
+              <CardTitle className="text-xl font-black">
+                Recall Receipt
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                Invoice duplicate viewer
+              </p>
             </div>
-            
+
             <CardContent className="p-6 space-y-6">
               {/* Receipt Specs */}
               <div className="space-y-1.5 text-xs border-b border-dashed border-border pb-4">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Receipt Number:</span>
-                  <span className="font-bold text-foreground">{selectedSale.sale_number}</span>
+                  <span className="font-bold text-foreground">
+                    {selectedSale.sale_number}
+                  </span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Logged Date:</span>
@@ -227,11 +252,15 @@ export default function SalesHistoryClient() {
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Cashier Identity:</span>
-                  <span className="font-semibold text-foreground">{selectedSale.cashier_email || "System"}</span>
+                  <span className="font-semibold text-foreground">
+                    {selectedSale.cashier_email || "System"}
+                  </span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Payment Mode:</span>
-                  <span className="font-bold capitalize text-primary">{selectedSale.payment_method.replace('_', ' ')}</span>
+                  <span className="font-bold capitalize text-primary">
+                    {selectedSale.payment_method.replace("_", " ")}
+                  </span>
                 </div>
               </div>
 
@@ -242,12 +271,21 @@ export default function SalesHistoryClient() {
                 </span>
                 <div className="max-h-[160px] overflow-y-auto divide-y divide-border/20 text-xs">
                   {selectedSale.items?.map((item: any) => (
-                    <div key={item.id} className="py-2 flex justify-between gap-4">
+                    <div
+                      key={item.id}
+                      className="py-2 flex justify-between gap-4"
+                    >
                       <div className="min-w-0 flex-1">
-                        <span className="font-semibold text-foreground block truncate">{item.product_name}</span>
-                        <span className="text-muted-foreground text-[10px]">{item.quantity} units @ {formatNaira(item.unit_price)}</span>
+                        <span className="font-semibold text-foreground block truncate">
+                          {item.product_name}
+                        </span>
+                        <span className="text-muted-foreground text-[10px]">
+                          {item.quantity} units @ {formatNaira(item.unit_price)}
+                        </span>
                       </div>
-                      <span className="font-bold text-foreground">{formatNaira(item.total_price)}</span>
+                      <span className="font-bold text-foreground">
+                        {formatNaira(item.total_price)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -273,7 +311,9 @@ export default function SalesHistoryClient() {
                 )}
                 <div className="flex justify-between items-center pt-2 border-t border-dashed border-border font-black text-sm">
                   <span>Total Amount Paid</span>
-                  <span className="text-primary text-base">{formatNaira(selectedSale.total_amount)}</span>
+                  <span className="text-primary text-base">
+                    {formatNaira(selectedSale.total_amount)}
+                  </span>
                 </div>
               </div>
 
@@ -282,14 +322,14 @@ export default function SalesHistoryClient() {
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="flex-1 rounded-2xl h-12 font-bold flex items-center justify-center gap-2"
+                  className="flex-1 rounded-lg h-12 font-bold flex items-center justify-center gap-2"
                 >
                   <Printer size={16} />
                   Print Copy
                 </Button>
                 <Button
                   onClick={() => setSelectedSale(null)}
-                  className="flex-1 rounded-2xl h-12 font-black shadow-lg shadow-primary/10"
+                  className="flex-1 rounded-lg h-12 font-black shadow-lg shadow-primary/10"
                 >
                   Close
                 </Button>

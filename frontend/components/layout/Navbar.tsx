@@ -49,7 +49,7 @@ export function Navbar() {
 
           {/* CENTER - Business Name (Replaces Search Bar) */}
           {/* <div className="flex-1 max-w-2xl mx-4 hidden md:flex justify-center">
-            <div className="bg-background/50 border border-border px-6 py-2 rounded-2xl flex items-center gap-3 shadow-xs">
+            <div className="bg-background/50 border border-border px-6 py-2 rounded-lg flex items-center gap-3 shadow-xs">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="text-sm font-bold tracking-tight text-muted-foreground uppercase">
                 {isLoading

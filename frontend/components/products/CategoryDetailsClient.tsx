@@ -46,7 +46,7 @@ const CategoryDetailsClient = () => {
 
   return (
     <div className="mb-12">
-      <div className="flex items-center justify-between mb-8 bg-card p-6 rounded-3xl border border-border shadow-sm">
+      <div className="flex items-center justify-between mb-8 bg-card p-6 rounded-lg border border-border shadow-sm">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-black text-primary tracking-tight">
             {name}
@@ -64,7 +64,7 @@ const CategoryDetailsClient = () => {
         <Button
           onClick={() => setIsEditModalOpen(true)}
           variant="outline"
-          className="rounded-xl border-border hover:bg-muted font-bold transition-all flex items-center gap-2"
+          className="rounded-lg border-border hover:bg-muted font-bold transition-all flex items-center gap-2"
         >
           <Settings2 size={18} />
           Edit Category

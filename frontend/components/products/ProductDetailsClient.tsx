@@ -8,9 +8,13 @@ import Image from "next/image";
 import Loader from "@/components/Loader";
 import { apiService } from "@/lib/services/apiService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { formatNaira } from "@/lib/utils";
-import { useDeleteProductImage, useGetProduct, useDeleteStockBatch } from "@/lib/hooks/product.hook";
+import {
+  useDeleteProductImage,
+  useGetProduct,
+  useDeleteStockBatch,
+} from "@/lib/hooks/product.hook";
 import { useToast } from "@/providers/ToastProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -28,12 +32,16 @@ import AddProductImageModal from "@/components/products/AddProductImageModal";
 import ReceiveBatchModal from "@/components/products/ReceiveBatchModal";
 import EditBatchModal from "@/components/products/EditBatchModal";
 
-
 const ProductDetailsClient = () => {
   const { user } = useAuth();
   const permissions = user?.permissions;
-  const isPlatformAdmin = user?.role === "platform_admin" || permissions?.is_platform_admin;
-  const canModify = isPlatformAdmin || permissions?.is_owner || permissions?.is_admin || permissions?.is_manager;
+  const isPlatformAdmin =
+    user?.role === "platform_admin" || permissions?.is_platform_admin;
+  const canModify =
+    isPlatformAdmin ||
+    permissions?.is_owner ||
+    permissions?.is_admin ||
+    permissions?.is_manager;
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>(
@@ -47,7 +55,7 @@ const ProductDetailsClient = () => {
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [showEditBatchModal, setShowEditBatchModal] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<any>(null);
-  
+
   const { addToast } = useToast();
 
   const deleteBatchMutation = useDeleteStockBatch();
@@ -114,7 +122,8 @@ const ProductDetailsClient = () => {
         onSuccess: () => {
           addToast({
             title: "Batch Deleted",
-            description: "The batch was removed and inventory updated successfully.",
+            description:
+              "The batch was removed and inventory updated successfully.",
             type: "success",
             duration: 3000,
           });
@@ -129,7 +138,7 @@ const ProductDetailsClient = () => {
             duration: 3000,
           });
         },
-      }
+      },
     );
   };
 
@@ -137,10 +146,7 @@ const ProductDetailsClient = () => {
     setImageErrors((prev) => ({ ...prev, [index]: true }));
   };
 
-  const confirmDelete = (
-    id: string | number,
-    name?: string,
-  ) => {
+  const confirmDelete = (id: string | number, name?: string) => {
     setDeleteConfirm({
       open: true,
       id,
@@ -148,22 +154,21 @@ const ProductDetailsClient = () => {
     });
   };
 
-
-
   const handleViewAnalytics = () => {
     router.push(`/products/${productId}/analytics`);
   };
-
-
 
   const stockCount = product?.stock ?? 0;
   const isLowStock = stockCount > 0 && stockCount <= 5;
   const isOutOfStock = stockCount === 0;
   const isActive = product?.is_active !== false;
 
-  // Loading state
   if (isProductLoading) {
-    return <Loader title="Loading Product Details..." />;
+    return (
+      <div className="relative min-h-[60vh] flex items-center justify-center bg-card rounded-[2rem] border border-border/50">
+        <Loader title="Loading Product Details..." fullscreen={false} />
+      </div>
+    );
   }
 
   // Error state
@@ -188,7 +193,7 @@ const ProductDetailsClient = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-2xl sm:text-3xl font-bold">Product Details</h1>
-            {/* {!isActive && (
+            {!isActive && (
               <Badge variant="secondary" className="bg-gray-500 text-white">
                 Inactive
               </Badge>
@@ -202,7 +207,7 @@ const ProductDetailsClient = () => {
               <Badge variant="secondary" className="bg-red-500 text-white">
                 Out of Stock
               </Badge>
-            )} */}
+            )}
           </div>
           <p className="text-muted-foreground">
             Manage and monitor your product
@@ -222,7 +227,7 @@ const ProductDetailsClient = () => {
                     product.images?.[selectedImage]?.image &&
                     !imageErrors[selectedImage]
                       ? product.images[selectedImage].image
-                      : "/makeup_product.png"
+                      : "/default_product.png"
                   }
                   alt={product.name}
                   fill
@@ -250,7 +255,7 @@ const ProductDetailsClient = () => {
                           src={
                             img.image && !imageErrors[idx]
                               ? img.image
-                              : "/makeup_product.png"
+                              : "/default_product.png"
                           }
                           alt={`${product.name} - Image ${idx + 1}`}
                           fill
@@ -376,7 +381,9 @@ const ProductDetailsClient = () => {
                       AI Predicted Expiry
                     </label>
                     <p className="text-sm font-black text-blue-700">
-                      {new Date(product.predicted_expiry_date).toLocaleDateString()}
+                      {new Date(
+                        product.predicted_expiry_date,
+                      ).toLocaleDateString()}
                     </p>
                     <p className="text-[8px] font-bold text-blue-500 uppercase">
                       Based on AI analysis
@@ -427,8 +434,6 @@ const ProductDetailsClient = () => {
         </div>
       </div>
 
-
-
       {/* Stock Batches Card */}
       <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
         <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
@@ -444,7 +449,7 @@ const ProductDetailsClient = () => {
           {canModify && (
             <Button
               onClick={() => setShowReceiveModal(true)}
-              className="rounded-2xl h-10 px-6 font-bold shadow-md shadow-primary/10 active:scale-95 transition-all flex items-center gap-2"
+              className="rounded-lg h-10 px-6 font-bold shadow-md shadow-primary/10 active:scale-95 transition-all flex items-center gap-2"
             >
               <Plus size={16} />
               Receive Stock
@@ -453,12 +458,16 @@ const ProductDetailsClient = () => {
         </CardHeader>
         <CardContent className="p-8 pt-0">
           {!product.batches || product.batches.length === 0 ? (
-            <div className="text-center py-12 bg-muted/30 border border-dashed rounded-3xl">
-              <p className="text-muted-foreground font-semibold">No stock batches found for this product.</p>
-              <p className="text-xs text-muted-foreground/80 mt-1">Click "Receive Stock" to log the first batch delivery.</p>
+            <div className="text-center py-12 bg-muted/30 border border-dashed rounded-lg">
+              <p className="text-muted-foreground font-semibold">
+                No stock batches found for this product.
+              </p>
+              <p className="text-xs text-muted-foreground/80 mt-1">
+                Click "Receive Stock" to log the first batch delivery.
+              </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-border/50">
+            <div className="overflow-x-auto rounded-lg border border-border/50">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-muted/50 border-b border-border/50 text-[10px] uppercase font-black tracking-wider text-muted-foreground">
@@ -468,37 +477,66 @@ const ProductDetailsClient = () => {
                     <th className="px-6 py-4">Production Date</th>
                     <th className="px-6 py-4">Expiry Date</th>
                     <th className="px-6 py-4">Days Left</th>
-                    {canModify && <th className="px-6 py-4 text-right">Actions</th>}
+                    {canModify && (
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
                   {product.batches.map((batch: any) => (
-                    <tr key={batch.id} className="hover:bg-accent/10 transition-colors">
-                      <td className="px-6 py-4 font-bold text-sm tracking-tight">{batch.batch_number}</td>
+                    <tr
+                      key={batch.id}
+                      className="hover:bg-accent/10 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-bold text-sm tracking-tight">
+                        {batch.batch_number}
+                      </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black capitalize ${
-                          batch.status === "fresh" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" :
-                          batch.status === "near_expiry" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" :
-                          batch.status === "critical" ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20" :
-                          batch.status === "expired" ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 animate-pulse" :
-                          "bg-muted text-muted-foreground border border-border"
-                        }`}>
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black capitalize ${
+                            batch.status === "fresh"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                              : batch.status === "near_expiry"
+                                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                : batch.status === "critical"
+                                  ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20"
+                                  : batch.status === "expired"
+                                    ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 animate-pulse"
+                                    : "bg-muted text-muted-foreground border border-border"
+                          }`}
+                        >
                           {batch.status.replace("_", " ")}
                         </span>
                       </td>
                       <td className="px-6 py-4 font-semibold text-sm">
-                        {batch.quantity} <span className="text-muted-foreground text-xs">/ {batch.initial_quantity} units</span>
+                        {batch.quantity}{" "}
+                        <span className="text-muted-foreground text-xs">
+                          / {batch.initial_quantity} units
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {batch.production_date ? new Date(batch.production_date).toLocaleDateString() : "-"}
+                        {batch.production_date
+                          ? new Date(batch.production_date).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm font-semibold">
-                        {batch.expiry_date ? new Date(batch.expiry_date).toLocaleDateString() : "-"}
+                        {batch.expiry_date
+                          ? new Date(batch.expiry_date).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {batch.days_until_expiry !== null && batch.days_until_expiry !== undefined ? (
-                          <span className={batch.days_until_expiry <= 7 ? "text-red-500 font-bold" : "text-muted-foreground"}>
-                            {batch.days_until_expiry < 0 ? `Expired (${Math.abs(batch.days_until_expiry)}d ago)` : `${batch.days_until_expiry} days`}
+                        {batch.days_until_expiry !== null &&
+                        batch.days_until_expiry !== undefined ? (
+                          <span
+                            className={
+                              batch.days_until_expiry <= 7
+                                ? "text-red-500 font-bold"
+                                : "text-muted-foreground"
+                            }
+                          >
+                            {batch.days_until_expiry < 0
+                              ? `Expired (${Math.abs(batch.days_until_expiry)}d ago)`
+                              : `${batch.days_until_expiry} days`}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">-</span>
@@ -547,7 +585,7 @@ const ProductDetailsClient = () => {
           <CardContent className="p-8 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-2xl shadow-primary/30">
+                <div className="w-14 h-14 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-2xl shadow-primary/30">
                   <Package className="w-7 h-7" />
                 </div>
                 <div>
@@ -561,14 +599,14 @@ const ProductDetailsClient = () => {
                 <Button
                   variant="outline"
                   onClick={() => setShowAddImageModal(true)}
-                  className="flex-1 md:flex-initial rounded-2xl h-14 px-8 font-black border-primary/20 hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
+                  className="flex-1 md:flex-initial rounded-lg h-14 px-8 font-black border-primary/20 hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
                 >
                   Media Assets
                 </Button>
                 <Button
                   variant="default"
                   onClick={() => setShowEditModal(true)}
-                  className="flex-1 md:flex-initial rounded-2xl h-14 px-8 font-black shadow-xl shadow-primary/20 transition-all active:scale-95"
+                  className="flex-1 md:flex-initial rounded-lg h-14 px-8 font-black shadow-xl shadow-primary/20 transition-all active:scale-95"
                 >
                   Modify SKU
                 </Button>
@@ -617,7 +655,7 @@ const ProductDetailsClient = () => {
           !open && setDeleteConfirm({ open: false, id: null })
         }
       >
-        <AlertDialogContent className="rounded-3xl p-8 border-border">
+        <AlertDialogContent className="rounded-lg p-8 border-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black">
               System Confirmation
@@ -625,7 +663,7 @@ const ProductDetailsClient = () => {
             <AlertDialogDescription className="text-base font-medium">
               You are about to remove this record from the inventory system.
               {deleteConfirm.name && (
-                <div className="mt-4 p-4 rounded-2xl bg-red-50 border border-red-100 font-bold text-red-700">
+                <div className="mt-4 p-4 rounded-lg bg-red-50 border border-red-100 font-bold text-red-700">
                   {deleteConfirm.name}
                 </div>
               )}
@@ -633,12 +671,10 @@ const ProductDetailsClient = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-8 gap-3">
-            <AlertDialogCancel className="rounded-2xl h-12 px-6 font-bold border-border">
+            <AlertDialogCancel className="rounded-lg h-12 px-6 font-bold border-border">
               Cancel Action
             </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white rounded-2xl h-12 px-6 font-black"
-            >
+            <AlertDialogAction className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black">
               Confirm Deletion
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -652,7 +688,7 @@ const ProductDetailsClient = () => {
           !open && setDeleteBatchConfirm({ open: false, id: null })
         }
       >
-        <AlertDialogContent className="rounded-3xl p-8 border-border">
+        <AlertDialogContent className="rounded-lg p-8 border-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black">
               System Confirmation
@@ -660,7 +696,7 @@ const ProductDetailsClient = () => {
             <AlertDialogDescription className="text-base font-medium">
               You are about to remove this stock batch from the system.
               {deleteBatchConfirm.batchNumber && (
-                <div className="mt-4 p-4 rounded-2xl bg-red-50 border border-red-100 font-bold text-red-700">
+                <div className="mt-4 p-4 rounded-lg bg-red-50 border border-red-100 font-bold text-red-700">
                   Batch: {deleteBatchConfirm.batchNumber}
                 </div>
               )}
@@ -668,7 +704,7 @@ const ProductDetailsClient = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-8 gap-3">
-            <AlertDialogCancel className="rounded-2xl h-12 px-6 font-bold border-border">
+            <AlertDialogCancel className="rounded-lg h-12 px-6 font-bold border-border">
               Cancel Action
             </AlertDialogCancel>
             <AlertDialogAction
@@ -677,7 +713,7 @@ const ProductDetailsClient = () => {
                   handleDeleteBatch(deleteBatchConfirm.id);
                 }
               }}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-2xl h-12 px-6 font-black"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black"
             >
               Confirm Deletion
             </AlertDialogAction>

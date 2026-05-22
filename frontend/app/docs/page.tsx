@@ -78,7 +78,7 @@ export default function DocsPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-4 border-b border-border/50 pb-6">
-        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
           <BookOpen size={24} />
         </div>
         <div>
@@ -91,7 +91,7 @@ export default function DocsPage() {
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Docs Navigation */}
-        <div className="w-full lg:w-64 shrink-0 bg-card/50 border border-border/50 rounded-3xl p-4 sticky top-24">
+        <div className="w-full lg:w-64 shrink-0 bg-card/50 border border-border/50 rounded-lg p-4 sticky top-24">
           <nav className="space-y-2">
             {sections.map((section) => {
               const Icon = section.icon;
@@ -100,7 +100,7 @@ export default function DocsPage() {
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 text-left ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left ${
                     isActive
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "hover:bg-accent/50 text-foreground"
@@ -118,11 +118,11 @@ export default function DocsPage() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-card/30 border border-border/50 rounded-3xl p-6 lg:p-10 shadow-sm min-h-[500px]">
+        <div className="flex-1 bg-card/30 border border-border/50 rounded-lg p-6 lg:p-10 shadow-sm min-h-[500px]">
           {activeSection === "getting-started" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
                   <BookOpen size={20} />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
@@ -136,7 +136,7 @@ export default function DocsPage() {
                   empowering your staff with the tools they need to maintain
                   efficient operations.
                 </p>
-                <div className="p-4 bg-accent/30 rounded-2xl border border-border/50 mt-6">
+                <div className="p-4 bg-accent/30 rounded-lg border border-border/50 mt-6">
                   <h3 className="font-bold mb-2">System Overview</h3>
                   <p className="text-sm text-muted-foreground">
                     Our platform is designed around a unified dashboard,
@@ -153,7 +153,7 @@ export default function DocsPage() {
           {activeSection === "how-to-use" && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
                   <HelpCircle size={20} />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
@@ -162,7 +162,7 @@ export default function DocsPage() {
               </div>
 
               <div className="grid gap-6">
-                <div className="group p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="group p-5 bg-card border border-border/50 rounded-lg hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-primary/10 rounded-lg text-primary">
                       <Package size={18} />
@@ -178,7 +178,7 @@ export default function DocsPage() {
                   </p>
                 </div>
 
-                <div className="group p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="group p-5 bg-card border border-border/50 rounded-lg hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-green-500/10 rounded-lg text-green-500">
                       <TrendingUp size={18} />
@@ -196,7 +196,7 @@ export default function DocsPage() {
                   </p>
                 </div>
 
-                <div className="group p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="group p-5 bg-card border border-border/50 rounded-lg hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
                       <Bell size={18} />
@@ -214,7 +214,7 @@ export default function DocsPage() {
                   </p>
                 </div>
 
-                <div className="group p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/50 transition-colors">
+                <div className="group p-5 bg-card border border-border/50 rounded-lg hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
                       <Users size={18} />
@@ -235,7 +235,7 @@ export default function DocsPage() {
           {activeSection === "terms" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                   <ShieldCheck size={20} />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
@@ -294,7 +294,7 @@ export default function DocsPage() {
           {activeSection === "register-app" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                   <Laptop size={20} />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
@@ -312,7 +312,7 @@ export default function DocsPage() {
 
               {statusMsg && (
                 <div
-                  className={`p-4 rounded-2xl border text-sm flex gap-3 items-start animate-in fade-in duration-300 ${
+                  className={`p-4 rounded-lg border text-sm flex gap-3 items-start animate-in fade-in duration-300 ${
                     statusMsg.type === "success"
                       ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
                       : "bg-destructive/10 border-destructive/20 text-destructive-foreground"
@@ -351,7 +351,7 @@ export default function DocsPage() {
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="e.g. Acme Pharmacy"
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
                   />
                 </div>
 
@@ -362,7 +362,7 @@ export default function DocsPage() {
                   <select
                     value={businessType}
                     onChange={(e) => setBusinessType(e.target.value)}
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
                   >
                     <option value="general">General Retail</option>
                     <option value="grocery">Grocery Store</option>
@@ -382,7 +382,7 @@ export default function DocsPage() {
                     value={adminEmail}
                     onChange={(e) => setAdminEmail(e.target.value)}
                     placeholder="e.g. owner@acmepharmacy.com"
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
                   />
                 </div>
 
@@ -390,7 +390,7 @@ export default function DocsPage() {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="rounded-2xl px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10 w-full sm:w-auto"
+                    className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10 w-full sm:w-auto"
                   >
                     {isLoading ? (
                       <>

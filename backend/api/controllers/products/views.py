@@ -80,6 +80,47 @@ class CategoryViewSet(viewsets.ModelViewSet):
             )
         return qs.order_by('name')
 
+    def perform_create(self, serializer):
+        tenant = getattr(self.request, 'tenant', None)
+        business_type = tenant.business_type if tenant else 'general'
+        name = serializer.validated_data.get('name')
+        from django.db.models import Q
+        if Category.plain_objects.filter(
+            Q(tenant=tenant) | Q(tenant__isnull=True),
+            name__iexact=name
+        ).exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"name": "A category with this name already exists."})
+        serializer.save(tenant=tenant, business_type=business_type)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.tenant is None:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You cannot update global preset categories.")
+        
+        name = serializer.validated_data.get('name')
+        if name and name.lower() != instance.name.lower():
+            tenant = getattr(self.request, 'tenant', None)
+            from django.db.models import Q
+            if Category.plain_objects.filter(
+                Q(tenant=tenant) | Q(tenant__isnull=True),
+                name__iexact=name
+            ).exclude(id=instance.id).exists():
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({"name": "A category with this name already exists."})
+                
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.tenant is None:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You cannot delete global preset categories.")
+        if instance.products.exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"detail": "Cannot delete category because it contains active products. Reassign or delete the products first."})
+        instance.delete()
+
     @action(detail=False, methods=['get'], url_path='presets')
     def presets(self, request):
         """

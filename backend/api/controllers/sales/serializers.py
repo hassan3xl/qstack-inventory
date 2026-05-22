@@ -2,7 +2,13 @@ from rest_framework import serializers
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from apps.products.models import Product, StockBatch
-from apps.sales.models import Sale, SaleItem
+from apps.sales.models import Sale, SaleItem, Customer
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'name', 'phone', 'email', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 class SaleItemSerializer(serializers.ModelSerializer):
     product_id = serializers.UUIDField(write_only=True)
@@ -16,11 +22,16 @@ class SaleItemSerializer(serializers.ModelSerializer):
 class SaleSerializer(serializers.ModelSerializer):
     items = SaleItemSerializer(many=True)
     cashier_email = serializers.CharField(source='cashier.email', read_only=True)
+    customer = CustomerSerializer(read_only=True)
+    customer_id = serializers.UUIDField(required=False, write_only=True, allow_null=True)
+    customer_name = serializers.CharField(required=False, write_only=True, allow_null=True)
+    customer_phone = serializers.CharField(required=False, write_only=True, allow_null=True)
 
     class Meta:
         model = Sale
         fields = [
-            'id', 'sale_number', 'cashier_email', 'subtotal', 'tax', 
+            'id', 'sale_number', 'cashier_email', 'customer', 'customer_id', 
+            'customer_name', 'customer_phone', 'subtotal', 'tax', 
             'discount', 'total_amount', 'payment_method', 
             'payment_status', 'items', 'created_at'
         ]
@@ -33,12 +44,35 @@ class SaleSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+        customer_id = validated_data.pop('customer_id', None)
+        customer_name = validated_data.pop('customer_name', None)
+        customer_phone = validated_data.pop('customer_phone', None)
+
         request = self.context.get('request')
         user = request.user if request else None
+        tenant = getattr(request, 'tenant', None) if request else None
+
+        customer = None
+        if customer_id:
+            try:
+                customer = Customer.objects.get(id=customer_id, tenant=tenant)
+            except Customer.DoesNotExist:
+                pass
+        
+        if not customer and customer_name and customer_phone:
+            customer, created = Customer.objects.get_or_create(
+                tenant=tenant,
+                phone=customer_phone,
+                defaults={'name': customer_name}
+            )
+            if not created and customer.name != customer_name:
+                customer.name = customer_name
+                customer.save()
 
         with transaction.atomic():
             sale = Sale.objects.create(
                 cashier=user,
+                customer=customer,
                 subtotal=0,
                 tax=validated_data.get('tax', 0),
                 discount=validated_data.get('discount', 0),

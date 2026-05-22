@@ -2,18 +2,56 @@
 
 import Loader from "@/components/Loader";
 import { Input } from "@/components/ui/input";
-import { useGetProfile } from "@/lib/hooks/profile.hook";
+import { useGetProfile, useUpdateProfile, useUpdatePassword } from "@/lib/hooks/profile.hook";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/providers/ToastProvider";
 
 const ProfileClient = () => {
-  const [saving] = useState(false);
-  const [avatarPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [passwordSaving, setPasswordSaving] = useState(false);
 
   const { register, handleSubmit } = useForm();
+  const { register: registerPassword, handleSubmit: handleSubmitPassword, reset: resetPasswordForm } = useForm();
   const { data: profile } = useGetProfile();
+  const updateProfileMutation = useUpdateProfile();
+  const updatePasswordMutation = useUpdatePassword();
+  const { addToast } = useToast();
 
-  const onSubmit = () => {};
+  const onSubmit = async (data: any) => {
+    try {
+      setSaving(true);
+      await updateProfileMutation.mutateAsync(data);
+      addToast({ title: "Success", description: "Profile updated successfully!", type: "success" });
+    } catch (error) {
+      addToast({ title: "Error", description: "Failed to update profile.", type: "error" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onPasswordSubmit = async (data: any) => {
+    if (data.new_password1 !== data.new_password2) {
+      addToast({ title: "Error", description: "New passwords do not match.", type: "error" });
+      return;
+    }
+    
+    try {
+      setPasswordSaving(true);
+      await updatePasswordMutation.mutateAsync({
+        old_password: data.old_password,
+        new_password1: data.new_password1,
+        new_password2: data.new_password2
+      });
+      addToast({ title: "Success", description: "Password changed successfully!", type: "success" });
+      resetPasswordForm();
+    } catch (error) {
+      addToast({ title: "Error", description: "Failed to change password. Ensure your old password is correct.", type: "error" });
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
 
   if (!profile) return null;
 
@@ -103,6 +141,51 @@ const ProfileClient = () => {
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </form>
+
+      <div className="mt-12 pt-8 border-t border-border">
+        <h3 className="text-xl font-bold mb-6 text-primary">Change Password</h3>
+        <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+          <div>
+            <Input
+              register={registerPassword}
+              type="password"
+              label="Current Password"
+              name="old_password"
+              className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Input
+                register={registerPassword}
+                type="password"
+                label="New Password"
+                name="new_password1"
+                className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                required
+              />
+            </div>
+            <div>
+              <Input
+                register={registerPassword}
+                type="password"
+                label="Confirm New Password"
+                name="new_password2"
+                className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                required
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={passwordSaving}
+            className="w-full bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-lg font-semibold transition mt-4"
+          >
+            {passwordSaving ? "Updating..." : "Update Password"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

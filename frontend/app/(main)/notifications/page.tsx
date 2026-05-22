@@ -126,7 +126,7 @@ const NotificationsPage = () => {
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   };
 
@@ -146,13 +146,13 @@ const NotificationsPage = () => {
     filter === "unread" ? notifications.filter((n) => !n.read) : notifications;
 
   return (
-    <div className="min-h-screen bg-card rounded-xl p-4 md:p-6">
+    <div className="min-h-screen bg-card rounded-lg p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-accent rounded-2xl shadow-sm border border-border 0 p-6 mb-4">
+        <div className="bg-accent rounded-lg shadow-sm border border-border 0 p-6 mb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-card rounded-xl">
+              <div className="p-3 bg-card rounded-lg">
                 <Bell className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -224,7 +224,7 @@ const NotificationsPage = () => {
         {/* Notifications List */}
         <div className="space-y-2">
           {filteredNotifications.length === 0 ? (
-            <div className="rounded-2xl shadow-sm border border-border p-12 text-center">
+            <div className="rounded-lg shadow-sm border border-border p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-card dark:bg-gray-700 rounded-full mb-4">
                 <Bell className="w-8 h-8 text-gray-400" />
               </div>
@@ -241,7 +241,7 @@ const NotificationsPage = () => {
             filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`rounded-xl shadow-sm border border-border p-4 transition-all hover:shadow-md group ${
+                className={`rounded-lg shadow-sm border border-border p-4 transition-all hover:shadow-md group ${
                   !notification.read
                     ? "ring-2 ring-blue-500 ring-opacity-50"
                     : ""
@@ -250,8 +250,8 @@ const NotificationsPage = () => {
                 <div className="flex gap-4">
                   {/* Icon */}
                   <div
-                    className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${getIconColor(
-                      notification.type
+                    className={`shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${getIconColor(
+                      notification.type,
                     )}`}
                   >
                     {getIcon(notification.type)}

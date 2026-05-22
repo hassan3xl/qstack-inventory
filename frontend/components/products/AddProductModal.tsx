@@ -55,7 +55,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       await addProductMutation.mutateAsync(payload);
       addToast({
         title: "Success",
-        description: "Product cataloged successfully! You can now receive stock batches to add inventory.",
+        description:
+          "Product cataloged successfully! You can now receive stock batches to add inventory.",
         type: "success",
       });
       onProductAdded();
@@ -90,25 +91,29 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           </h4>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground">Product Name *</label>
+            <label className="text-xs font-semibold text-foreground">
+              Product Name *
+            </label>
             <input
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
               placeholder="e.g. Premium Organic Milk"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground">Category *</label>
+            <label className="text-xs font-semibold text-foreground">
+              Category *
+            </label>
             <select
               name="category_id"
               value={formData.category_id}
               onChange={handleChange}
               required
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
             >
               <option value="">Select Category</option>
               {categories?.map((cat: any) => (
@@ -128,7 +133,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm font-medium"
               placeholder="Brief details about the product..."
             />
           </div>
@@ -147,7 +152,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               required
               min="0"
               placeholder="0.00"
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
             />
           </div>
         </div>
@@ -157,13 +162,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             type="button"
             variant="outline"
             onClick={closeModal}
-            className="rounded-2xl px-6 h-11 text-xs font-bold"
+            className="rounded-lg px-6 h-11 text-xs font-bold"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            className="rounded-2xl px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10"
+            className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10"
             disabled={addProductMutation.isPending}
           >
             {addProductMutation.isPending ? "Creating..." : "Add to Catalog"}

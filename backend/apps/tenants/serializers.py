@@ -4,7 +4,7 @@ from .models import Tenant, TenantUser
 class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
-        fields = ['id', 'name', 'business_type', 'is_active', 'created_at']
+        fields = ['id', 'name', 'business_type', 'logo', 'is_active', 'created_at']
 
 class TenantDashboardSerializer(serializers.Serializer):
     total_products = serializers.IntegerField(default=0)

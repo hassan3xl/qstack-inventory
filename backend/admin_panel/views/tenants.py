@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from apps.tenants.models import Tenant, TenantUser
 from apps.users.models import User
+from utils.resend import EmailSender
 import string
 import random
 
@@ -18,6 +19,7 @@ def tenant_list_view(request):
 
         if name and admin_email:
             user, created = User.objects.get_or_create(email=admin_email)
+            password = None
             if created:
                 password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 user.set_password(password)
@@ -28,6 +30,34 @@ def tenant_list_view(request):
 
             tenant = Tenant.objects.create(name=name, business_type=business_type)
             TenantUser.objects.create(tenant=tenant, user=user, role=TenantUser.Role.ADMIN)
+            
+            # Send emails if new user
+            if created and password:
+                try:
+                    user_name = admin_email.split('@')[0]
+                    
+                    # Send welcome email
+                    EmailSender.send_welcome(
+                        to=admin_email,
+                        name=user_name
+                    )
+                    
+                    # Send login credentials email
+                    EmailSender.send_notification(
+                        to=admin_email,
+                        name=user_name,
+                        title=f"Your Qstack Inventory Admin Account",
+                        message=f"Welcome to {name}! Your admin account has been created.<br><br>"
+                                f"<strong>Login Details:</strong><br>"
+                                f"Email: {admin_email}<br>"
+                                f"Temporary Password: <code>{password}</code><br><br>"
+                                f"Please log in and change your password immediately for security.",
+                        cta_text="Login to Admin Panel",
+                        cta_link="https://qstack-inventory.com/admin/login"  # Update with your admin URL
+                    )
+                except Exception as email_error:
+                    print(f"Warning: Failed to send emails to {admin_email}: {str(email_error)}")
+            
             messages.success(request, f"Tenant '{name}' registered successfully!")
         return redirect('tenant_list')
 

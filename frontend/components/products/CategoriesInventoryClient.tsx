@@ -1,51 +1,82 @@
 "use client";
 
+import React, { useState } from "react";
 import CategoryList from "@/components/products/CategoryList";
 import { useGetProductsCategories } from "@/lib/hooks/product.hook";
 import { Category } from "@/lib/types/product.types";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import AddCategoryModal from "./AddCategoryModal";
+
+import Loader from "@/components/Loader";
 
 const CategoriesInventoryClient: React.FC = () => {
   const { data: categories, isLoading, error } = useGetProductsCategories();
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error || !categories) {
-    return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <p className="text-muted-foreground">Failed to load categories.</p>
-      </div>
-    );
-  }
-
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const categoriesArray = Array.isArray(categories) ? categories : [];
 
-  if (categoriesArray.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <p className="text-muted-foreground">No categories available.</p>
-      </div>
-    );
-  }
-
   return (
-    <section className="my-4 border-t border-border">
-      <h2 className="text-2xl mt-2 font-bold py-2 text-primary">
-        Shop by Category
-      </h2>
+    <section className="my-4 relative min-h-[60vh]">
+      {(isLoading) && (
+        <div className="absolute inset-0 z-50 bg-background/50 flex items-center justify-center backdrop-blur-sm rounded-lg">
+          <Loader title="Loading categories..." fullscreen={false} />
+        </div>
+      )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-        {categoriesArray.map((category: Category) => (
-          <div key={category.id}>
-            <CategoryList category={category} />
-          </div>
-        ))}
+      {error && !categories && (
+        <div className="absolute inset-0 z-40 bg-background/50 flex flex-col items-center justify-center rounded-lg">
+          <p className="text-red-500 font-bold">Failed to load categories.</p>
+        </div>
+      )}
+      <div className="flex items-center justify-between py-4 border-b border-border mb-6">
+        <div>
+          <h2 className="text-2xl font-black text-primary tracking-tight">
+            Shop by Category
+          </h2>
+          <p className="text-xs text-muted-foreground font-medium mt-1">
+            Manage your store's product classifications.
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsAddModalOpen(true)}
+          className="rounded-lg font-bold flex items-center gap-1.5 shadow-md shadow-primary/10 transition-transform active:scale-95 duration-100"
+        >
+          <Plus size={18} />
+          <span>Add Category</span>
+        </Button>
       </div>
+
+      {categoriesArray.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[40vh] border border-dashed border-border rounded-lg p-8 bg-card">
+          <p className="text-muted-foreground font-semibold">
+            No custom categories created yet.
+          </p>
+          <p className="text-xs text-muted-foreground/80 mt-1 mb-4">
+            Create your first product category to start listing products.
+          </p>
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            variant="outline"
+            className="rounded-lg"
+          >
+            <Plus size={16} className="mr-1.5" />
+            Create Category
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {categoriesArray.map((category: Category) => (
+            <div key={category.id}>
+              <CategoryList category={category} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <AddCategoryModal
+        isModalOpen={isAddModalOpen}
+        closeModal={() => setIsAddModalOpen(false)}
+      />
     </section>
   );
 };

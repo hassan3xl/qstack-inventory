@@ -27,18 +27,6 @@ async function fetchWithCatch(
   url: string,
   options: RequestInit = {},
 ): Promise<any> {
-  const tenantSlug = getTenantSlug();
-
-  // Inject X-Tenant header if detected
-  const headers = new Headers(options.headers || {});
-  if (tenantSlug) {
-    headers.set("X-Tenant", tenantSlug);
-  } else {
-    console.warn(`[API DEBUG] No tenant detected for ${url}`);
-  }
-
-  options.headers = headers;
-
   try {
     const response = await fetch(`${BASE_URL}${url}`, options);
 

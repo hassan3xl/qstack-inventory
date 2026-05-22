@@ -53,8 +53,8 @@ export default function LandingPage() {
             onClick={handleLoginClick}
             className="group text-left h-full focus:outline-none"
           >
-            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-3xl p-8 hover:bg-card/60 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-primary/10 flex flex-col">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-lg p-8 hover:bg-card/60 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-primary/10 flex flex-col">
+              <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
                 <LogIn size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-3">Login</h3>
@@ -73,8 +73,8 @@ export default function LandingPage() {
             href="/docs"
             className="group text-left h-full focus:outline-none"
           >
-            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-3xl p-8 hover:bg-card/60 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 flex flex-col">
-              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-lg p-8 hover:bg-card/60 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 flex flex-col">
+              <div className="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <BookOpen size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-3">Documentation</h3>
@@ -93,8 +93,8 @@ export default function LandingPage() {
             onClick={handleEnquiryClick}
             className="group text-left h-full focus:outline-none"
           >
-            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-3xl p-8 hover:bg-card/60 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div className="h-full bg-card/40 backdrop-blur-md border border-border/50 rounded-lg p-8 hover:bg-card/60 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col">
+              <div className="w-14 h-14 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <MessageCircleQuestion size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-3">Enquiry</h3>

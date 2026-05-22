@@ -6,6 +6,7 @@ from apps.tenants.models import Tenant, TenantUser
 from apps.tenants.serializers import TenantSerializer, TenantDashboardSerializer
 from apps.tenants.permissions.tenant_roles import HasTenantAccess, IsTenantAdmin, IsTenantOwner
 from django.contrib.auth import get_user_model
+from utils.resend import EmailSender
 import string
 import random
 
@@ -60,6 +61,33 @@ class TenantRegisterAPIView(APIView):
 
                 # 3. Link owner — the registering user becomes the OWNER
                 TenantUser.objects.create(tenant=tenant, user=user, role=TenantUser.Role.OWNER)
+
+                # 4. Send welcome and login credentials emails
+                try:
+                    user_name = getattr(user.profile, 'first_name', None) or admin_email.split('@')[0]
+                    
+                    # Send welcome email
+                    EmailSender.send_welcome(
+                        to=admin_email,
+                        name=user_name
+                    )
+                    
+                    # Send login credentials email
+                    EmailSender.send_notification(
+                        to=admin_email,
+                        name=user_name,
+                        title="Your Qstack Inventory Account Setup",
+                        message=f"Welcome to {tenant.name}! Your account has been created.<br><br>"
+                                f"<strong>Login Details:</strong><br>"
+                                f"Email: {admin_email}<br>"
+                                f"Temporary Password: <code>{password}</code><br><br>"
+                                f"Please log in and change your password immediately for security.",
+                        cta_text="Login to Your Account",
+                        cta_link="https://qstack-inventory.com/login"  # Update with your frontend URL
+                    )
+                except Exception as email_error:
+                    print(f"Warning: Failed to send emails to {admin_email}: {str(email_error)}")
+                    # Continue even if email fails
 
                 return Response({
                     "message": "Registration received successfully. Your account is currently inactive. We will configure your application instance and send setup instructions to your email.",

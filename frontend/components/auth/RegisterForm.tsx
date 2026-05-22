@@ -85,7 +85,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-sm p-8 rounded-2xl shadow-lg border border-border bg-card">
+    <div className="w-full max-w-sm p-8 rounded-lg shadow-lg border border-border bg-card">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">Create Account</h1>
@@ -143,17 +143,32 @@ export default function RegisterForm() {
         {/* Terms and Conditions */}
         <div className="text-xs text-muted-foreground">
           By creating an account, you agree to our{" "}
-          <Link href="/terms" title="Terms" className="text-primary hover:underline" id="terms-link">
+          <Link
+            href="/terms"
+            title="Terms"
+            className="text-primary hover:underline"
+            id="terms-link"
+          >
             Terms of Service
           </Link>{" "}
           and{" "}
-          <Link href="/privacy" title="Privacy" className="text-primary hover:underline" id="privacy-link">
+          <Link
+            href="/privacy"
+            title="Privacy"
+            className="text-primary hover:underline"
+            id="privacy-link"
+          >
             Privacy Policy
           </Link>
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={isLoading} id="register-submit-button">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+          id="register-submit-button"
+        >
           {isLoading ? (
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
@@ -176,7 +191,12 @@ export default function RegisterForm() {
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" title="Sign In" className="text-primary font-medium hover:underline" id="login-link">
+          <Link
+            href="/login"
+            title="Sign In"
+            className="text-primary font-medium hover:underline"
+            id="login-link"
+          >
             Sign in
           </Link>
         </p>

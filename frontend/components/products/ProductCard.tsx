@@ -27,7 +27,7 @@ interface ProductCardProps {
   merchantView?: boolean;
 }
 
-const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
+const ProductCard = ({ product }: ProductCardProps) => {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -61,15 +61,11 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
     }
   };
 
-
-
   // Get first image or fallback
   const productImage =
     product.images && product.images.length > 0
       ? product.images[0]?.image
-      : "/makeup_product.png";
-
-
+      : "/default_product.png";
 
   // Stock status
   const stockCount = product.stock ?? 0;
@@ -83,17 +79,17 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
     !isExpired &&
     (new Date(product.expiry_date).getTime() - new Date().getTime()) /
       (1000 * 60 * 60 * 24) <=
-    7;
+      7;
 
   const isExpiringByAI =
     product.predicted_expiry_date &&
     !isExpired &&
     (new Date(product.predicted_expiry_date).getTime() - new Date().getTime()) /
       (1000 * 60 * 60 * 24) <=
-    1; // Less than 24 hours
+      1; // Less than 24 hours
 
   return (
-    <div className="bg-card rounded-2xl overflow-hidden border border-border hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group relative">
+    <div className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group relative">
       {/* Status Badge */}
       <div className="absolute top-3 left-3 z-30 flex flex-col gap-2">
         {!product.is_active && (
@@ -124,7 +120,7 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
         className="relative cursor-pointer overflow-hidden aspect-square bg-muted/30"
       >
         <Image
-          src={imageError ? "/makeup_product.png" : productImage}
+          src={imageError ? "/default_product.png" : productImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -181,26 +177,6 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
             style={{ width: `${Math.min((stockCount / 20) * 100, 100)}%` }}
           />
         </div>
-
-        {/* Interaction Footer */}
-        <div className="pt-2 flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 rounded-xl font-bold text-xs h-10 hover:bg-primary/5 hover:text-primary transition-all"
-            onClick={viewProductDetails}
-          >
-            View Details
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-xl h-10 w-10 text-red-400 hover:text-red-600 hover:bg-red-50"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            <Trash2 size={16} />
-          </Button>
-        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}
@@ -208,7 +184,7 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
       >
-        <AlertDialogContent className="rounded-3xl p-8">
+        <AlertDialogContent className="rounded-lg p-8">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black">
               Confirm Deletion
@@ -225,14 +201,14 @@ const ProductCard = ({ product, merchantView = true }: ProductCardProps) => {
           <AlertDialogFooter className="mt-8 gap-3">
             <AlertDialogCancel
               disabled={isLoading}
-              className="rounded-2xl h-12 font-bold px-6"
+              className="rounded-lg h-12 font-bold px-6"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
-              className="bg-red-600 text-white hover:bg-red-700 rounded-2xl h-12 font-black px-6"
+              className="bg-red-600 text-white hover:bg-red-700 rounded-lg h-12 font-black px-6"
             >
               {isLoading ? "Purging..." : "Confirm Purge"}
             </AlertDialogAction>

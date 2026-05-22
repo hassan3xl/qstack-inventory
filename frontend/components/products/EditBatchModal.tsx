@@ -70,7 +70,9 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
           const prodDate = new Date(updated.production_date);
           const days = parseInt(updated.best_before_days);
           if (!isNaN(prodDate.getTime()) && !isNaN(days)) {
-            const expDate = new Date(prodDate.getTime() + days * 24 * 60 * 60 * 1000);
+            const expDate = new Date(
+              prodDate.getTime() + days * 24 * 60 * 60 * 1000,
+            );
             updated.expiry_date = expDate.toISOString().split("T")[0];
           }
         }
@@ -91,7 +93,11 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "production_date" || name === "expiry_date" || name === "best_before_days") {
+    if (
+      name === "production_date" ||
+      name === "expiry_date" ||
+      name === "best_before_days"
+    ) {
       handleDateChange(name, value);
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -138,7 +144,8 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
     } catch (error: any) {
       addToast({
         title: "Error",
-        description: error?.error || error?.detail || "Failed to update stock batch.",
+        description:
+          error?.error || error?.detail || "Failed to update stock batch.",
         type: "error",
       });
     }
@@ -168,7 +175,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 required
                 min="0"
                 placeholder="e.g. 50"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
 
@@ -185,7 +192,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 required
                 min="0"
                 placeholder="e.g. 100"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
           </div>
@@ -201,7 +208,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
               value={formData.batch_number}
               onChange={handleChange}
               required
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
           </div>
 
@@ -217,7 +224,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 name="production_date"
                 value={formData.production_date}
                 onChange={handleChange}
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
 
@@ -233,7 +240,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 onChange={handleChange}
                 min="0"
                 placeholder="e.g. 30"
-                className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
               />
             </div>
           </div>
@@ -248,7 +255,7 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
               name="expiry_date"
               value={formData.expiry_date}
               onChange={handleChange}
-              className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
           </div>
         </div>
@@ -258,13 +265,13 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
             type="button"
             variant="outline"
             onClick={closeModal}
-            className="rounded-xl px-6"
+            className="rounded-lg px-6"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            className="rounded-xl px-8 shadow-lg shadow-primary/20"
+            className="rounded-lg px-8 shadow-lg shadow-primary/20"
             disabled={updateBatchMutation.isPending}
           >
             {updateBatchMutation.isPending ? "Saving..." : "Update Batch"}

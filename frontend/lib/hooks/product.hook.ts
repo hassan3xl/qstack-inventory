@@ -153,6 +153,38 @@ export const useEditCategory = () => {
 };
 
 // --------------------------------------
+// ADD CATEGORY
+// --------------------------------------
+export const useAddCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (categoryData: any) =>
+      productApi.AddCategory(categoryData),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+};
+
+// --------------------------------------
+// DELETE CATEGORY
+// --------------------------------------
+export const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (name: string) =>
+      productApi.DeleteCategory(name),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+};
+
+// --------------------------------------
 // ADD PRODUCT
 // --------------------------------------
 export const useAddProduct = () => {

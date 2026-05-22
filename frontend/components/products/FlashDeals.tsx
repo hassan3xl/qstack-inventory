@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const FlashDeals = () => {
   return (
-    <section className="mb-12 bg-muted p-6 rounded-2xl">
+    <section className="mb-12 bg-muted p-6 rounded-lg">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Zap className="text-orange-500" size={28} />
@@ -24,7 +24,7 @@ const FlashDeals = () => {
         {deals.map((deal) => (
           <div
             key={deal.id}
-            className="bg-secondary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            className="bg-secondary rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="relative">
               <Image

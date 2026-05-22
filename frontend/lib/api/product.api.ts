@@ -41,6 +41,16 @@ export const productApi = {
     }
   },
 
+  AddCategory: async (categoryData: any) => {
+    try {
+      const res = await apiService.post("/inventory/products/categories/", categoryData);
+      return res;
+    } catch (error) {
+      console.error("Error adding category:", error);
+      throw error;
+    }
+  },
+
   getCategoryDetail: async (name: string) => {
     try {
       const res = await apiService.get(`/inventory/products/categories/${name}/`);

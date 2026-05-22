@@ -28,3 +28,21 @@ export const useCreateSale = () => {
     },
   });
 };
+
+export const useGetCustomers = (search?: string) => {
+  return useQuery({
+    queryKey: ["customers", search],
+    queryFn: () => salesApi.getCustomers(search),
+  });
+};
+
+export const useCreateCustomer = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: salesApi.createCustomer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+    },
+  });
+};

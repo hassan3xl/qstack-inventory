@@ -52,7 +52,7 @@ export default function ModalProvider({
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()} // prevent backdrop click
-              className="bg-background border rounded-xl shadow-2xl max-w-lg w-full mx-4"
+              className="bg-background border rounded-lg shadow-2xl max-w-lg w-full mx-4"
             >
               {modalContent}
             </motion.div>

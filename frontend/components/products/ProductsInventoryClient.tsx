@@ -18,6 +18,7 @@ const ProductsInventoryClient: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
+  const [activeStatusFilter, setActiveStatusFilter] = useState("all");
 
   useEffect(() => {
     if (filterParam) {
@@ -64,9 +65,14 @@ const ProductsInventoryClient: React.FC = () => {
         (stockFilter === "out-of-stock" && stockCount === 0) ||
         (stockFilter === "expiring" && isExpiringSoon);
 
-      return matchesSearch && matchesCategory && matchesStock;
+      const matchesActive =
+        activeStatusFilter === "all" ||
+        (activeStatusFilter === "active" && product.is_active !== false) ||
+        (activeStatusFilter === "inactive" && product.is_active === false);
+
+      return matchesSearch && matchesCategory && matchesStock && matchesActive;
     });
-  }, [products, searchTerm, filterCategory, stockFilter]);
+  }, [products, searchTerm, filterCategory, stockFilter, activeStatusFilter]);
 
   const totalProducts = useMemo(
     () => (Array.isArray(products) ? products.length : 0),
@@ -135,7 +141,7 @@ const ProductsInventoryClient: React.FC = () => {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            className="rounded-2xl h-12 px-8 font-black shadow-xl shadow-primary/20"
+            className="rounded-lg h-12 px-8 font-black shadow-xl shadow-primary/20"
           >
             Register First Batch
           </Button>
@@ -155,7 +161,7 @@ const ProductsInventoryClient: React.FC = () => {
             actions={
               <Button
                 onClick={() => setIsModalOpen(true)}
-                className="rounded-2xl h-12 px-6 font-black shadow-lg shadow-primary/20"
+                className="rounded-lg h-12 px-6 font-black shadow-lg shadow-primary/20"
               >
                 + Register Product
               </Button>
@@ -171,14 +177,14 @@ const ProductsInventoryClient: React.FC = () => {
                 placeholder="Deep search by SKU, Name, or Batch ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-muted/30 border border-transparent rounded-2xl focus:bg-background focus:border-primary/20 transition-all text-sm font-medium"
+                className="w-full pl-11 pr-4 py-3 bg-muted/30 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-medium"
               />
             </div>
 
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-3 bg-muted/30 border border-transparent rounded-2xl focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
+              className="px-4 py-3 bg-muted/30 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
             >
               <option value="all">All Classifications</option>
               {categories.map((cat: any) => (
@@ -191,13 +197,23 @@ const ProductsInventoryClient: React.FC = () => {
             <select
               value={stockFilter}
               onChange={(e) => setStockFilter(e.target.value)}
-              className="px-4 py-3 bg-muted/30 border border-transparent rounded-2xl focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
+              className="px-4 py-3 bg-muted/30 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
             >
               <option value="all">All Stock Status</option>
               <option value="in-stock">Available Items</option>
               <option value="low-stock">Critical Levels</option>
               <option value="out-of-stock">Depleted Stock</option>
               <option value="expiring">Expiring Soon</option>
+            </select>
+
+            <select
+              value={activeStatusFilter}
+              onChange={(e) => setActiveStatusFilter(e.target.value)}
+              className="px-4 py-3 bg-muted/30 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[150px]"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
             </select>
           </div>
 

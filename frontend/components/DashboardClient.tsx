@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useGetProducts, useGetInventoryStats } from "@/lib/hooks/product.hook";
 import { formatCurrency, formatNaira } from "@/lib/utils";
 import { motion } from "framer-motion";
+import Loader from "@/components/Loader";
 
 const DashboardClient = () => {
   const { data: products, isLoading: isProductsLoading } = useGetProducts();
@@ -58,23 +59,26 @@ const DashboardClient = () => {
 
   const stats = [
     {
-      title: "Total Inventory Value",
-      value: formatNaira(invStats?.total_value || 0),
-      trend: { value: "Live", isPositive: true },
-      icon: <DollarSign className="w-5 h-5 text-emerald-500" />,
+      title: "Total Products",
+      value: productsArray.length.toString(),
+      trend: { value: "In Database", isPositive: true },
+      icon: <Package className="w-5 h-5 text-emerald-500" />,
       bg: "bg-emerald-500/10",
     },
     {
       title: "Active Products",
-      value: (invStats?.product_count || 0).toString(),
-      trend: { value: "Catalog", isPositive: true },
+      value: activeProducts.toString(),
+      trend: { value: "Live Catalog", isPositive: true },
       icon: <Package className="w-5 h-5 text-blue-500" />,
       bg: "bg-blue-500/10",
     },
     {
       title: "Low Stock Items",
       value: (invStats?.low_stock || 0).toString(),
-      trend: { value: `${invStats?.out_of_stock || 0} out of stock`, isPositive: false },
+      trend: {
+        value: `${invStats?.out_of_stock || 0} out of stock`,
+        isPositive: false,
+      },
       icon: <AlertTriangle className="w-5 h-5 text-amber-500" />,
       bg: "bg-amber-500/10",
     },
@@ -88,7 +92,13 @@ const DashboardClient = () => {
   ];
 
   if (isLoading)
-    return <div className="p-8 text-center">Loading dashboard...</div>;
+    return (
+      <Loader
+        title="Loading dashboard..."
+        fullscreen={false}
+        className="py-24"
+      />
+    );
 
   return (
     <div className="space-y-8 pb-12">
@@ -99,9 +109,9 @@ const DashboardClient = () => {
         actions={
           <Button
             asChild
-            className="shadow-lg shadow-primary/25 rounded-xl px-6"
+            className="shadow-lg shadow-primary/25 rounded-lg px-6"
           >
-            <Link href="/inventory/products">
+            <Link href="/products">
               <Plus className="w-4 h-4 mr-2" />
               Manage Products
             </Link>
@@ -117,11 +127,11 @@ const DashboardClient = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="group relative bg-card p-6 rounded-3xl border border-border shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
+            className="group relative bg-card p-6 rounded-lg border border-border shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
           >
             <div className="flex justify-between items-start mb-4">
               <div
-                className={`p-3 rounded-2xl ${stat.bg} group-hover:scale-110 transition-transform duration-300`}
+                className={`p-3 rounded-lg ${stat.bg} group-hover:scale-110 transition-transform duration-300`}
               >
                 {stat.icon}
               </div>
@@ -139,7 +149,7 @@ const DashboardClient = () => {
               <p className="text-sm font-medium text-muted-foreground mb-1">
                 {stat.title}
               </p>
-              <h3 className="text-3xl font-black text-foreground tracking-tight">
+              <h3 className="text-lg font-black text-foreground tracking-tight">
                 {stat.value}
               </h3>
             </div>
@@ -149,82 +159,87 @@ const DashboardClient = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Expiring Soon Watchlist */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="lg:col-span-2 bg-card rounded-3xl border border-border overflow-hidden shadow-sm"
-        >
-          <div className="p-6 border-b border-border flex justify-between items-center bg-red-500/5">
-            <div>
-              <h3 className="text-lg font-bold flex items-center gap-2 text-red-600">
-                <Clock className="w-5 h-5" /> Expiring Soon
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Products reaching expiration within the next 7 days
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-primary font-bold text-xs"
-              asChild
+        {expiringSoon && expiringSoon.length > 0 && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="lg:col-span-2 bg-card rounded-lg border border-border overflow-hidden shadow-sm"
             >
-              <Link href="/inventory/products">View All</Link>
-            </Button>
-          </div>
-          <div className="divide-y divide-border">
-            {expiringSoon.length > 0 ? (
-              expiringSoon.map((item: any) => (
-                <div
-                  key={item.id}
-                  className="p-4 hover:bg-muted/50 transition-colors flex items-center gap-4 group"
+              <div className="p-6 border-b border-border flex justify-between items-center bg-red-500/5">
+                <div>
+                  <h3 className="text-lg font-bold flex items-center gap-2 text-red-600">
+                    <Clock className="w-5 h-5" /> Expiring Soon
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Products reaching expiration within the next 7 days
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary font-bold text-xs"
+                  asChild
                 >
-                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center border border-border">
-                    <Package className="w-6 h-6 text-muted-foreground group-hover:text-red-500 transition-colors" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-sm">{item.name}</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Expiry: {new Date(item.expiry_date).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    {Math.ceil(
-                      (new Date(item.expiry_date).getTime() -
-                        new Date().getTime()) /
-                        (1000 * 60 * 60 * 24),
-                    ) < 0 ? (
-                      <span className="text-[10px] font-black uppercase bg-red-600 text-white px-3 py-1 rounded-lg shadow-lg animate-pulse">
-                        EXPIRED
-                      </span>
-                    ) : (
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-600">
+                  <Link href="/products">View All</Link>
+                </Button>
+              </div>
+              <div className="divide-y divide-border">
+                {expiringSoon.length > 0 ? (
+                  expiringSoon.map((item: any) => (
+                    <div
+                      key={item.id}
+                      className="p-4 hover:bg-muted/50 transition-colors flex items-center gap-4 group"
+                    >
+                      <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center border border-border">
+                        <Package className="w-6 h-6 text-muted-foreground group-hover:text-red-500 transition-colors" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-sm">{item.name}</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Expiry:{" "}
+                          {new Date(item.expiry_date).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="text-right">
                         {Math.ceil(
                           (new Date(item.expiry_date).getTime() -
                             new Date().getTime()) /
                             (1000 * 60 * 60 * 24),
-                        )}{" "}
-                        days left
-                      </span>
-                    )}
+                        ) < 0 ? (
+                          <span className="text-[10px] font-black uppercase bg-red-600 text-white px-3 py-1 rounded-lg shadow-lg animate-pulse">
+                            EXPIRED
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-600">
+                            {Math.ceil(
+                              (new Date(item.expiry_date).getTime() -
+                                new Date().getTime()) /
+                                (1000 * 60 * 60 * 24),
+                            )}{" "}
+                            days left
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-12 text-center text-muted-foreground">
+                    <p>No products expiring soon.</p>
                   </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-12 text-center text-muted-foreground">
-                <p>No products expiring soon.</p>
+                )}
               </div>
-            )}
-          </div>
-        </motion.div>
+            </motion.div>
+          </>
+        )}
 
         {/* Low Stock Watchlist */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm"
+          className="bg-card rounded-lg border border-border overflow-hidden shadow-sm"
         >
           <div className="p-6 border-b border-border bg-amber-500/5">
             <h3 className="text-lg font-bold flex items-center gap-2 text-amber-600">
@@ -267,10 +282,7 @@ const DashboardClient = () => {
           </div>
           {lowStockItems.length > 5 && (
             <div className="p-4 bg-muted/20 text-center border-t border-border">
-              <Link
-                href="/inventory/products"
-                className="text-xs font-bold text-primary"
-              >
+              <Link href="/products" className="text-xs font-bold text-primary">
                 View All Low Stock Items
               </Link>
             </div>
@@ -283,10 +295,10 @@ const DashboardClient = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-linear-to-r from-primary/5 to-primary/10 p-8 rounded-3xl border border-primary/20 flex flex-col md:flex-row items-center justify-between gap-6"
+        className="bg-linear-to-r from-primary/5 to-primary/10 p-8 rounded-lg border border-primary/20 flex flex-col md:flex-row items-center justify-between gap-6"
       >
         <div className="flex gap-4 items-center">
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
+          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
             <Calendar className="w-6 h-6" />
           </div>
           <div>
@@ -299,13 +311,13 @@ const DashboardClient = () => {
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className="rounded-xl border-primary/20 bg-background hover:bg-primary/5"
+            className="rounded-lg border-primary/20 bg-background hover:bg-primary/5"
             asChild
           >
             <Link href="/inventory/products">View Full Catalog</Link>
           </Button>
           <Button
-            className="rounded-xl px-8 shadow-lg shadow-primary/20"
+            className="rounded-lg px-8 shadow-lg shadow-primary/20"
             asChild
           >
             <Link href="/inventory/products/new">Add New Arrival</Link>

@@ -87,7 +87,7 @@ const StoreSettingsPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-4">
+    <div className="max-w-4xl mx-auto space-y-8">
       <Header
         title="Business Account"
         subtitle="Manage store profile details, industry classification, and subdomain routing settings."
@@ -96,9 +96,9 @@ const StoreSettingsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Side: Store Overview Cards */}
         <div className="md:col-span-1 space-y-4">
-          <Card className="rounded-[2rem] border-border/40 shadow-sm overflow-hidden bg-gradient-to-br from-primary/5 via-card to-card">
+          <Card className="rounded-md border-border/40 shadow-sm overflow-hidden bg-gradient-to-br from-primary/5 via-card to-card">
             <CardHeader className="pb-2">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-2">
+              <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center text-primary mb-2">
                 <Store className="w-5 h-5" />
               </div>
               <CardTitle className="text-sm font-black uppercase tracking-wider text-muted-foreground">
@@ -115,9 +115,9 @@ const StoreSettingsPage = () => {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[2rem] border-border/40 shadow-sm">
+          <Card className="rounded-md border-border/40 shadow-sm">
             <CardHeader className="pb-2">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 mb-2">
+              <div className="w-10 h-10 rounded-md bg-amber-500/10 flex items-center justify-center text-amber-500 mb-2">
                 <Landmark className="w-5 h-5" />
               </div>
               <CardTitle className="text-sm font-black uppercase tracking-wider text-muted-foreground">
@@ -131,9 +131,9 @@ const StoreSettingsPage = () => {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[2rem] border-border/40 shadow-sm">
+          <Card className="rounded-md border-border/40 shadow-sm">
             <CardHeader className="pb-2">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-2">
+              <div className="w-10 h-10 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 mb-2">
                 <Calendar className="w-5 h-5" />
               </div>
               <CardTitle className="text-sm font-black uppercase tracking-wider text-muted-foreground">
@@ -156,7 +156,7 @@ const StoreSettingsPage = () => {
 
         {/* Right Side: Settings Editor */}
         <div className="md:col-span-2">
-          <Card className="rounded-[2rem] border-border/40 shadow-md">
+          <Card className="rounded-md border-border/40 shadow-md">
             <CardHeader className="pb-4">
               <CardTitle className="text-xl font-bold flex items-center gap-2">
                 Business Details
@@ -177,13 +177,13 @@ const StoreSettingsPage = () => {
             <CardContent>
               {isStoreLoading ? (
                 <div className="space-y-4 py-4">
-                  <div className="h-10 bg-muted rounded-2xl animate-pulse" />
-                  <div className="h-10 bg-muted rounded-2xl animate-pulse" />
+                  <div className="h-10 bg-muted rounded-lg animate-pulse" />
+                  <div className="h-10 bg-muted rounded-lg animate-pulse" />
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {!canEdit && (
-                    <div className="flex gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-medium">
+                    <div className="flex gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-medium">
                       <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
                       <div>
                         Store details are read-only for your current role.
@@ -202,7 +202,7 @@ const StoreSettingsPage = () => {
                       onChange={handleChange}
                       disabled={!canEdit}
                       placeholder="Store Name"
-                      className="rounded-xl"
+                      className="rounded-md"
                     />
                   </div>
 
@@ -216,7 +216,7 @@ const StoreSettingsPage = () => {
                       onChange={handleChange}
                       disabled={!canEdit}
                       required
-                      className="w-full bg-background border border-input rounded-xl px-4 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer disabled:cursor-not-allowed"
+                      className="w-full bg-background border border-input rounded-md px-4 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer disabled:cursor-not-allowed"
                     >
                       <option value="grocery">Grocery & Provisions</option>
                       <option value="pharmacy">Pharmacy & Medicine</option>
@@ -231,7 +231,7 @@ const StoreSettingsPage = () => {
                     <Button
                       type="submit"
                       disabled={updateStoreMutation.isPending}
-                      className="rounded-xl w-full py-6 font-bold shadow-lg shadow-primary/10"
+                      className="rounded-md w-full py-6 font-bold shadow-lg shadow-primary/10"
                     >
                       {updateStoreMutation.isPending
                         ? "Saving..."

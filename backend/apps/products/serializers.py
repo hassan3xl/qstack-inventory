@@ -86,9 +86,14 @@ class ProductInventorySerializer(ModelSerializer):
 
 
 class ProductCategorySerializer(ModelSerializer):
+    product_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = ["id", 'name', 'image', 'description', 'business_type', 'default_best_before_days', 'expiry_strategy']
+        fields = ["id", 'name', 'image', 'description', 'business_type', 'default_best_before_days', 'expiry_strategy', 'tenant', 'product_count']
+
+    def get_product_count(self, obj):
+        return obj.products.count()
 
 
 class ProductImageSerializer(ModelSerializer):
@@ -179,7 +184,7 @@ class CategorySerializer(ModelSerializer):
             'id', 'name', 'image', 'description',
             'business_type', 'business_type_display',
             'default_best_before_days', 'expiry_strategy',
-            'product_count', 'products',
+            'product_count', 'products', 'tenant',
         ]
 
     def get_product_count(self, obj):
@@ -206,7 +211,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'name', 'description', 'stock', 'category_id',
-            'unit_price',
+            'unit_price', 'is_active',
             'production_date', 'expiry_date', 'best_before_days'
         ]
 

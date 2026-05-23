@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.db import transaction
 from apps.users.models import Profile
+from dj_rest_auth.serializers import PasswordResetSerializer
 
 User = get_user_model()
 
@@ -109,4 +110,15 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "is_manager": rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.MANAGER, 30),
             "is_cashier": rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.CASHIER, 20),
             "is_staff":   rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.STAFF,   10),
+        }
+
+class CustomPasswordResetSerializer(PasswordResetSerializer):
+    def get_email_options(self):
+        return {
+            'email_template_name': 'auth/password_reset_email.html',
+            'subject_template_name': 'auth/password_reset_subject.txt',
+            'domain_override': 'inventory.qstack.com.ng',
+            'extra_email_context': {
+                'site_name': 'Quantum Stack Inventory',
+            }
         }

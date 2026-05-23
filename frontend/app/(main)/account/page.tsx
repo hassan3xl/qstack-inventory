@@ -19,8 +19,9 @@ import {
   useGetProfile,
   useUpdateProfile,
   useUpdatePassword,
+  useRequestPasswordReset,
 } from "@/lib/hooks/profile.hook";
-import { User, Lock, Eye, CheckCircle2, Moon } from "lucide-react";
+import { User, Lock, Eye, CheckCircle2, Moon, Loader2 } from "lucide-react";
 
 type ActiveTab = "profile" | "security" | "appearance";
 
@@ -61,6 +62,7 @@ const AccountPage = () => {
     confirm_password: "",
   });
   const updatePasswordMutation = useUpdatePassword();
+  const requestPasswordResetMutation = useRequestPasswordReset();
 
   const handleProfileChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -138,8 +140,35 @@ const AccountPage = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    const email = user?.email;
+    if (!email) {
+      addToast({
+        title: "Error",
+        description: "Email address not found on your profile.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      await requestPasswordResetMutation.mutateAsync(email);
+      addToast({
+        title: "Reset Link Sent",
+        description: "Please check your email for a password reset link.",
+        type: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "Error",
+        description: "Failed to send password reset email.",
+        type: "error",
+      });
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 p-4">
       <Header
         title="Account Settings"
         subtitle="Manage your profile information, password, and preferences."
@@ -150,29 +179,29 @@ const AccountPage = () => {
         <div className="w-full md:w-64 flex md:flex-col gap-2 bg-card p-3 rounded-[1.8rem] border border-border/40 shadow-sm h-fit">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
               activeTab === "profile"
                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                 : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
             }`}
           >
             <User className="w-4 h-4" />
-            Profile
+            My Profile
           </button>
           <button
             onClick={() => setActiveTab("security")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
               activeTab === "security"
                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                 : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
             }`}
           >
             <Lock className="w-4 h-4" />
-            Security
+            Security & Login
           </button>
           <button
             onClick={() => setActiveTab("appearance")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
               activeTab === "appearance"
                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                 : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
@@ -186,7 +215,7 @@ const AccountPage = () => {
         {/* Settings Content Area */}
         <div className="flex-1">
           {activeTab === "profile" && (
-            <Card className="rounded-[2rem] border-border/40 shadow-md">
+            <Card className="rounded-xl border-border/40 shadow-md">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold">
                   Personal Profile
@@ -199,9 +228,9 @@ const AccountPage = () => {
               <CardContent>
                 {isProfileLoading ? (
                   <div className="space-y-4 py-6">
-                    <div className="h-10 bg-muted rounded-lg animate-pulse w-full" />
-                    <div className="h-10 bg-muted rounded-lg animate-pulse w-full" />
-                    <div className="h-28 bg-muted rounded-lg animate-pulse w-full" />
+                    <div className="h-10 bg-muted rounded-2xl animate-pulse w-full" />
+                    <div className="h-10 bg-muted rounded-2xl animate-pulse w-full" />
+                    <div className="h-28 bg-muted rounded-2xl animate-pulse w-full" />
                   </div>
                 ) : (
                   <form onSubmit={handleProfileSubmit} className="space-y-6">
@@ -215,7 +244,7 @@ const AccountPage = () => {
                           value={profileData.first_name}
                           onChange={handleProfileChange}
                           placeholder="First Name"
-                          className="rounded-lg"
+                          className="rounded-xl"
                         />
                       </div>
                       <div className="space-y-2">
@@ -227,7 +256,7 @@ const AccountPage = () => {
                           value={profileData.last_name}
                           onChange={handleProfileChange}
                           placeholder="Last Name"
-                          className="rounded-lg"
+                          className="rounded-xl"
                         />
                       </div>
                     </div>
@@ -239,7 +268,7 @@ const AccountPage = () => {
                       <NormalInput
                         value={user?.email || ""}
                         disabled
-                        className="rounded-lg bg-muted/65 cursor-not-allowed opacity-80"
+                        className="rounded-xl bg-muted/65 cursor-not-allowed opacity-80"
                       />
                     </div>
 
@@ -252,7 +281,7 @@ const AccountPage = () => {
                         value={profileData.phone}
                         onChange={handleProfileChange}
                         placeholder="Phone Number"
-                        className="rounded-lg"
+                        className="rounded-xl"
                       />
                     </div>
 
@@ -266,11 +295,11 @@ const AccountPage = () => {
                         onChange={handleProfileChange}
                         placeholder="Tell us about yourself..."
                         rows={4}
-                        className="rounded-lg resize-none"
+                        className="rounded-xl resize-none"
                       />
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/30 border border-border/50">
                       <input
                         type="checkbox"
                         id="email_notifications"
@@ -290,7 +319,7 @@ const AccountPage = () => {
                     <Button
                       type="submit"
                       disabled={updateProfileMutation.isPending}
-                      className="rounded-lg w-full py-6 font-bold shadow-lg shadow-primary/10"
+                      className="rounded-xl w-full py-6 font-bold shadow-lg shadow-primary/10"
                     >
                       {updateProfileMutation.isPending
                         ? "Saving..."
@@ -303,7 +332,7 @@ const AccountPage = () => {
           )}
 
           {activeTab === "security" && (
-            <Card className="rounded-[2rem] border-border/40 shadow-md">
+            <Card className="rounded-xl border-border/40 shadow-md">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold">
                   Change Password
@@ -326,8 +355,25 @@ const AccountPage = () => {
                       onChange={handlePasswordChange}
                       placeholder="••••••••"
                       required
-                      className="rounded-lg"
+                      className="rounded-xl"
                     />
+                    <div className="flex justify-end mt-1">
+                      <button
+                        type="button"
+                        onClick={handleForgotPassword}
+                        disabled={requestPasswordResetMutation.isPending}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1"
+                      >
+                        {requestPasswordResetMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" /> Sending
+                            link...
+                          </>
+                        ) : (
+                          "Forgot Current Password?"
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -341,7 +387,7 @@ const AccountPage = () => {
                       onChange={handlePasswordChange}
                       placeholder="••••••••"
                       required
-                      className="rounded-lg"
+                      className="rounded-xl"
                     />
                   </div>
 
@@ -356,14 +402,14 @@ const AccountPage = () => {
                       onChange={handlePasswordChange}
                       placeholder="••••••••"
                       required
-                      className="rounded-lg"
+                      className="rounded-xl"
                     />
                   </div>
 
                   <Button
                     type="submit"
                     disabled={updatePasswordMutation.isPending}
-                    className="rounded-lg w-full py-6 font-bold shadow-lg shadow-primary/10"
+                    className="rounded-xl w-full py-6 font-bold shadow-lg shadow-primary/10"
                   >
                     {updatePasswordMutation.isPending
                       ? "Updating Password..."
@@ -375,7 +421,7 @@ const AccountPage = () => {
           )}
 
           {activeTab === "appearance" && (
-            <Card className="rounded-[2rem] border-border/40 shadow-md">
+            <Card className="rounded-xl border-border/40 shadow-md">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold">
                   Display Preferences
@@ -386,7 +432,7 @@ const AccountPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between p-5 rounded-lg bg-muted/30 border border-border/50">
+                <div className="flex items-center justify-between p-5 rounded-2xl bg-muted/30 border border-border/50">
                   <div className="space-y-1">
                     <p className="text-sm font-bold">System Mode</p>
                     <p className="text-xs text-muted-foreground">

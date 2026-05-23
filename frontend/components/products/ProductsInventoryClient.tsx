@@ -169,7 +169,7 @@ const ProductsInventoryClient: React.FC = () => {
           />
 
           {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-[2rem] border border-border/50 shadow-sm">
+          <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input

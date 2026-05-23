@@ -29,3 +29,11 @@ export const useUpdatePassword = () => {
     },
   });
 };
+
+export const useRequestPasswordReset = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      return await profileApi.requestPasswordReset(email);
+    },
+  });
+};

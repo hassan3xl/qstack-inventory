@@ -2,6 +2,7 @@ from django.urls import path
 from .views import GoogleLogin, RequestOTPView, VerifyOTPView, ResetPasswordView, TenantLoginView
 from .user_view import AuthenticatedUserView
 from django.urls import path, include
+from django.views.generic import TemplateView
 from rest_framework_simplejwt.views import TokenVerifyView, TokenRefreshView
 
 urlpatterns = [
@@ -23,6 +24,9 @@ urlpatterns = [
     path('otp/request/', RequestOTPView.as_view(), name='otp_request'),
     path('otp/verify/', VerifyOTPView.as_view(), name='otp_verify'),
     path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
+    
+    # Required by dj-rest-auth to reverse the URL even though we use a custom template
+    path('password/reset/confirm/<str:uidb64>/<str:token>/', TemplateView.as_view(), name='password_reset_confirm'),
 
     # 6. Authenticated user endpoint
     path('user/', AuthenticatedUserView.as_view(), name='authenticated-user'),

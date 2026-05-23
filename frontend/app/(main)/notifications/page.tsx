@@ -16,74 +16,37 @@ import {
   X,
 } from "lucide-react";
 
-interface Notification {
+
+type Notification = {
   id: string;
-  type: "message" | "like" | "comment" | "payment" | "alert" | "mention";
+  type: string;
   title: string;
-  description: string;
-  time: string;
-  read: boolean;
-  avatar?: string;
+  message: string;
+  created_at: string;
+  is_read: boolean;
+  action_url?: string;
 }
+
+import {
+  useGetNotifications,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  useDeleteNotification,
+  useClearAllNotifications,
+} from "@/lib/hooks/notifications.hook";
+import { string } from "zod";
 
 const NotificationsPage = () => {
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "message",
-      title: "New message from Sarah",
-      description: "Hey! Can we schedule a meeting for tomorrow?",
-      time: "2m ago",
-      read: false,
-      avatar: "/avatars/sarah.jpg",
-    },
-    {
-      id: "2",
-      type: "like",
-      title: "John liked your post",
-      description: "Your post about React hooks received a like",
-      time: "1h ago",
-      read: false,
-      avatar: "/avatars/john.jpg",
-    },
-    {
-      id: "3",
-      type: "comment",
-      title: "New comment on your post",
-      description: "Emily commented: 'Great insights! Thanks for sharing.'",
-      time: "3h ago",
-      read: true,
-      avatar: "/avatars/emily.jpg",
-    },
-    {
-      id: "4",
-      type: "payment",
-      title: "Payment received",
-      description: "You received $150.00 from Project Alpha",
-      time: "5h ago",
-      read: false,
-    },
-    {
-      id: "5",
-      type: "alert",
-      title: "System maintenance scheduled",
-      description: "Platform will be down for maintenance on Sunday 2AM-4AM",
-      time: "1d ago",
-      read: true,
-    },
-    {
-      id: "6",
-      type: "mention",
-      title: "You were mentioned",
-      description: "Mike mentioned you in a comment",
-      time: "2d ago",
-      read: true,
-      avatar: "/avatars/mike.jpg",
-    },
-  ]);
+  const { data: fetchedNotifications = [] } = useGetNotifications();
+  const notifications = fetchedNotifications as Notification[];
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
+  const deleteNotificationMutation = useDeleteNotification();
+  const clearAllNotificationsMutation = useClearAllNotifications();
+
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const getIcon = (type: Notification["type"]) => {
     const iconClass = "w-5 h-5";
@@ -125,25 +88,23 @@ const NotificationsPage = () => {
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+    markAsReadMutation.mutate(id);
   };
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllAsReadMutation.mutate();
   };
 
   const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    deleteNotificationMutation.mutate(id);
   };
 
   const clearAll = () => {
-    setNotifications([]);
+    clearAllNotificationsMutation.mutate();
   };
 
   const filteredNotifications =
-    filter === "unread" ? notifications.filter((n) => !n.read) : notifications;
+    filter === "unread" ? notifications.filter((n) => !n.is_read) : notifications;
 
   return (
     <div className="min-h-screen bg-card rounded-lg p-4 md:p-6">
@@ -242,7 +203,7 @@ const NotificationsPage = () => {
               <div
                 key={notification.id}
                 className={`rounded-lg shadow-sm border border-border p-4 transition-all hover:shadow-md group ${
-                  !notification.read
+                  !notification.is_read
                     ? "ring-2 ring-blue-500 ring-opacity-50"
                     : ""
                 }`}
@@ -262,30 +223,35 @@ const NotificationsPage = () => {
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <h3
                         className={`font-semibold ${
-                          notification.read
+                          notification.is_read
                             ? "text-gray-700 dark:text-gray-300"
                             : "text-primary"
                         }`}
                       >
                         {notification.title}
                       </h3>
-                      {!notification.read && (
+                      {!notification.is_read && (
                         <span className="shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span>
                       )}
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                      {notification.description}
+                      {notification.message}
                     </p>
+                    {notification.action_url && (
+                      <a href={notification.action_url} className="text-sm text-blue-500 hover:underline mb-2 inline-block">
+                        View details
+                      </a>
+                    )}
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-gray-500 dark:text-gray-500">
-                        {notification.time}
+                        {new Date(notification.created_at).toLocaleString()}
                       </span>
                     </div>
                   </div>
 
                   {/* Actions */}
                   <div className="shrink-0 flex items-start gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!notification.read && (
+                    {!notification.is_read && (
                       <button
                         onClick={() => markAsRead(notification.id)}
                         className="p-2 hover:bg-card dark:hover:bg-gray-700 rounded-lg transition-colors"

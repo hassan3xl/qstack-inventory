@@ -91,14 +91,7 @@ const DashboardClient = () => {
     },
   ];
 
-  if (isLoading)
-    return (
-      <Loader
-        title="Loading dashboard..."
-        fullscreen={false}
-        className="py-24"
-      />
-    );
+
 
   return (
     <div className="space-y-8 pb-12">

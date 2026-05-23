@@ -28,4 +28,13 @@ export const profileApi = {
       throw error;
     }
   },
+  requestPasswordReset: async (email: string) => {
+    try {
+      const res = await apiService.post("/auth/password/reset/", { email });
+      return res;
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      throw error;
+    }
+  },
 };

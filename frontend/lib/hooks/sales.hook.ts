@@ -1,16 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { salesApi } from "../api/sales.api";
+import { QUERY_KEYS } from "./queryKeys";
 
 export const useGetSales = () => {
   return useQuery({
-    queryKey: ["sales"],
+    queryKey: QUERY_KEYS.SALES,
     queryFn: salesApi.getSales,
   });
 };
 
 export const useGetSale = (saleId: string) => {
   return useQuery({
-    queryKey: ["sale", saleId],
+    queryKey: QUERY_KEYS.SALE(saleId),
     queryFn: () => salesApi.getSale(saleId),
     enabled: !!saleId,
   });
@@ -31,7 +32,7 @@ export const useCreateSale = () => {
 
 export const useGetCustomers = (search?: string) => {
   return useQuery({
-    queryKey: ["customers", search],
+    queryKey: QUERY_KEYS.CUSTOMERS(search),
     queryFn: () => salesApi.getCustomers(search),
   });
 };

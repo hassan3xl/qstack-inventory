@@ -34,6 +34,8 @@ export default function DocsPage() {
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("general");
   const [adminEmail, setAdminEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [statusMsg, setStatusMsg] = useState<{
     type: "success" | "error";
     text: string;
@@ -50,6 +52,8 @@ export default function DocsPage() {
         business_name: businessName,
         business_type: businessType,
         admin_email: adminEmail,
+        first_name: firstName,
+        last_name: lastName,
       });
 
       setStatusMsg({
@@ -60,6 +64,8 @@ export default function DocsPage() {
       // Clear form
       setBusinessName("");
       setAdminEmail("");
+      setFirstName("");
+      setLastName("");
       setBusinessType("general");
     } catch (err: any) {
       const errorText =
@@ -131,7 +137,7 @@ export default function DocsPage() {
               </div>
               <div className="prose prose-slate dark:prose-invert max-w-none space-y-4">
                 <p className="text-muted-foreground leading-relaxed">
-                  Welcome to <strong>QStack Inventory</strong>, your complete
+                  Welcome to <strong>Quantum Stack</strong>, your complete
                   solution for managing stock, tracking product lifecycles, and
                   empowering your staff with the tools they need to maintain
                   efficient operations.
@@ -298,7 +304,7 @@ export default function DocsPage() {
                   <Laptop size={20} />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
-                  Get the QStack App
+                  Get Quantum Stack
                 </h2>
               </div>
 
@@ -340,6 +346,35 @@ export default function DocsPage() {
                 onSubmit={handleRegister}
                 className="space-y-4 max-w-lg mt-4"
               >
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="John"
+                      className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Doe"
+                      className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
                     <Building2 size={12} className="text-muted-foreground" />{" "}

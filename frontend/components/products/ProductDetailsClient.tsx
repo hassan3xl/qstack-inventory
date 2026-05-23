@@ -163,13 +163,7 @@ const ProductDetailsClient = () => {
   const isOutOfStock = stockCount === 0;
   const isActive = product?.is_active !== false;
 
-  if (isProductLoading) {
-    return (
-      <div className="relative min-h-[60vh] flex items-center justify-center bg-card rounded-[2rem] border border-border/50">
-        <Loader title="Loading Product Details..." fullscreen={false} />
-      </div>
-    );
-  }
+
 
   // Error state
   if (productError || !product) {
@@ -435,7 +429,7 @@ const ProductDetailsClient = () => {
       </div>
 
       {/* Stock Batches Card */}
-      <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
+      <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
         <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-xl font-black flex items-center gap-2">
@@ -580,7 +574,7 @@ const ProductDetailsClient = () => {
 
       {/* Asset Management - only visible if user can modify */}
       {canModify && (
-        <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden relative group">
+        <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden relative group">
           <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <CardContent className="p-8 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">

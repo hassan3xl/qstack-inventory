@@ -2,13 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productApi } from "../api/product.api";
 import { Product } from "../types/product.types";
 import { useAuth } from "@/contexts/AuthContext";
+import { QUERY_KEYS } from "./queryKeys";
 
 // --------------------------------------
 // GET ALL PRODUCTS
 // --------------------------------------
 export function useGetProducts() {
   return useQuery<Product>({
-    queryKey: ["products"],
+    queryKey: QUERY_KEYS.PRODUCTS,
     queryFn: productApi.getProducts,
   });
 }
@@ -18,7 +19,7 @@ export function useGetProducts() {
 // --------------------------------------
 export function useGetInventoryStats() {
   return useQuery({
-    queryKey: ["inventory-stats"],
+    queryKey: QUERY_KEYS.INVENTORY_STATS,
     queryFn: productApi.getInventoryStats,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

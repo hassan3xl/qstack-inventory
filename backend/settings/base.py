@@ -144,6 +144,7 @@ REST_AUTH = {
     'SESSION_LOGIN': False,
     'USER_DETAILS_SERIALIZER': 'api.controllers.auth.serializers.UserDetailSerializer',
     'REGISTER_SERIALIZER': 'api.controllers.auth.serializers.CustomRegisterSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'api.controllers.auth.serializers.CustomPasswordResetSerializer',
 }
 
 STORAGES = {

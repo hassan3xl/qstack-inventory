@@ -36,7 +36,7 @@ export default function LandingPage() {
       <div className="w-full max-w-5xl mx-auto px-4 py-12 relative z-10">
         <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-bold tracking-widest uppercase">
-            Welcome to QStack
+            Welcome to Quantum Stack
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
             Quantum Stack Inventory
@@ -79,7 +79,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold mb-3">Documentation</h3>
               <p className="text-muted-foreground flex-1 mb-8">
-                Read the comprehensive guide on how to use QStack Inventory
+                Read the comprehensive guide on how to use Quantum Stack
                 effectively and efficiently.
               </p>
               <div className="flex items-center text-blue-500 font-semibold text-sm group-hover:gap-2 transition-all">

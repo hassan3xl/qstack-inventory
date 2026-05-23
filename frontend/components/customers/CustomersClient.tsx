@@ -23,10 +23,13 @@ export default function CustomersClient() {
       <Header
         title="Customers Directory"
         subtitle="Manage and view your store's saved customers"
-        stats={[{ title: "Total Customers", value: customers?.length || 0 }]}
+        stats={[
+          { title: "Total Customers", value: customers?.length || 0 },
+          { title: "With Email", value: customers?.filter((c: any) => c.email)?.length || 0 }
+        ]}
       />
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-card p-4 rounded-[2rem] border border-border/50 shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-card p-4 rounded-xl border border-border/50 shadow-sm">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -49,7 +52,7 @@ export default function CustomersClient() {
             Error loading customers. Please try again.
           </div>
         ) : !customers || customers.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center p-24 bg-card border border-dashed rounded-[2rem]">
+          <div className="col-span-full flex flex-col items-center justify-center p-24 bg-card border border-dashed rounded-xl">
             <User className="w-16 h-16 text-muted-foreground/20 mb-4" />
             <p className="text-lg font-bold text-foreground">
               No customers found

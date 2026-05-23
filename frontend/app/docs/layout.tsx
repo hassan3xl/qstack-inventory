@@ -15,7 +15,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             <ArrowLeft size={16} />
             Back to Application
           </Link>
-          <div className="font-bold tracking-tight">QStack Docs</div>
+          <div className="font-bold tracking-tight">Quantum Stack Docs</div>
         </div>
       </header>
 

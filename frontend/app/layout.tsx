@@ -11,7 +11,7 @@ import { SidebarProvider } from "@/contexts/SidebarContext";
 import { QueryProvider } from "@/providers/QueryProviders";
 
 export const metadata: Metadata = {
-  title: "Qstack Inventory",
+  title: "Quantum Stack",
   description: "Professional Inventory Management",
 };
 

@@ -30,6 +30,8 @@ class TenantRegisterAPIView(APIView):
         business_name = request.data.get('business_name')
         business_type = request.data.get('business_type', Tenant.BusinessType.GENERAL)
         admin_email = request.data.get('admin_email')
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
 
         if not business_name or not admin_email:
             return Response(
@@ -49,6 +51,11 @@ class TenantRegisterAPIView(APIView):
                     password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
                     user.set_password(password)
                     user.save()
+                    
+                    if hasattr(user, 'profile'):
+                        user.profile.first_name = first_name
+                        user.profile.last_name = last_name
+                        user.profile.save()
                 else:
                     if TenantUser.objects.filter(user=user).exists():
                         return Response(

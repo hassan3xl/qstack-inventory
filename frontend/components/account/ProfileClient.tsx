@@ -2,10 +2,16 @@
 
 import Loader from "@/components/Loader";
 import { Input } from "@/components/ui/input";
-import { useGetProfile, useUpdateProfile, useUpdatePassword } from "@/lib/hooks/profile.hook";
+import {
+  useGetProfile,
+  useUpdateProfile,
+  useUpdatePassword,
+  useRequestPasswordReset,
+} from "@/lib/hooks/profile.hook";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/providers/ToastProvider";
+import { Loader2 } from "lucide-react";
 
 const ProfileClient = () => {
   const [saving, setSaving] = useState(false);
@@ -13,19 +19,32 @@ const ProfileClient = () => {
   const [passwordSaving, setPasswordSaving] = useState(false);
 
   const { register, handleSubmit } = useForm();
-  const { register: registerPassword, handleSubmit: handleSubmitPassword, reset: resetPasswordForm } = useForm();
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    reset: resetPasswordForm,
+  } = useForm();
   const { data: profile } = useGetProfile();
   const updateProfileMutation = useUpdateProfile();
   const updatePasswordMutation = useUpdatePassword();
+  const requestPasswordResetMutation = useRequestPasswordReset();
   const { addToast } = useToast();
-
+  const user = profile?.user;
   const onSubmit = async (data: any) => {
     try {
       setSaving(true);
       await updateProfileMutation.mutateAsync(data);
-      addToast({ title: "Success", description: "Profile updated successfully!", type: "success" });
+      addToast({
+        title: "Success",
+        description: "Profile updated successfully!",
+        type: "success",
+      });
     } catch (error) {
-      addToast({ title: "Error", description: "Failed to update profile.", type: "error" });
+      addToast({
+        title: "Error",
+        description: "Failed to update profile.",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -33,23 +52,65 @@ const ProfileClient = () => {
 
   const onPasswordSubmit = async (data: any) => {
     if (data.new_password1 !== data.new_password2) {
-      addToast({ title: "Error", description: "New passwords do not match.", type: "error" });
+      addToast({
+        title: "Error",
+        description: "New passwords do not match.",
+        type: "error",
+      });
       return;
     }
-    
+
     try {
       setPasswordSaving(true);
       await updatePasswordMutation.mutateAsync({
         old_password: data.old_password,
         new_password1: data.new_password1,
-        new_password2: data.new_password2
+        new_password2: data.new_password2,
       });
-      addToast({ title: "Success", description: "Password changed successfully!", type: "success" });
+      addToast({
+        title: "Success",
+        description: "Password changed successfully!",
+        type: "success",
+      });
       resetPasswordForm();
     } catch (error) {
-      addToast({ title: "Error", description: "Failed to change password. Ensure your old password is correct.", type: "error" });
+      addToast({
+        title: "Error",
+        description:
+          "Failed to change password. Ensure your old password is correct.",
+        type: "error",
+      });
     } finally {
       setPasswordSaving(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    // Note: User profile contains email according to django serializer
+    // Let's use the profile's email to send the reset link
+    const email = user?.email;
+    if (!email) {
+      addToast({
+        title: "Error",
+        description: "Email address not found on your profile.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      await requestPasswordResetMutation.mutateAsync(email);
+      addToast({
+        title: "Reset Link Sent",
+        description: "Please check your email for a password reset link.",
+        type: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "Error",
+        description: "Failed to send password reset email.",
+        type: "error",
+      });
     }
   };
 
@@ -144,7 +205,10 @@ const ProfileClient = () => {
 
       <div className="mt-12 pt-8 border-t border-border">
         <h3 className="text-xl font-bold mb-6 text-primary">Change Password</h3>
-        <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmitPassword(onPasswordSubmit)}
+          className="space-y-4"
+        >
           <div>
             <Input
               register={registerPassword}
@@ -154,6 +218,22 @@ const ProfileClient = () => {
               className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
               required
             />
+            <div className="flex justify-end mt-1">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={requestPasswordResetMutation.isPending}
+                className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1"
+              >
+                {requestPasswordResetMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" /> Sending link...
+                  </>
+                ) : (
+                  "Forgot Current Password?"
+                )}
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

@@ -16,7 +16,7 @@ const ForgotPasswordPage = () => {
     setLoading(true);
     setStatus("idle");
     try {
-      await apiService.post("/auth/password/reset/", { email: data.email });
+      await apiService.postWithoutToken("/auth/password/reset/", { email: data.email });
       setStatus("success");
     } catch (error) {
       setStatus("error");

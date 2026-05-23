@@ -15,7 +15,7 @@ class BusinessProfileAPIView(APIView):
         return Response({
             "id": tenant.id,
             "name": tenant.name,
-            "subdomain": tenant.subdomain,
+            "logo": tenant.logo.url,
             "category": tenant.get_business_type_display(),
             "is_active": tenant.is_active,
             "created_at": tenant.created_at
@@ -36,6 +36,19 @@ class BusinessProfileAPIView(APIView):
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class BusinessLogoAPIView(APIView):
+    permission_classes = [IsAuthenticated, HasTenantAccess]
+
+    def post(self, request):
+        tenant = request.tenant
+        logo_file = request.FILES.get('logo')
+        if not logo_file:
+            return Response({"error": "No logo file provided"}, status=400)
+
+        tenant.logo = logo_file
+        tenant.save()
+        return Response({"message": "Logo updated successfully", "logo_url": tenant.logo.url})
+    
 class StaffProfileAPIView(APIView):
     permission_classes = [IsAuthenticated, HasTenantAccess]
 

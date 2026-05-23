@@ -11,6 +11,7 @@ import {
   CreditCard,
   CreditCardIcon,
   Settings2,
+  LayoutDashboard,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -67,7 +68,7 @@ export function AccountDropdown() {
                     href="/dashboard"
                     className="cursor-pointer flex items-center gap-2"
                   >
-                    <User className="h-4 w-4" />
+                    <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </Link>
                 </DropdownMenuItem>

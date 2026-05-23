@@ -60,7 +60,7 @@ export default function SalesHistoryClient() {
   return (
     <div className="space-y-6">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-6 rounded-[2rem] border border-border/50 shadow-sm">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
         <div>
           <h1 className="text-3xl font-black tracking-tight flex items-center gap-2">
             <History className="w-8 h-8 text-primary" />
@@ -128,7 +128,7 @@ export default function SalesHistoryClient() {
       </div>
 
       {/* Filter and Search Panel */}
-      <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-[2rem] border border-border/50 shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <input
@@ -153,7 +153,7 @@ export default function SalesHistoryClient() {
       </div>
 
       {/* Sales History List Table */}
-      <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
+      <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="text-center py-20 font-bold text-muted-foreground">

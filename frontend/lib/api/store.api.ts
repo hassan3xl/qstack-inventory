@@ -36,7 +36,7 @@ export const StoreApi = {
 
   UpdateStoreLogo: async (storeData: any) => {
     try {
-      const res = await apiService.patch("/business/profile/logo/", storeData);
+      const res = await apiService.postFormData("/business/logo/", storeData);
       return res;
     } catch (error) {
       console.error("Error updating business profile logo:", error);

@@ -90,11 +90,6 @@ export default function FinanceClient() {
 
   return (
     <div className="space-y-6 relative">
-      {(isLoading || isInvLoading) && (
-        <div className="absolute inset-0 z-50 bg-background/50 flex items-center justify-center backdrop-blur-sm rounded-lg min-h-[400px]">
-          <Loader title="Loading finance data..." fullscreen={false} />
-        </div>
-      )}
       <Header
         title="Finance Details"
         subtitle="Overview of store revenue, taxes, and payment methods"
@@ -120,7 +115,7 @@ export default function FinanceClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payment Methods Breakdown */}
-        <Card className="rounded-[2rem] border-border/50 shadow-sm">
+        <Card className="rounded-xl border-border/50 shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg font-black flex items-center gap-2">
               <Wallet className="w-5 h-5 text-primary" /> Revenue by Payment
@@ -184,7 +179,7 @@ export default function FinanceClient() {
         </Card>
 
         {/* Visual Chart */}
-        <Card className="rounded-[2rem] border-border/50 shadow-sm flex flex-col">
+        <Card className="rounded-xl border-border/50 shadow-sm flex flex-col">
           <CardHeader>
             <CardTitle className="text-lg font-black flex items-center gap-2">
               <PieChart className="w-5 h-5 text-primary" /> Payment Method

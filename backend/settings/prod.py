@@ -11,6 +11,7 @@ from src.config import (
     ALLOWED_HOSTS,
     DEBUG,
     CORS_ALLOWED_ORIGINS,
+    RESEND_API_KEY
 )
 
 SECRET_KEY = SECRET_KEY
@@ -51,3 +52,11 @@ USE_X_FORWARDED_HOST = True
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.resend.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'resend'
+# Try to get from environ, fallback to the one loaded by dotenv in config
+EMAIL_HOST_PASSWORD = os.environ.get('RESEND_API_KEY', RESEND_API_KEY)
+DEFAULT_FROM_EMAIL = 'Qstack Inventory <noreply@mail.qstack.com.ng>'

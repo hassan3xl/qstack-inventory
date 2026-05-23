@@ -299,7 +299,7 @@ export default function POSClient() {
   return (
     <div className="space-y-6">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-6 rounded-[2rem] border border-border/50 shadow-sm">
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
         <div>
           <h1 className="text-3xl font-black tracking-tight flex items-center gap-2">
             <ShoppingCart className="w-8 h-8 text-primary" />
@@ -372,10 +372,8 @@ export default function POSClient() {
           </div>
 
           {/* Catalog Product Grid */}
-          {productsLoading ? (
-            <div className="text-center py-20">Loading catalog items...</div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 bg-card border border-dashed rounded-[2rem]">
+          {filteredProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 bg-card border border-dashed rounded-xl">
               <Barcode className="w-16 h-16 text-muted-foreground/20 mb-3" />
               <p className="text-muted-foreground font-bold">
                 No products found
@@ -462,7 +460,7 @@ export default function POSClient() {
 
         {/* Right Side - Cart / Order Panel */}
         <div className="space-y-6">
-          <Card className="rounded-[2rem] border-primary/10 shadow-xl shadow-primary/5 overflow-hidden sticky top-6">
+          <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden sticky top-6">
             <CardHeader className="p-6 border-b border-border/50 flex flex-row items-center justify-between">
               <CardTitle className="text-lg font-black flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-primary" />

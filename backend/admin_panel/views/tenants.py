@@ -16,6 +16,8 @@ def tenant_list_view(request):
         name = request.POST.get('name')
         business_type = request.POST.get('business_type', Tenant.BusinessType.GENERAL)
         admin_email = request.POST.get('admin_email')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
 
         if name and admin_email:
             user, created = User.objects.get_or_create(email=admin_email)
@@ -24,6 +26,12 @@ def tenant_list_view(request):
                 password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 user.set_password(password)
                 user.save()
+                
+                if hasattr(user, 'profile'):
+                    user.profile.first_name = first_name
+                    user.profile.last_name = last_name
+                    user.profile.save()
+                    
                 messages.info(request, f"An email has been sent to {admin_email} with their temporary password: {password}")
             else:
                 messages.info(request, f"User {admin_email} already exists and will be assigned as admin.")
@@ -45,8 +53,8 @@ def tenant_list_view(request):
                     # Send login credentials email
                     EmailSender.send_notification(
                         to=admin_email,
-                        name=user_name,
-                        title=f"Your Qstack Inventory Admin Account",
+                        name=first_name if first_name else user_name,
+                        title=f"Your Quantum Stack Admin Account",
                         message=f"Welcome to {name}! Your admin account has been created.<br><br>"
                                 f"<strong>Login Details:</strong><br>"
                                 f"Email: {admin_email}<br>"

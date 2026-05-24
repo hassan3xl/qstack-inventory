@@ -7,7 +7,9 @@
         "**/backend/**/*.html": "django-html"
     },
     "[django-html]": {
-        "editor.formatOnSave": false,
-        "editor.defaultFormatter": null
-    }
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "JaaJYT.djlint"
+    },
+    "djlint.pythonPath": "${workspaceFolder}/backend/venv/bin/python",
+    "djlint.executablePath": "${workspaceFolder}/backend/venv/bin/djlint"
 }

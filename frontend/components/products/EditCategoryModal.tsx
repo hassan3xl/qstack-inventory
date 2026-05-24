@@ -7,7 +7,7 @@ import {
   useEditCategory,
   useDeleteCategory,
 } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import {
   Info,
   Tag,
@@ -32,7 +32,6 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   categoryName,
 }) => {
   const router = useRouter();
-  const { addToast } = useToast();
   const { data: category, isLoading } = useGetCategoryDetail(categoryName);
   const editCategoryMutation = useEditCategory();
   const deleteCategoryMutation = useDeleteCategory();
@@ -79,11 +78,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
         name: categoryName,
         data: formData,
       });
-      addToast({
-        title: "Success",
-        description: "Category updated successfully!",
-        type: "success",
-      });
+      toast.success("Category updated successfully!");
       closeModal();
       // If renamed, redirect to new name page
       if (formData.name !== categoryName) {
@@ -92,11 +87,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     } catch (error: any) {
       const errMsg =
         error?.name?.[0] || error?.detail || "Failed to update category.";
-      addToast({
-        title: "Error",
-        description: errMsg,
-        type: "error",
-      });
+      toast.error(errMsg);
     }
   };
 
@@ -111,21 +102,13 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     }
     try {
       await deleteCategoryMutation.mutateAsync(categoryName);
-      addToast({
-        title: "Success",
-        description: "Category deleted successfully!",
-        type: "success",
-      });
+      toast.success("Category deleted successfully!");
       closeModal();
       router.push("/categories");
     } catch (error: any) {
       const errMsg =
         error?.detail || error?.message || "Failed to delete category.";
-      addToast({
-        title: "Error",
-        description: errMsg,
-        type: "error",
-      });
+      toast.error(errMsg);
     }
   };
 

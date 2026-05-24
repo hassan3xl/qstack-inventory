@@ -5,7 +5,7 @@ import { useGetProducts } from "@/lib/hooks/product.hook";
 import { useCreateSale, useGetCustomers } from "@/lib/hooks/sales.hook";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { formatNaira } from "@/lib/utils";
 import {
   Search,
@@ -39,7 +39,6 @@ export default function POSClient() {
     refetch,
   } = useGetProducts();
   const createSaleMutation = useCreateSale();
-  const { addToast } = useToast();
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,10 +120,8 @@ export default function POSClient() {
   // Add Product to Cart
   const addToCart = (product: any) => {
     if (product.stock <= 0) {
-      addToast({
-        title: "Out of Stock",
+      toast.error("Out of Stock", {
         description: `"${product.name}" is currently unavailable.`,
-        type: "error",
       });
       return;
     }
@@ -133,10 +130,8 @@ export default function POSClient() {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
         if (existing.quantity >= product.stock) {
-          addToast({
-            title: "Limit Reached",
+          toast.warning("Limit Reached", {
             description: `Only ${product.stock} units of "${product.name}" are available in stock.`,
-            type: "warning",
           });
           return prevCart;
         }
@@ -169,10 +164,8 @@ export default function POSClient() {
             const nextQty = item.quantity + amount;
             if (nextQty <= 0) return null;
             if (nextQty > item.stock) {
-              addToast({
-                title: "Limit Reached",
+              toast.warning("Limit Reached", {
                 description: `Only ${item.stock} units available in stock.`,
-                type: "warning",
               });
               return item;
             }
@@ -202,17 +195,13 @@ export default function POSClient() {
     if (targetProduct) {
       playBeep();
       addToCart(targetProduct);
-      addToast({
-        title: "Product Scanned",
+      toast.success("Product Scanned", {
         description: `Successfully added "${targetProduct.name}" to cart.`,
-        type: "success",
       });
       setBarcodeInput("");
     } else {
-      addToast({
-        title: "Not Found",
+      toast.error("Not Found", {
         description: `No product matches SKU code "${barcodeInput}".`,
-        type: "error",
       });
     }
   };
@@ -230,20 +219,16 @@ export default function POSClient() {
   // Submit / Process Sale Checkout
   const handleCheckout = async () => {
     if (cart.length === 0) {
-      addToast({
-        title: "Cart Empty",
+      toast.warning("Cart Empty", {
         description: "Please select at least one item to checkout.",
-        type: "warning",
       });
       return;
     }
 
     // Validate new customer phone if new customer is being added
     if (isAddingNewCustomer && !newCustomerPhone.trim()) {
-      addToast({
-        title: "Customer Phone Required",
+      toast.warning("Customer Phone Required", {
         description: "Please enter a phone number to save the customer.",
-        type: "warning",
       });
       return;
     }
@@ -278,20 +263,16 @@ export default function POSClient() {
 
       refetch(); // Reload products to get updated stock levels
 
-      addToast({
-        title: "Checkout Completed",
+      toast.success("Checkout Completed", {
         description: `Sale registered successfully under receipt ${result.sale_number}.`,
-        type: "success",
       });
     } catch (err: any) {
       const errMsg =
         err?.response?.data?.non_field_errors?.[0] ||
         err?.message ||
         "Failed to process sale";
-      addToast({
-        title: "Checkout Failed",
+      toast.error("Checkout Failed", {
         description: errMsg,
-        type: "error",
       });
     }
   };

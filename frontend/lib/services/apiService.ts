@@ -163,3 +163,34 @@ export const apiService = {
     });
   },
 };
+
+export const getBackendErrorMessage = (error: any): string => {
+  if (!error) return "An unexpected error occurred.";
+  
+  if (typeof error === "string") return error;
+  
+  if (error.detail && typeof error.detail === "string") return error.detail;
+  
+  if (Array.isArray(error.non_field_errors) && error.non_field_errors.length > 0) {
+    return error.non_field_errors[0];
+  }
+
+  if (typeof error === "object") {
+    const messages: string[] = [];
+    for (const key in error) {
+      if (Object.prototype.hasOwnProperty.call(error, key)) {
+        const val = error[key];
+        if (Array.isArray(val)) {
+          messages.push(`${key}: ${val.join(", ")}`);
+        } else if (typeof val === "string") {
+          messages.push(`${key}: ${val}`);
+        }
+      }
+    }
+    if (messages.length > 0) {
+      return messages.join(" | ");
+    }
+  }
+
+  return error.message || "An unexpected error occurred.";
+};

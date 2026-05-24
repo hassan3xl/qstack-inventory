@@ -20,6 +20,18 @@ class Tenant(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 
+    @property
+    def principal_user(self):
+        owner_rel = self.users.filter(role='owner').first()
+        if not owner_rel:
+            owner_rel = self.users.filter(role='admin').first()
+        return owner_rel.user if owner_rel else None
+
+    @property
+    def is_pending(self):
+        user = self.principal_user
+        return user is not None and not user.is_active
+
     class Meta:
         db_table = "tenants"
 

@@ -7,7 +7,7 @@ import {
   useEditProduct,
   useGetProductsCategories,
 } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Package, DollarSign, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,7 +22,6 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   closeModal,
   productId,
 }) => {
-  const { addToast } = useToast();
   const { data: categories } = useGetProductsCategories();
   const { data: product, isLoading } = useGetProduct(productId);
   const editProductMutation = useEditProduct();
@@ -71,18 +70,10 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
       };
 
       await editProductMutation.mutateAsync(cleanedData);
-      addToast({
-        title: "Success",
-        description: "Product updated successfully!",
-        type: "success",
-      });
+      toast.success("Product updated successfully!");
       closeModal();
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to update product.",
-        type: "error",
-      });
+      toast.error("Failed to update product.");
     }
   };
 

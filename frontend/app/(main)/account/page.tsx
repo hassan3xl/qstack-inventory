@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { ThemeSwitcher } from "@/providers/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { NormalInput } from "@/components/ui/input";
@@ -27,7 +27,6 @@ type ActiveTab = "profile" | "security" | "appearance";
 
 const AccountPage = () => {
   const { user } = useAuth();
-  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
 
   // Profile hook
@@ -85,19 +84,13 @@ const AccountPage = () => {
     e.preventDefault();
     try {
       await updateProfileMutation.mutateAsync(profileData);
-      addToast({
-        title: "Profile Updated",
+      toast.success("Profile Updated", {
         description: "Your personal details have been saved successfully.",
-        type: "success",
-        duration: 3000,
       });
     } catch (err: any) {
-      addToast({
-        title: "Update Failed",
+      toast.error("Update Failed", {
         description:
           err?.message || "There was an error updating your profile.",
-        type: "error",
-        duration: 5000,
       });
     }
   };
@@ -105,11 +98,8 @@ const AccountPage = () => {
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.new_password !== passwordData.confirm_password) {
-      addToast({
-        title: "Validation Error",
+      toast.error("Validation Error", {
         description: "New passwords do not match.",
-        type: "error",
-        duration: 4000,
       });
       return;
     }
@@ -118,11 +108,8 @@ const AccountPage = () => {
         old_password: passwordData.old_password,
         new_password: passwordData.new_password,
       });
-      addToast({
-        title: "Password Changed",
+      toast.success("Password Changed", {
         description: "Your password has been updated successfully.",
-        type: "success",
-        duration: 3000,
       });
       setPasswordData({
         old_password: "",
@@ -130,12 +117,9 @@ const AccountPage = () => {
         confirm_password: "",
       });
     } catch (err: any) {
-      addToast({
-        title: "Error Changing Password",
+      toast.error("Error Changing Password", {
         description:
           err?.message || "Verify your current password and try again.",
-        type: "error",
-        duration: 5000,
       });
     }
   };
@@ -143,27 +127,17 @@ const AccountPage = () => {
   const handleForgotPassword = async () => {
     const email = user?.email;
     if (!email) {
-      addToast({
-        title: "Error",
-        description: "Email address not found on your profile.",
-        type: "error",
-      });
+      toast.error("Email address not found on your profile.");
       return;
     }
 
     try {
       await requestPasswordResetMutation.mutateAsync(email);
-      addToast({
-        title: "Reset Link Sent",
+      toast.success("Reset Link Sent", {
         description: "Please check your email for a password reset link.",
-        type: "success",
       });
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to send password reset email.",
-        type: "error",
-      });
+      toast.error("Failed to send password reset email.");
     }
   };
 

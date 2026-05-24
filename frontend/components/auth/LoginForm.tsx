@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Key, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/providers/ToastProvider";
 import { handleLogin } from "@/lib/actions/auth.actions";
-import { apiService } from "@/lib/services/apiService";
+import { apiService, getBackendErrorMessage } from "@/lib/services/apiService";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner"
 
 type FormValues = {
   email: string;
@@ -17,7 +17,6 @@ type FormValues = {
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { addToast } = useToast();
 
   const {
     register,
@@ -37,11 +36,8 @@ export default function LoginForm() {
 
       if (response.access) {
         await handleLogin(response.user, response.access);
-        addToast({
-          title: "Login successful!",
+        toast.success("Login successful!", {
           description: "Welcome back!",
-          type: "success",
-          duration: 3000,
         });
 
         // Small delay to show the toast before redirect
@@ -49,21 +45,16 @@ export default function LoginForm() {
           window.location.href = "/";
         }, 1000);
       } else {
-        addToast({
-          title: "Login failed",
+        toast.error("Login failed", {
           description:
             response.detail || "Please check your credentials and try again.",
-          type: "error",
-          duration: 5000,
         });
       }
     } catch (error: any) {
       console.log("Login error:", error);
-      addToast({
-        title: "Login error",
-        description: error.detail || "Something went wrong. Try again.",
-        type: "error",
-        duration: 5000,
+      const errorMessage = getBackendErrorMessage(error);
+      toast.error("Login failed", {
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);

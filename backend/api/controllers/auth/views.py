@@ -34,6 +34,18 @@ class TenantLoginView(LoginView):
        guard routes and sidebar items without an extra /me request
     """
     def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if email:
+            try:
+                user = User.objects.get(email__iexact=email)
+                if not user.is_active:
+                    return Response(
+                        {"non_field_errors": ["Your account is currently inactive. Please check with your administrator or verify if registration approval is pending."]},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except User.DoesNotExist:
+                pass
+
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == 200:

@@ -1,5 +1,7 @@
-{% extends 'base.html' %} {% block title %}{{ tenant.name }} - Platform Admin{%
-endblock %} {% block content %} {% if owner_user and not owner_user.is_active %}
+{% extends 'base.html' %} 
+{% block title %}{{ tenant.name }} - Platform Admin{% endblock %} 
+{% block content %} 
+{% if owner_user and not owner_user.is_active %}
 <div
   class="mb-6 rounded-lg border border-amber-500/20 bg-amber-500/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
 >
@@ -42,7 +44,13 @@ endblock %} {% block content %} {% if owner_user and not owner_user.is_active %}
         <i class="fas fa-chevron-left text-muted-foreground"></i>
       </a>
       <h1 class="text-3xl font-bold tracking-tight">{{ tenant.name }}</h1>
-      {% if tenant.is_active %}
+      {% if tenant.is_pending %}
+      <div
+        class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-550"
+      >
+        Pending Approval
+      </div>
+      {% elif tenant.is_active %}
       <div
         class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500"
       >

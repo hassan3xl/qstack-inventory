@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Plus, User, Shield, Calendar, Loader2, Trash2, X } from "lucide-react";
 import { apiService } from "@/lib/services/apiService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { QUERY_KEYS } from "@/lib/hooks/queryKeys";
 
 export default function StaffClient() {
-  const { addToast } = useToast();
   const queryClient = useQueryClient();
 
   // Modals control
@@ -29,10 +28,8 @@ export default function StaffClient() {
     mutationFn: (data: any) => apiService.post("/staff/add/", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.STAFF_LIST });
-      addToast({
-        title: "Staff Added",
+      toast.success("Staff Added", {
         description: "Login credentials have been provisioned.",
-        type: "success",
       });
       setIsAdding(false);
     },
@@ -41,7 +38,7 @@ export default function StaffClient() {
         error?.response?.data?.error ||
         error?.response?.data?.detail ||
         "Failed to add staff.";
-      addToast({ title: "Error", description: errorMsg, type: "error" });
+      toast.error("Error adding staff", { description: errorMsg });
     },
   });
 
@@ -51,10 +48,8 @@ export default function StaffClient() {
       apiService.patch(`/staff/${userId}/`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.STAFF_LIST });
-      addToast({
-        title: "Staff Updated",
+      toast.success("Staff Updated", {
         description: "Staff role/details updated successfully.",
-        type: "success",
       });
       setIsEditing(false);
       setSelectedStaff(null);
@@ -64,7 +59,7 @@ export default function StaffClient() {
         error?.response?.data?.error ||
         error?.response?.data?.detail ||
         "Failed to update staff.";
-      addToast({ title: "Error", description: errorMsg, type: "error" });
+      toast.error("Error updating staff", { description: errorMsg });
     },
   });
 
@@ -73,10 +68,8 @@ export default function StaffClient() {
     mutationFn: (userId: string) => apiService.delete(`/staff/${userId}/`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.STAFF_LIST });
-      addToast({
-        title: "Staff Removed",
+      toast.success("Staff Removed", {
         description: "Staff access has been revoked.",
-        type: "success",
       });
       setSelectedStaff(null);
       setIsEditing(false);
@@ -86,7 +79,7 @@ export default function StaffClient() {
         error?.response?.data?.error ||
         error?.response?.data?.detail ||
         "Failed to remove staff.";
-      addToast({ title: "Error", description: errorMsg, type: "error" });
+      toast.error("Error removing staff", { description: errorMsg });
     },
   });
 

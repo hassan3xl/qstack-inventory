@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import BaseModal from "../modals/BaseModal";
 import { Button } from "@/components/ui/button";
 import { useReceiveStockBatch } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Calendar, Layers, Hash, Clock } from "lucide-react";
 
 interface ReceiveBatchModalProps {
@@ -22,7 +22,6 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
   closeModal,
   onBatchReceived,
 }) => {
-  const { addToast } = useToast();
   const receiveBatchMutation = useReceiveStockBatch();
 
   const [formData, setFormData] = useState({
@@ -80,10 +79,8 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
     e.preventDefault();
     const qty = parseInt(formData.quantity);
     if (isNaN(qty) || qty <= 0) {
-      addToast({
-        title: "Invalid Input",
+      toast.error("Invalid Input", {
         description: "Quantity must be a positive integer.",
-        type: "error",
       });
       return;
     }
@@ -101,10 +98,8 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
         data: payload,
       });
 
-      addToast({
-        title: "Success",
-        description: "Stock batch received and product inventory updated!",
-        type: "success",
+      toast.success("Stock batch received successfully!", {
+        description: "Product inventory has been updated.",
       });
 
       setFormData({
@@ -118,12 +113,7 @@ const ReceiveBatchModal: React.FC<ReceiveBatchModalProps> = ({
       if (onBatchReceived) onBatchReceived();
       closeModal();
     } catch (error: any) {
-      addToast({
-        title: "Error",
-        description:
-          error?.error || error?.detail || "Failed to receive stock batch.",
-        type: "error",
-      });
+      toast.error(error?.error || error?.detail || "Failed to receive stock batch.");
     }
   };
 

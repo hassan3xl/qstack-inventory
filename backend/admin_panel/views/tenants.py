@@ -81,8 +81,7 @@ def tenant_detail_view(request, pk):
     tenant_users = tenant.users.all().select_related('user')
     
     # Get owner user
-    owner_rel = tenant.users.filter(role=TenantUser.Role.OWNER).first()
-    owner_user = owner_rel.user if owner_rel else None
+    owner_user = tenant.principal_user
     
     return render(request, 'tenants/details.html', {
         'tenant': tenant,
@@ -97,9 +96,8 @@ def tenant_approve_view(request, pk):
         tenant = get_object_or_404(Tenant, pk=pk)
         
         # Activate owner user
-        owner_rel = tenant.users.filter(role=TenantUser.Role.OWNER).first()
-        if owner_rel and owner_rel.user:
-            user = owner_rel.user
+        user = tenant.principal_user
+        if user:
             if not user.is_active:
                 user.is_active = True
                 user.save()

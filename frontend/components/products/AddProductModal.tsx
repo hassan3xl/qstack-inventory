@@ -7,7 +7,7 @@ import {
   useAddProduct,
   useGetProductsCategories,
 } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Package, DollarSign } from "lucide-react";
 
 interface AddProductModalProps {
@@ -21,7 +21,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   closeModal,
   onProductAdded,
 }) => {
-  const { addToast } = useToast();
   const { data: categories } = useGetProductsCategories();
   const addProductMutation = useAddProduct();
 
@@ -53,11 +52,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       };
 
       await addProductMutation.mutateAsync(payload);
-      addToast({
-        title: "Success",
+      toast.success("Product cataloged successfully!", {
         description:
-          "Product cataloged successfully! You can now receive stock batches to add inventory.",
-        type: "success",
+          "You can now receive stock batches to add inventory.",
       });
       onProductAdded();
       closeModal();
@@ -68,11 +65,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         unit_price: "",
       });
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to add product to catalog.",
-        type: "error",
-      });
+      toast.error("Failed to add product to catalog.");
     }
   };
 

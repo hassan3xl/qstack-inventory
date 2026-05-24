@@ -15,7 +15,7 @@ import {
   useGetProduct,
   useDeleteStockBatch,
 } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   AlertDialog,
@@ -56,8 +56,6 @@ const ProductDetailsClient = () => {
   const [showEditBatchModal, setShowEditBatchModal] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<any>(null);
 
-  const { addToast } = useToast();
-
   const deleteBatchMutation = useDeleteStockBatch();
 
   // Delete confirmation states
@@ -95,20 +93,14 @@ const ProductDetailsClient = () => {
       { productId, imageId },
       {
         onSuccess: () => {
-          addToast({
-            title: "Image Deleted",
+          toast.success("Image Deleted", {
             description: "The image was removed successfully.",
-            type: "success",
-            duration: 3000,
           });
           refetch(); // refresh product data
         },
         onError: () => {
-          addToast({
-            title: "Delete Failed",
+          toast.error("Delete Failed", {
             description: "Unable to delete image. Please try again.",
-            type: "error",
-            duration: 3000,
           });
         },
       },
@@ -120,22 +112,16 @@ const ProductDetailsClient = () => {
       { productId, batchId },
       {
         onSuccess: () => {
-          addToast({
-            title: "Batch Deleted",
+          toast.success("Batch Deleted", {
             description:
               "The batch was removed and inventory updated successfully.",
-            type: "success",
-            duration: 3000,
           });
           refetch();
           setDeleteBatchConfirm({ open: false, id: null });
         },
         onError: () => {
-          addToast({
-            title: "Delete Failed",
+          toast.error("Delete Failed", {
             description: "Unable to delete batch. Please try again.",
-            type: "error",
-            duration: 3000,
           });
         },
       },

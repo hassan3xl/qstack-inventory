@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import BaseModal from "../modals/BaseModal";
 import { useAddCategory } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Tag, Calendar, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -16,7 +16,6 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   isModalOpen,
   closeModal,
 }) => {
-  const { addToast } = useToast();
   const addCategoryMutation = useAddCategory();
 
   const [formData, setFormData] = useState({
@@ -43,11 +42,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     e.preventDefault();
     try {
       await addCategoryMutation.mutateAsync(formData);
-      addToast({
-        title: "Success",
-        description: "Category created successfully!",
-        type: "success",
-      });
+      toast.success("Category created successfully!");
       // Reset form
       setFormData({
         name: "",
@@ -59,11 +54,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     } catch (error: any) {
       const errMsg =
         error?.name?.[0] || error?.detail || "Failed to create category.";
-      addToast({
-        title: "Error",
-        description: errMsg,
-        type: "error",
-      });
+      toast.error(errMsg);
     }
   };
 

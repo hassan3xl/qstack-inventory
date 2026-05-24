@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import BaseModal from "../modals/BaseModal";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { useUploadProductImage } from "@/lib/hooks/product.hook";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
@@ -19,7 +19,6 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
   isModalOpen,
   closeModal,
 }) => {
-  const { addToast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const uploadImageMutation = useUploadProductImage();
@@ -45,20 +44,12 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
 
     try {
       await uploadImageMutation.mutateAsync({ productId, formData });
-      addToast({
-        title: "Success",
-        description: "Image uploaded successfully",
-        type: "success",
-      });
+      toast.success("Image uploaded successfully");
       setSelectedFile(null);
       setPreview(null);
       closeModal();
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to upload image",
-        type: "error",
-      });
+      toast.error("Failed to upload image");
     }
   };
 

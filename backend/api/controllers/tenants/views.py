@@ -83,14 +83,14 @@ class TenantRegisterAPIView(APIView):
                     EmailSender.send_notification(
                         to=admin_email,
                         name=user_name,
-                        title="Your Qstack Inventory Account Setup",
+                        title="Your Quantum Stack Inventory Account Setup",
                         message=f"Welcome to {tenant.name}! Your account has been created.<br><br>"
                                 f"<strong>Login Details:</strong><br>"
                                 f"Email: {admin_email}<br>"
                                 f"Temporary Password: <code>{password}</code><br><br>"
                                 f"Please log in and change your password immediately for security.",
                         cta_text="Login to Your Account",
-                        cta_link="https://qstack-inventory.com/login"  # Update with your frontend URL
+                        cta_link="https://inventory.qstack.com.ng"
                     )
                 except Exception as email_error:
                     print(f"Warning: Failed to send emails to {admin_email}: {str(email_error)}")

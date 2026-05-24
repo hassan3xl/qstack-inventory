@@ -10,7 +10,7 @@ import {
 } from "@/lib/hooks/profile.hook";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 const ProfileClient = () => {
@@ -28,23 +28,14 @@ const ProfileClient = () => {
   const updateProfileMutation = useUpdateProfile();
   const updatePasswordMutation = useUpdatePassword();
   const requestPasswordResetMutation = useRequestPasswordReset();
-  const { addToast } = useToast();
   const user = profile?.user;
   const onSubmit = async (data: any) => {
     try {
       setSaving(true);
       await updateProfileMutation.mutateAsync(data);
-      addToast({
-        title: "Success",
-        description: "Profile updated successfully!",
-        type: "success",
-      });
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to update profile.",
-        type: "error",
-      });
+      toast.error("Failed to update profile.");
     } finally {
       setSaving(false);
     }
@@ -52,11 +43,7 @@ const ProfileClient = () => {
 
   const onPasswordSubmit = async (data: any) => {
     if (data.new_password1 !== data.new_password2) {
-      addToast({
-        title: "Error",
-        description: "New passwords do not match.",
-        type: "error",
-      });
+      toast.error("New passwords do not match.");
       return;
     }
 
@@ -67,19 +54,12 @@ const ProfileClient = () => {
         new_password1: data.new_password1,
         new_password2: data.new_password2,
       });
-      addToast({
-        title: "Success",
-        description: "Password changed successfully!",
-        type: "success",
-      });
+      toast.success("Password changed successfully!");
       resetPasswordForm();
     } catch (error) {
-      addToast({
-        title: "Error",
-        description:
-          "Failed to change password. Ensure your old password is correct.",
-        type: "error",
-      });
+      toast.error(
+        "Failed to change password. Ensure your old password is correct.",
+      );
     } finally {
       setPasswordSaving(false);
     }
@@ -90,27 +70,17 @@ const ProfileClient = () => {
     // Let's use the profile's email to send the reset link
     const email = user?.email;
     if (!email) {
-      addToast({
-        title: "Error",
-        description: "Email address not found on your profile.",
-        type: "error",
-      });
+      toast.error("Email address not found on your profile.");
       return;
     }
 
     try {
       await requestPasswordResetMutation.mutateAsync(email);
-      addToast({
-        title: "Reset Link Sent",
+      toast.success("Reset Link Sent", {
         description: "Please check your email for a password reset link.",
-        type: "success",
       });
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to send password reset email.",
-        type: "error",
-      });
+      toast.error("Failed to send password reset email.");
     }
   };
 

@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { User, Mail, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/providers/ToastProvider";
 import { useModal } from "@/providers/ModalProvider";
+import { toast } from "sonner";
 
 export default function EnquiryForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { addToast } = useToast();
   const { closeModal } = useModal();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,19 +18,13 @@ export default function EnquiryForm() {
     // Simulate API call, endpoint to be provided later by user
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      addToast({
-        title: "Enquiry Sent",
+      toast.success("Enquiry Sent", {
         description: "We have received your message and will get back to you shortly.",
-        type: "success",
-        duration: 4000,
       });
       closeModal();
     } catch (error) {
-      addToast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to send enquiry. Please try again.",
-        type: "error",
-        duration: 4000,
       });
     } finally {
       setIsLoading(false);

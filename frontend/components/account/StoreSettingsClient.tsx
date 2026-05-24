@@ -15,11 +15,10 @@ import {
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { useGetStore, useUpdateStoreLogo } from "@/lib/hooks/store.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 
 const StoreSettingsClient = () => {
   const { data: store, isLoading } = useGetStore();
-  const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const updateLogoMutation = useUpdateStoreLogo();
   const [isHoveringLogo, setIsHoveringLogo] = useState(false);
@@ -38,18 +37,14 @@ const StoreSettingsClient = () => {
 
       try {
         await updateLogoMutation.mutateAsync(formData);
-        addToast({
-          title: "Logo Updated",
+        toast.success("Logo Updated", {
           description:
             "Your business identity has been refreshed successfully.",
-          type: "success",
         });
       } catch (error) {
-        addToast({
-          title: "Upload Failed",
+        toast.error("Upload Failed", {
           description:
             "There was an error updating your logo. Please try again.",
-          type: "error",
         });
       }
     }

@@ -4,7 +4,7 @@ import { Edit, Trash2, Eye, MoreVertical, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { apiService } from "@/lib/services/apiService";
 
 import {
@@ -32,7 +32,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const [imageError, setImageError] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { addToast } = useToast();
 
   const deleteMutation = useDeleteProduct();
 
@@ -45,17 +44,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
     try {
       await deleteMutation.mutateAsync(product.id);
 
-      addToast({
-        title: "Product deleted",
-        description: `${product.name} has been deleted successfully`,
-        type: "success",
+      toast.success("Product deleted successfully!", {
+        description: `${product.name} has been deleted.`,
       });
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to delete product",
-        type: "error",
-      });
+      toast.error("Failed to delete product");
     } finally {
       setIsLoading(false);
     }

@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Key, Mail, User2, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/providers/ToastProvider";
-import { apiService } from "@/lib/services/apiService";
+import { apiService, getBackendErrorMessage } from "@/lib/services/apiService";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner"
 
 type FormValues = {
   email: string;
@@ -19,7 +19,6 @@ type FormValues = {
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { addToast } = useToast();
   const router = useRouter();
 
   const {
@@ -40,11 +39,8 @@ export default function RegisterForm() {
       });
 
       if (res.access) {
-        addToast({
-          title: "Account created successfully!",
+        toast.success("Account created successfully!", {
           description: "Please sign in.",
-          type: "success",
-          duration: 6000,
         });
 
         // Redirect to login page after successful signup
@@ -52,32 +48,17 @@ export default function RegisterForm() {
           router.push("/login");
         }, 2000);
       } else {
-        addToast({
-          title: "Sign up failed",
+        toast.error("Sign up failed", {
           description:
             res.message || "Please check your information and try again.",
-          type: "error",
-          duration: 5000,
         });
       }
     } catch (error: any) {
       console.error("Sign up error:", error);
+      const errorMessage = getBackendErrorMessage(error);
 
-      let errorMessage = "An unexpected error occurred. Please try again.";
-
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message?.includes("Network Error")) {
-        errorMessage = "Network error. Please check your connection.";
-      } else if (error.message?.includes("409")) {
-        errorMessage = "An account with this email already exists.";
-      }
-
-      addToast({
-        title: "Sign up error",
+      toast.error("Sign up error", {
         description: errorMessage,
-        type: "error",
-        duration: 5000,
       });
     } finally {
       setIsLoading(false);

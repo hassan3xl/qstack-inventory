@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import BaseModal from "../modals/BaseModal";
 import { Button } from "@/components/ui/button";
 import { useUpdateStockBatch } from "@/lib/hooks/product.hook";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 import { Calendar, Layers, Hash, Clock } from "lucide-react";
 
 interface EditBatchModalProps {
@@ -22,7 +22,6 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
   closeModal,
   onBatchUpdated,
 }) => {
-  const { addToast } = useToast();
   const updateBatchMutation = useUpdateStockBatch();
 
   const [formData, setFormData] = useState({
@@ -110,10 +109,8 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
     const initialQty = parseInt(formData.initial_quantity);
 
     if (isNaN(qty) || qty < 0) {
-      addToast({
-        title: "Invalid Input",
+      toast.error("Invalid Input", {
         description: "Quantity must be a non-negative integer.",
-        type: "error",
       });
       return;
     }
@@ -133,21 +130,14 @@ const EditBatchModal: React.FC<EditBatchModalProps> = ({
         data: payload,
       });
 
-      addToast({
-        title: "Success",
-        description: "Stock batch updated successfully!",
-        type: "success",
-      });
+      toast.success("Stock batch updated successfully!");
 
       if (onBatchUpdated) onBatchUpdated();
       closeModal();
     } catch (error: any) {
-      addToast({
-        title: "Error",
-        description:
-          error?.error || error?.detail || "Failed to update stock batch.",
-        type: "error",
-      });
+      toast.error(
+        error?.error || error?.detail || "Failed to update stock batch.",
+      );
     }
   };
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 echo "Waiting for database..."
 DB_HOST=${DB_HOST:-db}
 DB_PORT=${DB_PORT:-5432}
@@ -16,16 +19,25 @@ fi
 
 echo "Database is ready!"
 
+# Run migrations
 echo "Running migrations..."
 python manage.py migrate --noinput
 
-echo "Collecting static files..."
-python manage.py collectstatic --noinput
+if [ "$DJANGO_ENV" = "production" ]; then
+  echo "Running in PRODUCTION mode"
+  
+  echo "Collecting static files..."
+  python manage.py collectstatic --noinput
 
-echo "Starting Gunicorn..."
-
-exec gunicorn src.wsgi:application \
-    --bind 0.0.0.0:${PORT:-10000} \
-    --workers 1 \
-    --threads 2 \
-    --timeout 120
+  echo "Starting Gunicorn..."
+  exec gunicorn src.wsgi:application \
+      --bind 0.0.0.0:${PORT:-10000} \
+      --workers 1 \
+      --threads 2 \
+      --timeout 120
+else
+  echo "Running in DEVELOPMENT mode"
+  
+  echo "Starting Django development server..."
+  exec python manage.py runserver 0.0.0.0:8000
+fi

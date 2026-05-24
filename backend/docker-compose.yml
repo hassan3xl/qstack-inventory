@@ -26,10 +26,10 @@ services:
     env_file: .env
     environment:
       - DB_HOST=db
-      - DB_NAME=inventory_db
-      - DB_USER=devuser
-      - DB_PASSWORD=dev_password
       - DB_PORT=5432
+      - DATABASE_URL=postgresql://devuser:dev_password@db:5432/inventory_db
+      - DJANGO_ENV=development
+      - DJANGO_SETTINGS_MODULE=settings.dev
     ports:
       - "8000:8000"
     depends_on:

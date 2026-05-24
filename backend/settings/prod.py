@@ -15,7 +15,7 @@ from src.config import (
 )
 
 SECRET_KEY = SECRET_KEY
-DEBUG = DEBUG
+DEBUG = True
 ALLOWED_HOSTS = ALLOWED_HOSTS
 CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS
 
@@ -49,7 +49,12 @@ LOGGING = {
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+if "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:
+    try:
+        idx = MIDDLEWARE.index("django.middleware.security.SecurityMiddleware")
+        MIDDLEWARE.insert(idx + 1, "whitenoise.middleware.WhiteNoiseMiddleware")
+    except ValueError:
+        MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

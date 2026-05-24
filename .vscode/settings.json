@@ -2,5 +2,12 @@
     "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
     "python.analysis.extraPaths": [
         "${workspaceFolder}/backend"
-    ]
+    ],
+    "files.associations": {
+        "**/backend/**/*.html": "django-html"
+    },
+    "[django-html]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": null
+    }
 }

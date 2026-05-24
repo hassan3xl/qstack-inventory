@@ -21,11 +21,25 @@ SECRET_KEY = CONFIG_SECRET_KEY
 ALLOWED_HOSTS = ALLOWED_HOSTS
 ALLOWED_ORIGINS = ALLOWED_ORIGINS
 
+db_url = (
+    os.environ.get("DATABASE_URL")
+    or os.environ.get("DOCKER_DB")
+    or os.environ.get("LOCAL_DB")
+    or os.environ.get("PRODUCTION_DB")  
+    or os.environ.get("SQLITE_DB")
+    or "sqlite:///db.sqlite3"
+)
+
+ssl_require = False
+if db_url and "neon.tech" in db_url:
+    ssl_require = True
+
 DATABASES = {
     "default": dj_database_url.config(
+        # default=db_url,
         default=os.environ.get("PRODUCTION_DB"),
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=ssl_require,
     )
 }
 

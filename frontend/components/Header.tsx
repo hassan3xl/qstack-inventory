@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import { RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
+import { motion } from "framer-motion";
 
 interface StatCardData {
   title: string;
@@ -10,6 +13,7 @@ interface StatCardData {
     value: string;
     isPositive: boolean;
   };
+  bg?: string;
 }
 
 interface HeaderProps {
@@ -21,29 +25,40 @@ interface HeaderProps {
   actions?: React.ReactNode;
 }
 
-const StatCard = ({ title, value, icon, trend }: StatCardData) => {
+const StatCard = ({ title, value, icon, trend, bg }: StatCardData) => {
   return (
-    <div className="bg-card rounded-md p-6 shadow-sm border border-border hover:shadow-md hover:border-ring transition-all">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-primary mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-foreground">{value}</h3>
-          {trend && (
-            <p
-              className={`text-sm mt-2 flex items-center gap-1 ${
-                trend.isPositive
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-              }`}
-            >
-              <span>{trend.isPositive ? "↑" : "↓"}</span>
-              {trend.value}
-            </p>
-          )}
+    <motion.div
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="group relative bg-card p-6 rounded-lg border border-border shadow-xs hover:shadow-md transition-all duration-300"
+    >
+      <div className="flex justify-between items-start mb-4">
+        <div
+          className={`p-3 rounded-lg ${bg || "bg-muted"} group-hover:scale-110 transition-transform duration-300 text-foreground`}
+        >
+          {icon}
         </div>
-        <div className="bg-muted p-3 rounded-lg text-foreground">{icon}</div>
+        {trend && (
+          <div
+            className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${
+              trend.isPositive
+                ? "bg-emerald-500/10 text-emerald-600"
+                : "bg-red-500/10 text-red-600"
+            }`}
+          >
+            <span>{trend.isPositive ? "↑" : "↓"}</span>
+            {trend.value}
+          </div>
+        )}
       </div>
-    </div>
+      <div>
+        <p className="text-sm font-medium text-muted-foreground mb-1">
+          {title}
+        </p>
+        <h3 className="text-2xl font-black text-foreground tracking-tight">
+          {value}
+        </h3>
+      </div>
+    </motion.div>
   );
 };
 
@@ -56,12 +71,17 @@ export const Header: React.FC<HeaderProps> = ({
   actions,
 }) => {
   return (
-    <div className="mb-8">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="mb-8"
+    >
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {/* Left side - title/subtitle */}
         <div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-foreground">
             {title}
           </h1>
           {subtitle && (
@@ -80,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
               size="icon"
               onClick={onRefresh}
               title="Refresh"
-              className="hover:bg-accent hover:text-foreground transition-colors"
+              className="hover:bg-accent hover:text-foreground transition-colors rounded-lg"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -102,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

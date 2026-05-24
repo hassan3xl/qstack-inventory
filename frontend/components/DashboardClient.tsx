@@ -97,6 +97,7 @@ const DashboardClient = () => {
       <Header
         title="Inventory Overview"
         subtitle="Manage your products, track stock levels, and monitor expiration dates."
+        stats={stats}
         actions={
           <Button
             asChild
@@ -109,44 +110,6 @@ const DashboardClient = () => {
           </Button>
         }
       />
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="group relative bg-card p-6 rounded-lg border border-border shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div
-                className={`p-3 rounded-lg ${stat.bg} group-hover:scale-110 transition-transform duration-300`}
-              >
-                {stat.icon}
-              </div>
-              <div
-                className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${
-                  stat.trend.isPositive
-                    ? "bg-emerald-500/10 text-emerald-600"
-                    : "bg-red-500/10 text-red-600"
-                }`}
-              >
-                {stat.trend.value}
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
-                {stat.title}
-              </p>
-              <h3 className="text-lg font-black text-foreground tracking-tight">
-                {stat.value}
-              </h3>
-            </div>
-          </motion.div>
-        ))}
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Expiring Soon Watchlist */}

@@ -22,6 +22,10 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "Starting Django development server..."
+echo "Starting Gunicorn..."
 
-exec python manage.py runserver 0.0.0.0:8000
+exec gunicorn src.wsgi:application \
+    --bind 0.0.0.0:${PORT:-10000} \
+    --workers 1 \
+    --threads 2 \
+    --timeout 120

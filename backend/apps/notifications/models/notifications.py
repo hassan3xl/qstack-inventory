@@ -79,4 +79,4 @@ class UserNotificationPreference(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"Preferences for {self.user.username}"
+        return f"Preferences for {self.user.email}"

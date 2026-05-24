@@ -91,8 +91,6 @@ const DashboardClient = () => {
     },
   ];
 
-
-
   return (
     <div className="space-y-8 pb-12">
       {/* Header Section */}
@@ -307,13 +305,7 @@ const DashboardClient = () => {
             className="rounded-lg border-primary/20 bg-background hover:bg-primary/5"
             asChild
           >
-            <Link href="/inventory/products">View Full Catalog</Link>
-          </Button>
-          <Button
-            className="rounded-lg px-8 shadow-lg shadow-primary/20"
-            asChild
-          >
-            <Link href="/inventory/products/new">Add New Arrival</Link>
+            <Link href="/products">View Full Catalog</Link>
           </Button>
         </div>
       </motion.div>

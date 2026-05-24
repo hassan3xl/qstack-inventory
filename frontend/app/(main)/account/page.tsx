@@ -142,7 +142,7 @@ const AccountPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-4">
+    <div className="max-w-4xl mx-auto space-y-8">
       <Header
         title="Account Settings"
         subtitle="Manage your profile information, password, and preferences."
@@ -160,7 +160,7 @@ const AccountPage = () => {
             }`}
           >
             <User className="w-4 h-4" />
-            My Profile
+            Profile
           </button>
           <button
             onClick={() => setActiveTab("security")}
@@ -171,7 +171,7 @@ const AccountPage = () => {
             }`}
           >
             <Lock className="w-4 h-4" />
-            Security & Login
+            Security
           </button>
           <button
             onClick={() => setActiveTab("appearance")}

@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import SignoutButton from "../auth/SignoutButton";
 
 export function AccountDropdown() {
   const { user, loading, signOut } = useAuth();
@@ -85,9 +86,8 @@ export function AccountDropdown() {
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 flex items-center gap-2">
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
+                <DropdownMenuItem asChild className="cursor-pointer text-red-600 focus:text-red-600 flex items-center gap-2">
+                  <SignoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

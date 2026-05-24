@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function PageSkeleton() {
   return (
-    <div className="space-y-6 w-full animate-in fade-in duration-500">
+    <div className="space-y-6 w-full mx-auto animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <Skeleton className="h-8 w-64 mb-2" />

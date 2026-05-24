@@ -55,6 +55,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    // Clear client-side cookies
+    document.cookie = "session_user=; max-age=0; path=/;";
+    document.cookie = "session_access_token=; max-age=0; path=/;";
+    
+    // Clear server-side cookies
     await resetAuthCookies();
     setUser(null);
     window.location.href = "/"; // redirect after logout

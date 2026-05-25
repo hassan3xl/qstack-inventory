@@ -60,11 +60,7 @@ export function Navbar() {
                 <h1 className="text-xl capitalize font-black text-foreground hidden sm:block tracking-tighter">
                   {storeInfo?.name} Inventory
                 </h1>
-                {storeInfo?.business_type && (
-                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/20 scale-95 origin-left shrink-0">
-                    {config.displayName}
-                  </span>
-                )}
+              
               </div>
             </Link>
           </div>

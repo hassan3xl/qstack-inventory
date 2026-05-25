@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { formatNaira } from "@/lib/utils";
+import { NormalInput } from "@/components/ui/input";
 import {
   Search,
   ShoppingCart,
@@ -54,13 +55,14 @@ export default function POSClient() {
 
   // Customer states
   const [customerSearch, setCustomerSearch] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const [isAddingNewCustomer, setIsAddingNewCustomer] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
 
   const { data: customerSuggestions } = useGetCustomers(
-    customerSearch.trim().length >= 1 ? customerSearch : undefined,
+    customerSearch.trim() || undefined,
   );
 
   const barcodeInputRef = useRef<HTMLInputElement>(null);
@@ -296,20 +298,20 @@ export default function POSClient() {
           onSubmit={handleBarcodeSubmit}
           className="flex items-center gap-2 w-full md:w-auto"
         >
-          <div className="relative flex-1 md:w-72">
-            <Barcode className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <input
+          <div className="flex-1 md:w-72">
+            <NormalInput
               ref={barcodeInputRef}
               type="text"
+              icon={Barcode}
               placeholder="Scan Barcode / SKU..."
               value={barcodeInput}
               onChange={(e) => setBarcodeInput(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-muted/40 border border-border rounded-lg focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all text-sm font-semibold"
+              className="w-full"
             />
           </div>
           <Button
             type="submit"
-            className="rounded-lg h-11 px-5 font-bold shadow-md shadow-primary/10"
+            className="rounded-lg h-11 px-5 font-bold shadow-md shadow-primary/10 cursor-pointer"
           >
             Scan
           </Button>
@@ -324,7 +326,7 @@ export default function POSClient() {
             <Button
               variant={selectedCategory === "all" ? "default" : "outline"}
               onClick={() => setSelectedCategory("all")}
-              className="rounded-lg text-xs font-bold"
+              className="rounded-lg text-xs font-bold cursor-pointer"
             >
               All Items
             </Button>
@@ -333,21 +335,21 @@ export default function POSClient() {
                 key={cat}
                 variant={selectedCategory === cat ? "default" : "outline"}
                 onClick={() => setSelectedCategory(cat)}
-                className="rounded-lg text-xs font-bold capitalize"
+                className="rounded-lg text-xs font-bold capitalize cursor-pointer"
               >
                 {cat}
               </Button>
             ))}
 
             {/* Keyword Search */}
-            <div className="relative ml-auto w-full md:w-60 mt-2 md:mt-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-3.5 h-3.5" />
-              <input
+            <div className="ml-auto w-full md:w-60 mt-2 md:mt-0">
+              <NormalInput
                 type="text"
+                icon={Search}
                 placeholder="Search catalog..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-muted/30 border border-transparent rounded-lg focus:bg-background focus:border-border transition-all text-xs font-semibold"
+                className="w-full text-xs"
               />
             </div>
           </div>
@@ -393,7 +395,7 @@ export default function POSClient() {
                       />
                       {isOutOfStock ? (
                         <div className="absolute inset-0 bg-background/80 backdrop-blur-xs flex items-center justify-center">
-                          <span className="bg-red-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                          <span className="bg-red-50 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
                             Out of Stock
                           </span>
                         </div>
@@ -412,14 +414,12 @@ export default function POSClient() {
                       <h3 className="font-bold text-sm leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5">
                         {product.name}
                       </h3>
-                      <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-border/30">
+                      <div className="flex flex-col items-start justify-between mt-2.5 pt-2 border-t border-border/30">
                         <span className="font-black text-foreground text-sm">
                           {formatNaira(product.unit_price)}
                         </span>
                         <div className="flex flex-col items-end">
-                          <span className="text-[10px] text-muted-foreground font-semibold">
-                            SKU: {product.inventory?.sku || "N/A"}
-                          </span>
+                          
                           <span
                             className={`text-[10px] font-black mt-0.5 ${
                               product.stock <= 5
@@ -445,15 +445,14 @@ export default function POSClient() {
             <CardHeader className="p-6 border-b border-border/50 flex flex-row items-center justify-between">
               <CardTitle className="text-lg font-black flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-primary" />
-                Active Receipt Cart (
-                {cart.reduce((sum, i) => sum + i.quantity, 0)})
+                Active Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
               </CardTitle>
               {cart.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setCart([])}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50 text-xs font-bold rounded-lg"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50 text-xs font-bold rounded-lg cursor-pointer"
                 >
                   Clear Cart
                 </Button>
@@ -490,7 +489,7 @@ export default function POSClient() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => updateQuantity(item.id, -1)}
-                            className="w-7 h-7 bg-muted/60 hover:bg-muted rounded-lg flex items-center justify-center transition-colors"
+                            className="w-7 h-7 bg-muted/60 hover:bg-muted rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                           >
                             <Minus size={12} />
                           </button>
@@ -499,7 +498,7 @@ export default function POSClient() {
                           </span>
                           <button
                             onClick={() => updateQuantity(item.id, 1)}
-                            className="w-7 h-7 bg-muted/60 hover:bg-muted rounded-lg flex items-center justify-center transition-colors"
+                            className="w-7 h-7 bg-muted/60 hover:bg-muted rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                           >
                             <Plus size={12} />
                           </button>
@@ -511,7 +510,7 @@ export default function POSClient() {
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="text-red-400 hover:text-red-600 transition-colors p-1"
+                          className="text-red-400 hover:text-red-600 transition-colors p-1 cursor-pointer"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -542,7 +541,7 @@ export default function POSClient() {
                             setSelectedCustomer(null);
                             setCustomerSearch("");
                           }}
-                          className="text-emerald-700 hover:text-red-500 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 h-8 w-8 p-0 rounded-lg"
+                          className="text-emerald-700 hover:text-red-500 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 h-8 w-8 p-0 rounded-lg cursor-pointer"
                         >
                           ✕
                         </Button>
@@ -560,89 +559,81 @@ export default function POSClient() {
                               setNewCustomerName("");
                               setNewCustomerPhone("");
                             }}
-                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground"
+                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground cursor-pointer"
                           >
                             Cancel
                           </button>
                         </div>
                         <div className="grid grid-cols-1 gap-2.5">
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-muted-foreground uppercase">
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Customer Name"
-                              value={newCustomerName}
-                              onChange={(e) =>
-                                setNewCustomerName(e.target.value)
-                              }
-                              className="w-full px-3 py-2 bg-muted/40 border border-border rounded-lg text-xs font-medium focus:bg-background outline-none transition-all"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-muted-foreground uppercase">
-                              Phone
-                            </label>
-                            <input
-                              type="tel"
-                              placeholder="Phone Number"
-                              value={newCustomerPhone}
-                              onChange={(e) =>
-                                setNewCustomerPhone(e.target.value)
-                              }
-                              className="w-full px-3 py-2 bg-muted/40 border border-border rounded-lg text-xs font-medium focus:bg-background outline-none transition-all"
-                            />
-                          </div>
+                          <NormalInput
+                            type="text"
+                            label="Name"
+                            placeholder="Customer Name"
+                            value={newCustomerName}
+                            onChange={(e) => setNewCustomerName(e.target.value)}
+                            className="w-full text-xs"
+                          />
+                          <NormalInput
+                            type="tel"
+                            label="Phone"
+                            placeholder="Phone Number"
+                            value={newCustomerPhone}
+                            onChange={(e) => setNewCustomerPhone(e.target.value)}
+                            className="w-full text-xs"
+                          />
                         </div>
                       </div>
                     ) : (
                       <div className="relative">
-                        <input
+                        <NormalInput
                           type="text"
+                          icon={Search}
                           placeholder="Search by name or phone..."
                           value={customerSearch}
                           onChange={(e) => setCustomerSearch(e.target.value)}
-                          className="w-full px-3.5 py-2 bg-background border border-border rounded-lg text-xs font-semibold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                          onFocus={() => setIsSearchFocused(true)}
+                          onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
+                          className="w-full text-xs"
                         />
-                        {customerSearch.trim().length > 0 && (
+                        {(isSearchFocused || customerSearch.trim().length > 0) && (
                           <div className="absolute left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-xl max-h-48 overflow-y-auto z-20 divide-y divide-border/50">
-                            {customerSuggestions &&
-                            customerSuggestions.length > 0 ? (
-                              customerSuggestions.map((c: any) => (
+                            {customerSuggestions && customerSuggestions.length > 0 ? (
+                              customerSuggestions.slice(0, 10).map((c: any) => (
                                 <button
                                   key={c.id}
                                   type="button"
                                   onClick={() => {
                                     setSelectedCustomer(c);
                                     setCustomerSearch("");
+                                    setIsSearchFocused(false);
                                   }}
-                                  className="w-full text-left px-4 py-2.5 text-xs hover:bg-muted font-semibold transition-colors flex justify-between items-center"
+                                  className="w-full text-left px-4 py-2.5 text-xs hover:bg-muted font-semibold transition-colors flex justify-between items-center cursor-pointer"
                                 >
-                                  <span className="text-foreground">
-                                    {c.name}
-                                  </span>
+                                  <span className="text-foreground">{c.name}</span>
                                   <span className="text-muted-foreground text-[10px] font-bold">
                                     {c.phone}
                                   </span>
                                 </button>
                               ))
                             ) : (
-                              <div className="px-4 py-2.5 text-xs text-muted-foreground">
-                                No matches found.
+                              <div className="px-4 py-2.5 text-xs text-muted-foreground font-medium">
+                                No customers found.
                               </div>
                             )}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setIsAddingNewCustomer(true);
-                                setNewCustomerName(customerSearch);
-                                setNewCustomerPhone("");
-                              }}
-                              className="w-full text-left px-4 py-2.5 text-xs hover:bg-primary/5 text-primary font-bold transition-colors border-t border-border"
-                            >
-                              + Register "{customerSearch}"
-                            </button>
+                            {customerSearch.trim().length > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsAddingNewCustomer(true);
+                                  setNewCustomerName(customerSearch);
+                                  setNewCustomerPhone("");
+                                  setIsSearchFocused(false);
+                                }}
+                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-primary/5 text-primary font-bold transition-colors border-t border-border cursor-pointer"
+                              >
+                                + Register &quot;{customerSearch}&quot;
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -653,27 +644,23 @@ export default function POSClient() {
                   <div className="bg-muted/30 p-6 border-t border-border/50 space-y-4">
                     <div className="flex gap-3">
                       <div className="flex-1">
-                        <label className="text-[10px] font-black uppercase text-muted-foreground block mb-1">
-                          Discount (₦)
-                        </label>
-                        <input
+                        <NormalInput
                           type="number"
-                          placeholder="₦ 0.00"
+                          label="Discount (₦)"
+                          placeholder="0.00"
                           value={discount || ""}
                           onChange={(e) => setDiscount(Number(e.target.value))}
-                          className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs font-semibold"
+                          className="w-full text-xs font-semibold"
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-[10px] font-black uppercase text-muted-foreground block mb-1">
-                          Tax (₦)
-                        </label>
-                        <input
+                        <NormalInput
                           type="number"
-                          placeholder="₦ 0.00"
+                          label="Tax (₦)"
+                          placeholder="0.00"
                           value={tax || ""}
                           onChange={(e) => setTax(Number(e.target.value))}
-                          className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs font-semibold"
+                          className="w-full text-xs font-semibold"
                         />
                       </div>
                     </div>
@@ -685,8 +672,9 @@ export default function POSClient() {
                       </span>
                       <div className="grid grid-cols-3 gap-2">
                         <button
+                          type="button"
                           onClick={() => setPaymentMethod("cash")}
-                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${
                             paymentMethod === "cash"
                               ? "border-primary bg-primary/5 text-primary shadow-xs"
                               : "border-border hover:bg-muted"
@@ -696,8 +684,9 @@ export default function POSClient() {
                           Cash
                         </button>
                         <button
+                          type="button"
                           onClick={() => setPaymentMethod("card")}
-                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${
                             paymentMethod === "card"
                               ? "border-primary bg-primary/5 text-primary shadow-xs"
                               : "border-border hover:bg-muted"
@@ -707,8 +696,9 @@ export default function POSClient() {
                           Card
                         </button>
                         <button
+                          type="button"
                           onClick={() => setPaymentMethod("bank_transfer")}
-                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                          className={`py-2 px-3 rounded-lg border font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${
                             paymentMethod === "bank_transfer"
                               ? "border-primary bg-primary/5 text-primary shadow-xs"
                               : "border-border hover:bg-muted"
@@ -752,7 +742,7 @@ export default function POSClient() {
                     <Button
                       onClick={handleCheckout}
                       disabled={createSaleMutation.isPending}
-                      className="w-full rounded-lg h-12 font-black shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 mt-4"
+                      className="w-full rounded-lg h-12 font-black shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 cursor-pointer"
                     >
                       {createSaleMutation.isPending
                         ? "Processing..."
@@ -805,8 +795,7 @@ export default function POSClient() {
                   <div className="flex justify-between text-muted-foreground">
                     <span>Customer Details:</span>
                     <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                      {completedSale.customer.name} (
-                      {completedSale.customer.phone})
+                      {completedSale.customer.name} ({completedSale.customer.phone})
                     </span>
                   </div>
                 )}
@@ -876,14 +865,14 @@ export default function POSClient() {
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="flex-1 rounded-lg h-12 font-bold flex items-center justify-center gap-2"
+                  className="flex-1 rounded-lg h-12 font-bold flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Printer size={16} />
                   Print
                 </Button>
                 <Button
                   onClick={() => setShowReceipt(false)}
-                  className="flex-1 rounded-lg h-12 font-black shadow-lg shadow-primary/10"
+                  className="flex-1 rounded-lg h-12 font-black shadow-lg shadow-primary/10 cursor-pointer"
                 >
                   Close Receipt
                 </Button>

@@ -108,47 +108,148 @@ function Input<T extends FieldValues>({
           </div>
         );
 
-      case "select":
+      case "select": {
+        const registered = register(name, validation);
+        const [selectedValue, setSelectedValue] = useState("");
+        const [isOpen, setIsOpen] = useState(false);
+        const selectRef = React.useRef<HTMLSelectElement | null>(null);
+
+        React.useEffect(() => {
+          if (selectRef.current && selectRef.current.value !== selectedValue) {
+            setSelectedValue(selectRef.current.value);
+          }
+        });
+
+        const selectedOption = options.find((opt) => opt.value === selectedValue);
+        const selectedLabel = selectedOption ? selectedOption.label : "";
+
+        if (multiple) {
+          return (
+            <div className={`${getContainerClasses()} relative`}>
+              {Icon && (
+                <Icon
+                  size={18}
+                  className={`ml-3 transition-colors ${getIconClasses()}`}
+                />
+              )}
+              <select
+                {...registered}
+                ref={(e) => {
+                  registered.ref(e);
+                  selectRef.current = e;
+                }}
+                disabled={disabled}
+                multiple
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                className={`${fieldClass} pr-10 appearance-none cursor-pointer py-2`}
+                {...props}
+              >
+                {placeholder && (
+                  <option value="" disabled>
+                    {placeholder}
+                  </option>
+                )}
+                {options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        }
+
         return (
-          <div className={`${getContainerClasses()} relative`}>
+          <div className={`${getContainerClasses()} w-full relative`}>
             {Icon && (
               <Icon
                 size={18}
                 className={`ml-3 transition-colors ${getIconClasses()}`}
               />
             )}
+            
+            {/* Hidden select to link with react-hook-form */}
             <select
-              {...register(name, validation)}
+              {...registered}
+              ref={(e) => {
+                registered.ref(e);
+                selectRef.current = e;
+              }}
               disabled={disabled}
-              multiple={multiple}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className={`${fieldClass} pr-10 appearance-none cursor-pointer ${
-                multiple ? "py-2" : ""
-              }`}
+              value={selectedValue}
+              onChange={(e) => {
+                setSelectedValue(e.target.value);
+                registered.onChange(e);
+              }}
+              className="hidden"
               {...props}
             >
-              {placeholder && (
-                <option value="" disabled>
-                  {placeholder}
-                </option>
-              )}
+              <option value="" disabled>
+                {placeholder}
+              </option>
               {options.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            {!multiple && (
+
+            {/* Custom Dropdown Trigger */}
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => setIsOpen(!isOpen)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => {
+                setFocused(false);
+                setTimeout(() => setIsOpen(false), 200);
+              }}
+              className={`${fieldClass} w-full pr-10 text-left cursor-pointer flex items-center justify-between min-h-[44px]`}
+            >
+              <span className={selectedValue ? "text-foreground font-semibold" : "text-muted-foreground font-semibold"}>
+                {selectedLabel || placeholder || "Select option"}
+              </span>
               <ChevronDown
                 size={16}
-                className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${
-                  focused ? "text-primary" : "text-muted-foreground"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200 ${
+                  isOpen ? "rotate-180 text-primary" : "text-muted-foreground"
                 }`}
               />
+            </button>
+
+            {/* Custom Dropdown Options */}
+            {isOpen && !disabled && (
+              <div className="absolute top-[calc(100%+4px)] left-0 right-0 w-full z-50 bg-background border border-border rounded-lg shadow-xl max-h-52 overflow-y-auto divide-y divide-border/20 py-1">
+                {options.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedValue(opt.value);
+                      if (selectRef.current) {
+                        selectRef.current.value = opt.value;
+                        selectRef.current.dispatchEvent(new Event("change", { bubbles: true }));
+                      }
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-muted/60 transition-colors flex justify-between items-center cursor-pointer ${
+                      selectedValue === opt.value
+                        ? "bg-primary/5 text-primary font-bold"
+                        : "text-foreground font-medium"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {selectedValue === opt.value && (
+                      <Check size={16} className="text-primary shrink-0 ml-2" />
+                    )}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         );
+      }
 
       case "checkbox":
         return (

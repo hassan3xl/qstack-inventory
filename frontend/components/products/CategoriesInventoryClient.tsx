@@ -16,14 +16,27 @@ const CategoriesInventoryClient: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const categoriesArray = Array.isArray(categories) ? categories : [];
 
-  return (
-    <section className=" relative min-h-[60vh]">
-      {/* {(isLoading) && (
-        <div className="absolute inset-0 z-50 bg-background/50 flex items-center justify-center backdrop-blur-sm rounded-lg">
-          <Loader title="Loading categories..." fullscreen={false} />
+  if (isLoading) {
+    return (
+      <section className="relative min-h-[60vh]">
+        <Header
+          title="Browse by Category"
+          subtitle="Manage your store's product classifications."
+        />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+          {[...Array(8)].map((_, idx) => (
+            <div
+              key={idx}
+              className="h-32 rounded-xl bg-muted/60 animate-pulse border border-border/50"
+            />
+          ))}
         </div>
-      )} */}
+      </section>
+    );
+  }
 
+  return (
+    <section className="relative min-h-[60vh]">
       {error && !categories && (
         <div className="absolute inset-0 z-40 bg-background/50 flex flex-col items-center justify-center rounded-lg">
           <p className="text-red-500 font-bold">Failed to load categories.</p>

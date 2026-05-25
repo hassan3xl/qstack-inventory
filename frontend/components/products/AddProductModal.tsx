@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import BaseModal from "../modals/BaseModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,12 +8,22 @@ import {
   useGetProductsCategories,
 } from "@/lib/hooks/product.hook";
 import { toast } from "sonner";
-import { Package, DollarSign } from "lucide-react";
+import { Package, DollarSign, Info } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { formatPriceWithCommas, parsePriceFromFormatted } from "@/lib/utils";
 
 interface AddProductModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
   onProductAdded: () => void;
+}
+
+interface AddProductFormValues {
+  name: string;
+  category_id: string;
+  unit_price: string;
+  description: string;
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
@@ -24,50 +34,49 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   const { data: categories } = useGetProductsCategories();
   const addProductMutation = useAddProduct();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category_id: "",
-    unit_price: "",
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<AddProductFormValues>({
+    defaultValues: {
+      name: "",
+      category_id: "",
+      unit_price: "",
+      description: "",
+    },
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: AddProductFormValues) => {
     try {
+      const cleanPrice = parsePriceFromFormatted(data.unit_price);
       const payload = {
-        name: formData.name.trim(),
-        description: formData.description.trim() || null,
-        category_id: formData.category_id,
-        unit_price: formData.unit_price,
-        stock: 0, // Inital stock is 0; managed via batches
+        name: data.name.trim(),
+        description: data.description.trim() || null,
+        category_id: data.category_id,
+        unit_price: cleanPrice,
+        stock: 0, // Initial stock is 0; managed via batches
       };
 
       await addProductMutation.mutateAsync(payload);
       toast.success("Product cataloged successfully!", {
-        description:
-          "You can now receive stock batches to add inventory.",
+        description: "You can now receive stock batches to add inventory.",
       });
       onProductAdded();
+      reset();
       closeModal();
-      setFormData({
-        name: "",
-        description: "",
-        category_id: "",
-        unit_price: "",
-      });
     } catch (error) {
       toast.error("Failed to add product to catalog.");
     }
   };
+
+  const categoryOptions =
+    categories?.map((cat: any) => ({
+      value: cat.id.toString(),
+      label: cat.name,
+    })) || [];
 
   return (
     <BaseModal
@@ -77,91 +86,73 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       description="Define product details in the system. Stock and batch tracking are logged separately when receiving inventory."
       size="md"
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-4">
           <h4 className="flex items-center gap-2 text-xs font-black text-muted-foreground uppercase tracking-widest mb-2">
             <Package size={14} /> Catalog Information
           </h4>
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground">
-              Product Name *
-            </label>
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
-              placeholder="e.g. Premium Organic Milk"
-            />
-          </div>
+          <Input
+            name="name"
+            register={register}
+            label="Product Name"
+            icon={Package}
+            placeholder="e.g. Premium Organic Milk"
+            error={errors.name}
+            validation={{ required: "Product name is required" }}
+          />
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground">
-              Category *
-            </label>
-            <select
-              name="category_id"
-              value={formData.category_id}
-              onChange={handleChange}
-              required
-              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
-            >
-              <option value="">Select Category</option>
-              {categories?.map((cat: any) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Input
+            name="category_id"
+            register={register}
+            label="Category"
+            field="select"
+            placeholder="Select Category"
+            options={categoryOptions}
+            error={errors.category_id}
+            validation={{ required: "Category is required" }}
+          />
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground">
-              Description (Optional)
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
-              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm font-medium"
-              placeholder="Brief details about the product..."
-            />
-          </div>
+          <Input
+            name="description"
+            register={register}
+            label="Description (Optional)"
+            field="textarea"
+            icon={Info}
+            placeholder="Brief details about the product..."
+            error={errors.description}
+            rows={3}
+          />
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-foreground flex items-center gap-1">
-              <DollarSign size={14} className="text-muted-foreground" />
-              Selling Price (₦) *
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              name="unit_price"
-              value={formData.unit_price}
-              onChange={handleChange}
-              required
-              min="0"
-              placeholder="0.00"
-              className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
-            />
-          </div>
+          <Input
+            name="unit_price"
+            register={register}
+            label="Selling Price (₦)"
+            icon={DollarSign}
+            placeholder="0.00"
+            error={errors.unit_price}
+            validation={{
+              required: "Selling price is required",
+              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                const formatted = formatPriceWithCommas(e.target.value);
+                setValue("unit_price", formatted);
+              },
+            }}
+          />
         </div>
 
-        <div className="flex gap-3 pt-4 justify-end border-t border-border/30">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-end border-t border-border/30">
           <Button
             type="button"
             variant="outline"
             onClick={closeModal}
-            className="rounded-lg px-6 h-11 text-xs font-bold"
+            className="rounded-lg px-6 h-11 text-xs font-bold cursor-pointer"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10"
+            className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10 cursor-pointer"
             disabled={addProductMutation.isPending}
           >
             {addProductMutation.isPending ? "Creating..." : "Add to Catalog"}

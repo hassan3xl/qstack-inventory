@@ -145,6 +145,7 @@ REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'api.controllers.auth.serializers.UserDetailSerializer',
     'REGISTER_SERIALIZER': 'api.controllers.auth.serializers.CustomRegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'api.controllers.auth.serializers.CustomPasswordResetSerializer',
+    'PASSWORD_RESET_FORM': 'django.contrib.auth.forms.PasswordResetForm',
 }
 
 STORAGES = {

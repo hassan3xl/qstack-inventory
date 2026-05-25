@@ -27,3 +27,20 @@ export const formatNaira = (amount: number | string) => {
     minimumFractionDigits: 2,
   }).format(typeof amount === "string" ? parseFloat(amount) : amount);
 };
+
+export const formatPriceWithCommas = (value: string | number) => {
+  if (value === undefined || value === null) return "";
+  let cleanValue = String(value).replace(/,/g, "");
+  cleanValue = cleanValue.replace(/[^0-9.]/g, "");
+  const parts = cleanValue.split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (parts.length > 2) {
+    return parts[0] + "." + parts.slice(1).join("");
+  }
+  return parts.join(".");
+};
+
+export const parsePriceFromFormatted = (value: string | number) => {
+  if (!value) return "";
+  return String(value).replace(/,/g, "");
+};

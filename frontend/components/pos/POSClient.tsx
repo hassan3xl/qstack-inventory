@@ -282,11 +282,11 @@ export default function POSClient() {
       {/* Header Panel */}
       <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
         <div>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-2">
+          <h1 className="text-xl md:text-3xl font-black tracking-tight flex items-center gap-2">
             <ShoppingCart className="w-8 h-8 text-primary" />
             POS Cashier Terminal
           </h1>
-          <p className="text-sm text-muted-foreground font-medium mt-1">
+          <p className="text-xs md:text-sm text-muted-foreground font-medium mt-1">
             Scan barcodes or click products to register in-store customer sales.
           </p>
         </div>

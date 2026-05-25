@@ -230,6 +230,9 @@ export const useDeleteProduct = () => {
   return useMutation({
     mutationFn: async (productId: string) =>
       productApi.DeleteProduct(productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
   });
 };
 

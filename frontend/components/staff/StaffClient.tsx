@@ -8,6 +8,31 @@ import { apiService } from "@/lib/services/apiService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QUERY_KEYS } from "@/lib/hooks/queryKeys";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+interface AddStaffValues {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+}
+
+interface EditStaffValues {
+  first_name: string;
+  last_name: string;
+  role: string;
+}
 
 export default function StaffClient() {
   const queryClient = useQueryClient();
@@ -16,6 +41,7 @@ export default function StaffClient() {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Fetch Staff List
   const { data: staff, isLoading } = useQuery({
@@ -23,6 +49,34 @@ export default function StaffClient() {
     queryFn: () => apiService.get("/staff/list/"),
     staleTime: 1000 * 60 * 5,
   });
+
+  const addForm = useForm<AddStaffValues>({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      role: "staff",
+    },
+  });
+
+  const editForm = useForm<EditStaffValues>({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      role: "staff",
+    },
+  });
+
+  // Preload staff metadata when opening edit modal
+  React.useEffect(() => {
+    if (selectedStaff) {
+      editForm.reset({
+        first_name: selectedStaff.full_name?.split(" ")[0] || "",
+        last_name: selectedStaff.full_name?.split(" ").slice(1).join(" ") || "",
+        role: selectedStaff.role || "staff",
+      });
+    }
+  }, [selectedStaff, editForm]);
 
   // Add Staff Mutation
   const addStaffMutation = useMutation({
@@ -33,6 +87,7 @@ export default function StaffClient() {
         description: "Login credentials have been provisioned.",
       });
       setIsAdding(false);
+      addForm.reset();
     },
     onError: (error: any) => {
       const errorMsg =
@@ -74,6 +129,7 @@ export default function StaffClient() {
       });
       setSelectedStaff(null);
       setIsEditing(false);
+      setShowDeleteConfirm(false);
     },
     onError: (error: any) => {
       const errorMsg =
@@ -84,30 +140,18 @@ export default function StaffClient() {
     },
   });
 
-  const handleAddStaff = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+  const onAddSubmit = (data: AddStaffValues) => {
     addStaffMutation.mutate(data);
   };
 
-  const handleEditStaff = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onEditSubmit = (data: EditStaffValues) => {
     if (!selectedStaff) return;
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
     editStaffMutation.mutate({ userId: selectedStaff.id, data });
   };
 
   const handleRemoveStaff = () => {
     if (!selectedStaff) return;
-    if (
-      confirm(
-        `Are you sure you want to remove ${selectedStaff.full_name || selectedStaff.email} from the business?`,
-      )
-    ) {
-      removeStaffMutation.mutate(selectedStaff.id);
-    }
+    removeStaffMutation.mutate(selectedStaff.id);
   };
 
   const totalStaff = staff?.length || 0;
@@ -133,7 +177,7 @@ export default function StaffClient() {
         actions={
           <Button
             onClick={() => setIsAdding(true)}
-            className="rounded-lg shadow-lg shadow-primary/20 h-11 px-5 font-bold"
+            className="rounded-lg shadow-lg shadow-primary/20 h-11 px-5 font-bold cursor-pointer"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add New Staff
@@ -146,7 +190,7 @@ export default function StaffClient() {
         {/* Mobile/Tablet Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-4 p-4">
           {isLoading ? (
-            <div className="p-12 text-center text-muted-foreground font-semibold md:col-span-2">
+            <div className="p-12 text-center text-muted-foreground font-semibold md:col-span-2 animate-pulse">
               Loading staff...
             </div>
           ) : staff?.length === 0 ? (
@@ -159,8 +203,8 @@ export default function StaffClient() {
                 key={member.id}
                 className="border border-border/50 rounded-xl p-5 bg-muted/20 space-y-4"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       <User className="w-5 h-5" />
                     </div>
@@ -180,7 +224,7 @@ export default function StaffClient() {
                       setSelectedStaff(member);
                       setIsEditing(true);
                     }}
-                    className="rounded-lg text-xs font-bold shrink-0 ml-2"
+                    className="rounded-lg text-xs font-bold shrink-0 cursor-pointer"
                   >
                     Manage
                   </Button>
@@ -215,7 +259,7 @@ export default function StaffClient() {
 
         {/* Desktop Table */}
         <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full text-sm text-left">
+          <table className="w-full text-sm text-left border-collapse">
             <thead className="bg-muted/50 border-b border-border/50 text-[10px] uppercase font-black tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-6 py-4">Staff Member</th>
@@ -249,8 +293,8 @@ export default function StaffClient() {
                     key={member.id}
                     className="hover:bg-muted/30 transition-colors group"
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="px-6 py-4 max-w-[300px]">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                           <User className="w-5 h-5" />
                         </div>
@@ -296,7 +340,7 @@ export default function StaffClient() {
                           setSelectedStaff(member);
                           setIsEditing(true);
                         }}
-                        className="rounded-lg text-xs font-bold"
+                        className="rounded-lg text-xs font-bold cursor-pointer"
                       >
                         Manage
                       </Button>
@@ -320,7 +364,7 @@ export default function StaffClient() {
                 </h3>
                 <button
                   onClick={() => setIsAdding(false)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -329,73 +373,66 @@ export default function StaffClient() {
                 Provision login credentials and system access to your staff.
               </p>
 
-              <form onSubmit={handleAddStaff} className="space-y-4">
+              <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-muted-foreground">
-                      First Name
-                    </label>
-                    <input
-                      name="first_name"
-                      required
-                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-muted-foreground">
-                      Last Name
-                    </label>
-                    <input
-                      name="last_name"
-                      required
-                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-muted-foreground">
-                    Email Address
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  <Input
+                    name="first_name"
+                    label="First Name"
+                    register={addForm.register}
+                    error={addForm.formState.errors.first_name}
+                    validation={{ required: "First name is required" }}
+                    placeholder="John"
+                  />
+                  <Input
+                    name="last_name"
+                    label="Last Name"
+                    register={addForm.register}
+                    error={addForm.formState.errors.last_name}
+                    validation={{ required: "Last name is required" }}
+                    placeholder="Doe"
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-muted-foreground">
-                    Access Role
-                  </label>
-                  <select
-                    name="role"
-                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="staff">Staff Member</option>
-                    <option value="cashier">Cashier</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Co-Admin</option>
-                  </select>
-                </div>
+                <Input
+                  name="email"
+                  type="email"
+                  label="Email Address"
+                  register={addForm.register}
+                  error={addForm.formState.errors.email}
+                  validation={{ required: "Email address is required" }}
+                  placeholder="john.doe@qstack.com"
+                />
 
-                <div className="flex gap-3 pt-4">
+                <Input
+                  name="role"
+                  label="Access Role"
+                  field="select"
+                  register={addForm.register}
+                  error={addForm.formState.errors.role}
+                  options={[
+                    { value: "staff", label: "Staff Member" },
+                    { value: "cashier", label: "Cashier" },
+                    { value: "manager", label: "Manager" },
+                    { value: "admin", label: "Co-Admin" },
+                  ]}
+                />
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border/30">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsAdding(false)}
-                    className="flex-1 rounded-lg h-11"
+                    className="flex-1 rounded-lg h-11 cursor-pointer"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={addStaffMutation.isPending}
-                    className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold"
+                    className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold cursor-pointer"
                   >
                     {addStaffMutation.isPending ? (
-                      <Loader2 className="animate-spin" />
+                      <Loader2 className="animate-spin mr-1.5" />
                     ) : (
                       "Provision Access"
                     )}
@@ -421,7 +458,7 @@ export default function StaffClient() {
                     setIsEditing(false);
                     setSelectedStaff(null);
                   }}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -431,61 +468,46 @@ export default function StaffClient() {
                 permission.
               </p>
 
-              <form onSubmit={handleEditStaff} className="space-y-4">
+              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-muted-foreground">
-                      First Name
-                    </label>
-                    <input
-                      name="first_name"
-                      defaultValue={
-                        selectedStaff.full_name?.split(" ")[0] || ""
-                      }
-                      required
-                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-muted-foreground">
-                      Last Name
-                    </label>
-                    <input
-                      name="last_name"
-                      defaultValue={
-                        selectedStaff.full_name
-                          ?.split(" ")
-                          .slice(1)
-                          .join(" ") || ""
-                      }
-                      required
-                      className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
+                  <Input
+                    name="first_name"
+                    label="First Name"
+                    register={editForm.register}
+                    error={editForm.formState.errors.first_name}
+                    validation={{ required: "First name is required" }}
+                    placeholder="John"
+                  />
+                  <Input
+                    name="last_name"
+                    label="Last Name"
+                    register={editForm.register}
+                    error={editForm.formState.errors.last_name}
+                    validation={{ required: "Last name is required" }}
+                    placeholder="Doe"
+                  />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-muted-foreground">
-                    Access Role
-                  </label>
-                  <select
-                    name="role"
-                    defaultValue={selectedStaff.role}
-                    disabled={selectedStaff.role === "owner"}
-                    className="w-full bg-muted/40 border border-border/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    {selectedStaff.role === "owner" && (
-                      <option value="owner">Owner</option>
-                    )}
-                    <option value="staff">Staff Member</option>
-                    <option value="cashier">Cashier</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Co-Admin</option>
-                  </select>
-                </div>
+                <Input
+                  name="role"
+                  label="Access Role"
+                  field="select"
+                  register={editForm.register}
+                  error={editForm.formState.errors.role}
+                  disabled={selectedStaff.role === "owner"}
+                  options={[
+                    ...(selectedStaff.role === "owner"
+                      ? [{ value: "owner", label: "Owner" }]
+                      : []),
+                    { value: "staff", label: "Staff Member" },
+                    { value: "cashier", label: "Cashier" },
+                    { value: "manager", label: "Manager" },
+                    { value: "admin", label: "Co-Admin" },
+                  ]}
+                />
 
-                <div className="flex flex-col gap-2 pt-4">
-                  <div className="flex gap-3">
+                <div className="flex flex-col gap-2 pt-4 border-t border-border/30">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Button
                       type="button"
                       variant="outline"
@@ -493,17 +515,17 @@ export default function StaffClient() {
                         setIsEditing(false);
                         setSelectedStaff(null);
                       }}
-                      className="flex-1 rounded-lg h-11"
+                      className="flex-1 rounded-lg h-11 cursor-pointer"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={editStaffMutation.isPending}
-                      className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold"
+                      className="flex-1 rounded-lg h-11 shadow-lg shadow-primary/10 font-bold cursor-pointer"
                     >
                       {editStaffMutation.isPending ? (
-                        <Loader2 className="animate-spin" />
+                        <Loader2 className="animate-spin mr-1.5" />
                       ) : (
                         "Save Changes"
                       )}
@@ -512,12 +534,13 @@ export default function StaffClient() {
                   {selectedStaff.role !== "owner" && (
                     <Button
                       type="button"
-                      onClick={handleRemoveStaff}
+                      variant="destructive"
+                      onClick={() => setShowDeleteConfirm(true)}
                       disabled={removeStaffMutation.isPending}
-                      className="rounded-lg h-11 w-full font-bold flex items-center justify-center gap-1.5 mt-2"
+                      className="rounded-lg h-11 w-full font-bold flex items-center justify-center gap-1.5 mt-2 cursor-pointer"
                     >
                       {removeStaffMutation.isPending ? (
-                        <Loader2 className="animate-spin" />
+                        <Loader2 className="animate-spin mr-1.5" />
                       ) : (
                         <>
                           <Trash2 size={16} />
@@ -532,6 +555,37 @@ export default function StaffClient() {
           </div>
         </div>
       )}
+
+      {/* Revocation Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="rounded-lg p-8 border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-black">
+              Revoke System Access
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base font-medium">
+              Are you sure you want to remove this staff member? This will revoke all access privileges to the platform.
+              {selectedStaff && (
+                <div className="mt-4 p-4 rounded-lg bg-red-50 border border-red-100 font-bold text-red-700">
+                  {selectedStaff.full_name || selectedStaff.email}
+                </div>
+              )}
+              This operation is final and will log the revocation event.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-8 gap-3">
+            <AlertDialogCancel onClick={() => setShowDeleteConfirm(false)} className="rounded-lg h-12 px-6 font-bold border-border cursor-pointer">
+              Cancel Action
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRemoveStaff}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black cursor-pointer"
+            >
+              Confirm Revocation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

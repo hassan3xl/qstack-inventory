@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import BaseModal from "../modals/BaseModal";
 import { useAddCategory } from "@/lib/hooks/product.hook";
 import { toast } from "sonner";
-import { Tag, Calendar, ShieldCheck } from "lucide-react";
+import { Tag, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
 
 interface AddCategoryModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
+}
+
+interface AddCategoryFormValues {
+  name: string;
+  description: string;
+  default_best_before_days: number;
+  expiry_strategy: "GENERAL" | "PERISHABLE" | "STABLE" | "MEDICAL";
 }
 
 const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
@@ -18,38 +27,31 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
 }) => {
   const addCategoryMutation = useAddCategory();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    default_best_before_days: 0,
-    expiry_strategy: "GENERAL",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<AddCategoryFormValues>({
+    defaultValues: {
+      name: "",
+      description: "",
+      default_best_before_days: 0,
+      expiry_strategy: "GENERAL",
+    },
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "default_best_before_days" ? parseInt(value) || 0 : value,
-    }));
-  };
+  const selectedStrategy = watch("expiry_strategy");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: AddCategoryFormValues) => {
     try {
-      await addCategoryMutation.mutateAsync(formData);
-      toast.success("Category created successfully!");
-      // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        default_best_before_days: 0,
-        expiry_strategy: "GENERAL",
+      await addCategoryMutation.mutateAsync({
+        ...data,
+        default_best_before_days: Number(data.default_best_before_days) || 0,
       });
+      toast.success("Category created successfully!");
+      reset();
       closeModal();
     } catch (error: any) {
       const errMsg =
@@ -65,7 +67,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       title="Create Custom Category"
       description="Add a new category scoped to your business."
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           {/* Basic Info */}
           <div className="space-y-4">
@@ -73,31 +75,24 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
               <Tag size={16} /> Basic Information
             </h4>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold ml-1">
-                Category Name
-              </label>
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="e.g. Organic Produce, Cosmetics"
-                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm"
-              />
-            </div>
+            <Input
+              name="name"
+              label="Category Name"
+              register={register}
+              error={errors.name}
+              validation={{ required: "Category name is required" }}
+              placeholder="e.g. Organic Produce, Cosmetics"
+            />
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold ml-1">Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={3}
-                className="w-full bg-muted border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm"
-                placeholder="Briefly describe what items belong here..."
-              />
-            </div>
+            <Input
+              name="description"
+              label="Description"
+              field="textarea"
+              register={register}
+              error={errors.description}
+              placeholder="Briefly describe what items belong here..."
+              rows={3}
+            />
           </div>
 
           {/* Expiry Settings */}
@@ -106,48 +101,38 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
               <ShieldCheck size={16} /> Expiry Strategy
             </h4>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold ml-1">
-                Strategy Type
-              </label>
-              <select
-                name="expiry_strategy"
-                value={formData.expiry_strategy}
-                onChange={handleChange}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-              >
-                <option value="GENERAL">General (Default)</option>
-                <option value="PERISHABLE">Perishable (Fresh Foods)</option>
-                <option value="STABLE">Stable (Canned, Biscuits)</option>
-                <option value="MEDICAL">Medical (Drugs, Medications)</option>
-              </select>
-              <p className="text-[10px] text-muted-foreground ml-1 mt-1">
-                {formData.expiry_strategy === "PERISHABLE" &&
-                  "Best for fresh produce, dairy, and meat."}
-                {formData.expiry_strategy === "STABLE" &&
-                  "Best for long-lasting packaged goods."}
-                {formData.expiry_strategy === "MEDICAL" &&
-                  "Specific tracking for pharmaceuticals."}
-                {formData.expiry_strategy === "GENERAL" &&
-                  "Standard tracking for all other items."}
-              </p>
-            </div>
+            <Input
+              name="expiry_strategy"
+              label="Strategy Type"
+              field="select"
+              register={register}
+              error={errors.expiry_strategy}
+              options={[
+                { value: "GENERAL", label: "General (Default)" },
+                { value: "PERISHABLE", label: "Perishable (Fresh Foods)" },
+                { value: "STABLE", label: "Stable (Canned, Biscuits)" },
+                { value: "MEDICAL", label: "Medical (Drugs, Medications)" },
+              ]}
+            />
+            <p className="text-[10px] text-muted-foreground ml-1 mt-1 font-medium">
+              {selectedStrategy === "PERISHABLE" && "Best for fresh produce, dairy, and meat."}
+              {selectedStrategy === "STABLE" && "Best for long-lasting packaged goods."}
+              {selectedStrategy === "MEDICAL" && "Specific tracking for pharmaceuticals."}
+              {selectedStrategy === "GENERAL" && "Standard tracking for all other items."}
+            </p>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold ml-1 flex items-center gap-1.5">
-                <Calendar size={12} /> Default Best Before (Days)
-              </label>
-              <input
-                type="number"
-                name="default_best_before_days"
-                value={formData.default_best_before_days}
-                onChange={handleChange}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-              />
-              <p className="text-[10px] text-muted-foreground ml-1">
-                New products in this category will default to this shelf life.
-              </p>
-            </div>
+            <Input
+              name="default_best_before_days"
+              label="Default Best Before (Days)"
+              type="number"
+              register={register}
+              error={errors.default_best_before_days}
+              validation={{ valueAsNumber: true }}
+              placeholder="0"
+            />
+            <p className="text-[10px] text-muted-foreground ml-1 font-medium">
+              New products in this category will default to this shelf life.
+            </p>
           </div>
         </div>
 
@@ -156,13 +141,13 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             type="button"
             variant="outline"
             onClick={closeModal}
-            className="rounded-lg px-8"
+            className="rounded-lg px-8 cursor-pointer"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            className="rounded-lg px-12 shadow-lg shadow-primary/20"
+            className="rounded-lg px-12 shadow-lg shadow-primary/20 cursor-pointer"
             disabled={addCategoryMutation.isPending}
           >
             {addCategoryMutation.isPending ? "Creating..." : "Create Category"}

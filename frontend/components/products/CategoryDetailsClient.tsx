@@ -28,8 +28,23 @@ const CategoryDetailsClient = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="mb-12 space-y-8">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between p-6 bg-card rounded-lg border border-border/50 animate-pulse">
+          <div className="space-y-2 flex-1">
+            <div className="h-8 w-48 bg-muted rounded-md" />
+            <div className="h-4 w-32 bg-muted rounded-md" />
+            <div className="h-5 w-24 bg-muted rounded-md" />
+          </div>
+          <div className="h-10 w-36 bg-muted rounded-md" />
+        </div>
+
+        {/* Products Grid Skeleton */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {[...Array(8)].map((_, idx) => (
+            <div key={idx} className="h-64 rounded-xl bg-muted/60 animate-pulse border border-border/50" />
+          ))}
+        </div>
       </div>
     );
   }

@@ -14,6 +14,7 @@ import {
   useDeleteProductImage,
   useGetProduct,
   useDeleteStockBatch,
+  useDeleteProduct,
 } from "@/lib/hooks/product.hook";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -57,6 +58,20 @@ const ProductDetailsClient = () => {
   const [selectedBatch, setSelectedBatch] = useState<any>(null);
 
   const deleteBatchMutation = useDeleteStockBatch();
+  const deleteProductMutation = useDeleteProduct();
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await deleteProductMutation.mutateAsync(id);
+      toast.success("Product Deleted Successfully", {
+        description: "The product has been removed from inventory.",
+      });
+      setDeleteConfirm({ open: false, id: null });
+      router.push("/products");
+    } catch (error: any) {
+      toast.error(error?.error || error?.detail || "Failed to delete product.");
+    }
+  };
 
   // Delete confirmation states
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -149,7 +164,9 @@ const ProductDetailsClient = () => {
   const isOutOfStock = stockCount === 0;
   const isActive = product?.is_active !== false;
 
-
+if (isProductLoading) {
+  return <div className="flex justify-center items-center h-64"><Loader title="Loading product..." fullscreen={false} /></div>;
+}
 
   // Error state
   if (productError || !product) {
@@ -196,58 +213,24 @@ const ProductDetailsClient = () => {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Image Gallery */}
+        {/* Product Image */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative mb-7 overflow-hidden rounded-lg border border-border bg-card aspect-square">
+          <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
+            <CardContent className="p-6">
+              <div className="relative overflow-hidden rounded-lg border border-border bg-muted/20 aspect-square w-full">
                 <Image
                   src={
-                    product.images?.[selectedImage]?.image &&
-                    !imageErrors[selectedImage]
-                      ? product.images[selectedImage].image
+                    product.images?.[0]?.image && !imageErrors[0]
+                      ? product.images[0].image
                       : "/default_product.png"
                   }
                   alt={product.name}
                   fill
-                  className="object-cover"
-                  onError={() => handleImageError(selectedImage)}
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  onError={() => handleImageError(0)}
                   unoptimized
                 />
               </div>
-
-              {/* Thumbnail Images */}
-              {product.images && product.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-3">
-                  {product.images.map((img, idx) => (
-                    <div key={idx} className="flex flex-col gap-2">
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedImage(idx)}
-                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                          selectedImage === idx
-                            ? "border-blue-600"
-                            : "border-border hover:border-gray-400"
-                        }`}
-                      >
-                        <Image
-                          src={
-                            img.image && !imageErrors[idx]
-                              ? img.image
-                              : "/default_product.png"
-                          }
-                          alt={`${product.name} - Image ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                          onError={() => handleImageError(idx)}
-                          unoptimized
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
@@ -416,7 +399,7 @@ const ProductDetailsClient = () => {
 
       {/* Stock Batches Card */}
       <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
-        <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
+        <CardHeader className=" pb-4 flex flex-col md:flex-row items-start md:items-center justify-between">
           <div>
             <CardTitle className="text-xl font-black flex items-center gap-2">
               <Layers className="w-5 h-5 text-primary" />
@@ -432,11 +415,11 @@ const ProductDetailsClient = () => {
               className="rounded-lg h-10 px-6 font-bold shadow-md shadow-primary/10 active:scale-95 transition-all flex items-center gap-2"
             >
               <Plus size={16} />
-              Receive Stock
+              Add Stock
             </Button>
           )}
         </CardHeader>
-        <CardContent className="p-8 pt-0">
+        <CardContent className=" pt-0">
           {!product.batches || product.batches.length === 0 ? (
             <div className="text-center py-12 bg-muted/30 border border-dashed rounded-lg">
               <p className="text-muted-foreground font-semibold">
@@ -447,112 +430,230 @@ const ProductDetailsClient = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-border/50">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-muted/50 border-b border-border/50 text-[10px] uppercase font-black tracking-wider text-muted-foreground">
-                    <th className="px-6 py-4">Batch Number</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Quantity</th>
-                    <th className="px-6 py-4">Production Date</th>
-                    <th className="px-6 py-4">Expiry Date</th>
-                    <th className="px-6 py-4">Days Left</th>
-                    {canModify && (
-                      <th className="px-6 py-4 text-right">Actions</th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {product.batches.map((batch: any) => (
-                    <tr
-                      key={batch.id}
-                      className="hover:bg-accent/10 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-bold text-sm tracking-tight">
+            <div className="space-y-6">
+              {/* Mobile & Tablet Card Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
+                {product.batches.map((batch: any) => (
+                  <div
+                    key={batch.id}
+                    className="bg-card border border-border rounded-xl p-5 space-y-4 hover:border-primary/20 transition-all shadow-xs"
+                  >
+                    {/* Top Row: Batch Number & Status */}
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-foreground">
                         {batch.batch_number}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black capitalize ${
-                            batch.status === "fresh"
-                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                              : batch.status === "near_expiry"
-                                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                                : batch.status === "critical"
-                                  ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20"
-                                  : batch.status === "expired"
-                                    ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 animate-pulse"
-                                    : "bg-muted text-muted-foreground border border-border"
-                          }`}
-                        >
-                          {batch.status.replace("_", " ")}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-semibold text-sm">
-                        {batch.quantity}{" "}
-                        <span className="text-muted-foreground text-xs">
-                          / {batch.initial_quantity} units
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {batch.production_date
-                          ? new Date(batch.production_date).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-semibold">
-                        {batch.expiry_date
-                          ? new Date(batch.expiry_date).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        {batch.days_until_expiry !== null &&
-                        batch.days_until_expiry !== undefined ? (
-                          <span
-                            className={
-                              batch.days_until_expiry <= 7
-                                ? "text-red-500 font-bold"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {batch.days_until_expiry < 0
-                              ? `Expired (${Math.abs(batch.days_until_expiry)}d ago)`
-                              : `${batch.days_until_expiry} days`}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black capitalize ${
+                          batch.status === "fresh"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                            : batch.status === "near_expiry"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                              : batch.status === "critical"
+                                ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20"
+                                : batch.status === "expired"
+                                  ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 animate-pulse"
+                                  : "bg-muted text-muted-foreground border border-border"
+                        }`}
+                      >
+                        {batch.status.replace("_", " ")}
+                      </span>
+                    </div>
+
+                    {/* Middle row: Quantity & Days Left */}
+                    <div className="grid grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <p className="text-muted-foreground font-semibold">Quantity</p>
+                        <p className="font-bold text-foreground mt-0.5">
+                          {batch.quantity}{" "}
+                          <span className="text-muted-foreground font-medium">
+                            / {batch.initial_quantity} units
                           </span>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </td>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground font-semibold">Shelf Life</p>
+                        <p className="font-bold mt-0.5">
+                          {batch.days_until_expiry !== null &&
+                          batch.days_until_expiry !== undefined ? (
+                            <span
+                              className={
+                                batch.days_until_expiry <= 7
+                                  ? "text-red-500 font-bold"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {batch.days_until_expiry < 0
+                                ? `Expired (${Math.abs(batch.days_until_expiry)}d ago)`
+                                : `${batch.days_until_expiry} days left`}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Date Row: Production & Expiry */}
+                    <div className="grid grid-cols-2 gap-4 text-xs pt-3 border-t border-border/40">
+                      <div>
+                        <p className="text-muted-foreground font-semibold">Production Date</p>
+                        <p className="text-foreground font-medium mt-0.5">
+                          {batch.production_date
+                            ? new Date(batch.production_date).toLocaleDateString()
+                            : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground font-semibold">Expiry Date</p>
+                        <p className="text-foreground font-bold mt-0.5">
+                          {batch.expiry_date
+                            ? new Date(batch.expiry_date).toLocaleDateString()
+                            : "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Row: Actions (Edit & Delete) */}
+                    {canModify && (
+                      <div className="flex justify-end gap-2 pt-3 border-t border-border/40">
+                        <button
+                          onClick={() => {
+                            setSelectedBatch(batch);
+                            setShowEditBatchModal(true);
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-muted text-muted-foreground hover:text-primary rounded-lg text-xs font-bold transition-all border border-border/40 cursor-pointer"
+                        >
+                          <Edit size={14} />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDeleteBatchConfirm({
+                              open: true,
+                              id: batch.id,
+                              batchNumber: batch.batch_number,
+                            });
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-muted-foreground hover:text-red-600 rounded-lg text-xs font-bold transition-all border border-border/40 cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table Layout */}
+              <div className="hidden lg:block overflow-x-auto rounded-lg border border-border/50">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-muted/50 border-b border-border/50 text-[10px] uppercase font-black tracking-wider text-muted-foreground">
+                      <th className="px-6 py-4">Batch Number</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Quantity</th>
+                      <th className="px-6 py-4">Production Date</th>
+                      <th className="px-6 py-4">Expiry Date</th>
+                      <th className="px-6 py-4">Days Left</th>
                       {canModify && (
-                        <td className="px-6 py-4 text-right space-x-2">
-                          <button
-                            onClick={() => {
-                              setSelectedBatch(batch);
-                              setShowEditBatchModal(true);
-                            }}
-                            className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center"
-                            title="Edit Batch"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setDeleteBatchConfirm({
-                                open: true,
-                                id: batch.id,
-                                batchNumber: batch.batch_number,
-                              });
-                            }}
-                            className="p-1.5 hover:bg-red-50 rounded-lg text-muted-foreground hover:text-red-600 transition-colors inline-flex items-center justify-center"
-                            title="Delete Batch"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </td>
+                        <th className="px-6 py-4 text-right">Actions</th>
                       )}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {product.batches.map((batch: any) => (
+                      <tr
+                        key={batch.id}
+                        className="hover:bg-accent/10 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-bold text-sm tracking-tight">
+                          {batch.batch_number}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black capitalize ${
+                              batch.status === "fresh"
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                : batch.status === "near_expiry"
+                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                  : batch.status === "critical"
+                                    ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20"
+                                    : batch.status === "expired"
+                                      ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 animate-pulse"
+                                      : "bg-muted text-muted-foreground border border-border"
+                            }`}
+                          >
+                            {batch.status.replace("_", " ")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-sm">
+                          {batch.quantity}{" "}
+                          <span className="text-muted-foreground text-xs">
+                            / {batch.initial_quantity} units
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-muted-foreground">
+                          {batch.production_date
+                            ? new Date(batch.production_date).toLocaleDateString()
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-semibold">
+                          {batch.expiry_date
+                            ? new Date(batch.expiry_date).toLocaleDateString()
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {batch.days_until_expiry !== null &&
+                          batch.days_until_expiry !== undefined ? (
+                            <span
+                              className={
+                                batch.days_until_expiry <= 7
+                                  ? "text-red-500 font-bold"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {batch.days_until_expiry < 0
+                                ? `Expired (${Math.abs(batch.days_until_expiry)}d ago)`
+                                : `${batch.days_until_expiry} days`}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                        {canModify && (
+                          <td className="px-6 py-4 text-right space-x-2">
+                            <button
+                              onClick={() => {
+                                setSelectedBatch(batch);
+                                setShowEditBatchModal(true);
+                              }}
+                              className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center cursor-pointer"
+                              title="Edit Batch"
+                            >
+                              <Edit size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setDeleteBatchConfirm({
+                                  open: true,
+                                  id: batch.id,
+                                  batchNumber: batch.batch_number,
+                                });
+                              }}
+                              className="p-1.5 hover:bg-red-50 rounded-lg text-muted-foreground hover:text-red-600 transition-colors inline-flex items-center justify-center cursor-pointer"
+                              title="Delete Batch"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>
@@ -569,26 +670,67 @@ const ProductDetailsClient = () => {
                   <Package className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black">Asset & Detail Control</h3>
+                  <h3 className="text-lg font-black">Asset & Detail Control</h3>
                   <p className="text-sm text-muted-foreground font-medium">
                     Coordinate logistics and supply chain records.
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4 w-full md:w-auto">
+              <div className="flex flex-wrap gap-4 w-full md:w-auto">
+                {product.images && product.images.length > 0 ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (product.images?.[0]?.id) {
+                          handleDeleteImage(product.images[0].id);
+                        }
+                      }}
+                      className="flex-1 md:flex-initial rounded-lg font-black border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all active:scale-95 cursor-pointer"
+                    >
+                      Remove Image
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowAddImageModal(true)}
+                      className="flex-1 md:flex-initial rounded-lg font-black border-primary/20 hover:bg-primary/5 hover:text-primary transition-all active:scale-95 cursor-pointer"
+                    >
+                      Replace Image
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddImageModal(true)}
+                    className="flex-1 md:flex-initial rounded-lg font-black border-primary/20 hover:bg-primary/5 hover:text-primary transition-all active:scale-95 cursor-pointer"
+                  >
+                    Upload Image
+                  </Button>
+                )}
                 <Button
-                  variant="outline"
-                  onClick={() => setShowAddImageModal(true)}
-                  className="flex-1 md:flex-initial rounded-lg h-14 px-8 font-black border-primary/20 hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
-                >
-                  Media Assets
-                </Button>
-                <Button
+                  type="button"
                   variant="default"
                   onClick={() => setShowEditModal(true)}
-                  className="flex-1 md:flex-initial rounded-lg h-14 px-8 font-black shadow-xl shadow-primary/20 transition-all active:scale-95"
+                  className="flex-1 md:flex-initial rounded-lg font-black shadow-xl shadow-primary/20 transition-all active:scale-95 cursor-pointer"
                 >
                   Modify SKU
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    setDeleteConfirm({
+                      open: true,
+                      id: product.id,
+                      name: product.name,
+                    });
+                  }}
+                  className="flex-1 md:flex-initial rounded-lg font-black shadow-xl shadow-red-500/20 transition-all active:scale-95 cursor-pointer"
+                >
+                  Delete SKU
                 </Button>
               </div>
             </div>
@@ -607,6 +749,7 @@ const ProductDetailsClient = () => {
         isModalOpen={showAddImageModal}
         closeModal={() => setShowAddImageModal(false)}
         productId={product.id}
+        existingImageId={product.images?.[0]?.id}
       />
       <ReceiveBatchModal
         productId={product.id}
@@ -651,10 +794,17 @@ const ProductDetailsClient = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-8 gap-3">
-            <AlertDialogCancel className="rounded-lg h-12 px-6 font-bold border-border">
+            <AlertDialogCancel onClick={()=> setDeleteConfirm({open: false, id: null })} className="rounded-lg h-12 px-6 font-bold border-border cursor-pointer">
               Cancel Action
             </AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black">
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteConfirm.id) {
+                  handleDeleteProduct(String(deleteConfirm.id));
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black cursor-pointer"
+            >
               Confirm Deletion
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -684,7 +834,7 @@ const ProductDetailsClient = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-8 gap-3">
-            <AlertDialogCancel className="rounded-lg h-12 px-6 font-bold border-border">
+            <AlertDialogCancel onClick={()=> setDeleteBatchConfirm({open: false, id: null})} className="rounded-lg h-12 px-6 font-bold border-border cursor-pointer">
               Cancel Action
             </AlertDialogCancel>
             <AlertDialogAction
@@ -693,7 +843,7 @@ const ProductDetailsClient = () => {
                   handleDeleteBatch(deleteBatchConfirm.id);
                 }
               }}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-12 px-6 font-black cursor-pointer"
             >
               Confirm Deletion
             </AlertDialogAction>

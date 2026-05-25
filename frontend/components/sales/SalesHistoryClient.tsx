@@ -5,6 +5,7 @@ import { useGetSales } from "@/lib/hooks/sales.hook";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatNaira } from "@/lib/utils";
+import { NormalInput } from "@/components/ui/input";
 import {
   Search,
   History,
@@ -62,7 +63,7 @@ export default function SalesHistoryClient() {
       {/* Header Panel */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
         <div>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-2">
+          <h1 className="text-xl md:text-3xl font-black tracking-tight flex items-center gap-2">
             <History className="w-8 h-8 text-primary" />
             POS Sales Register History
           </h1>
@@ -128,22 +129,22 @@ export default function SalesHistoryClient() {
       </div>
 
       {/* Filter and Search Panel */}
-      <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm">
-        <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-          <input
+      <div className="flex flex-col md:flex-row gap-4 bg-card p-6 rounded-xl border border-border/50 shadow-sm items-stretch md:items-center">
+        <div className="flex-1">
+          <NormalInput
             type="text"
+            icon={Search}
             placeholder="Search by receipt number, cashier email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-muted/40 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-medium"
+            className="w-full"
           />
         </div>
 
         <select
           value={paymentFilter}
           onChange={(e) => setPaymentFilter(e.target.value)}
-          className="px-4 py-3 bg-muted/40 border border-transparent rounded-lg focus:bg-background focus:border-primary/20 transition-all text-sm font-bold min-w-[180px]"
+          className="px-4 py-2.5 bg-background border border-input hover:border-ring/60 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all text-sm font-bold min-w-[180px] h-11"
         >
           <option value="all">All Payment Methods</option>
           <option value="cash">Cash Only</option>
@@ -156,7 +157,7 @@ export default function SalesHistoryClient() {
       <Card className="rounded-xl border-primary/10 shadow-xl shadow-primary/5 overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-20 font-bold text-muted-foreground">
+            <div className="text-center py-20 font-bold text-muted-foreground animate-pulse">
               Loading sales registers...
             </div>
           ) : filteredSales.length === 0 ? (
@@ -167,56 +168,106 @@ export default function SalesHistoryClient() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-black tracking-wider text-muted-foreground">
-                    <th className="px-6 py-4">Receipt Number</th>
-                    <th className="px-6 py-4">Cashier</th>
-                    <th className="px-6 py-4">Date & Time</th>
-                    <th className="px-6 py-4">Payment Method</th>
-                    <th className="px-6 py-4">Total Amount</th>
-                    <th className="px-6 py-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {filteredSales.map((sale: any) => (
-                    <tr
-                      key={sale.id}
-                      className="hover:bg-accent/15 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-bold text-sm text-foreground">
+            <>
+              {/* Mobile/Tablet Card View */}
+              <div className="lg:hidden divide-y divide-border/20">
+                {filteredSales.map((sale: any) => (
+                  <div
+                    key={sale.id}
+                    className="p-5 flex flex-col gap-3 hover:bg-accent/5 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-foreground">
                         {sale.sale_number}
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">
-                        {sale.cashier_email || "System"}
-                      </td>
-                      <td className="px-6 py-4 text-xs text-muted-foreground">
+                      </span>
+                      <span className="capitalize text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
+                        {sale.payment_method.replace("_", " ")}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs text-muted-foreground font-medium gap-4">
+                      <span className="truncate" title={sale.cashier_email}>
+                        Cashier: {sale.cashier_email || "System"}
+                      </span>
+                      <span className="shrink-0">
                         {new Date(sale.created_at).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="capitalize text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
-                          {sale.payment_method.replace("_", " ")}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-border/30">
+                      <div>
+                        <span className="text-[10px] font-black uppercase text-muted-foreground block">
+                          Total Amount
                         </span>
-                      </td>
-                      <td className="px-6 py-4 font-black text-sm text-foreground">
-                        {formatNaira(sale.total_amount)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Button
-                          onClick={() => setSelectedSale(sale)}
-                          variant="outline"
-                          size="sm"
-                          className="rounded-lg text-xs font-black"
-                        >
-                          View Receipt
-                        </Button>
-                      </td>
+                        <span className="font-black text-base text-foreground">
+                          {formatNaira(sale.total_amount)}
+                        </span>
+                      </div>
+                      <Button
+                        onClick={() => setSelectedSale(sale)}
+                        variant="outline"
+                        size="sm"
+                        className="rounded-lg text-xs font-black cursor-pointer"
+                      >
+                        View Receipt
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-black tracking-wider text-muted-foreground">
+                      <th className="px-6 py-4">Receipt Number</th>
+                      <th className="px-6 py-4">Cashier</th>
+                      <th className="px-6 py-4">Date & Time</th>
+                      <th className="px-6 py-4">Payment Method</th>
+                      <th className="px-6 py-4">Total Amount</th>
+                      <th className="px-6 py-4">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {filteredSales.map((sale: any) => (
+                      <tr
+                        key={sale.id}
+                        className="hover:bg-accent/15 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-bold text-sm text-foreground">
+                          {sale.sale_number}
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">
+                          {sale.cashier_email || "System"}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-muted-foreground">
+                          {new Date(sale.created_at).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="capitalize text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
+                            {sale.payment_method.replace("_", " ")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-black text-sm text-foreground">
+                          {formatNaira(sale.total_amount)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <Button
+                            onClick={() => setSelectedSale(sale)}
+                            variant="outline"
+                            size="sm"
+                            className="rounded-lg text-xs font-black cursor-pointer"
+                          >
+                            View Receipt
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -322,14 +373,14 @@ export default function SalesHistoryClient() {
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="flex-1 rounded-lg h-12 font-bold flex items-center justify-center gap-2"
+                  className="flex-1 rounded-lg h-12 font-bold flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Printer size={16} />
                   Print Copy
                 </Button>
                 <Button
                   onClick={() => setSelectedSale(null)}
-                  className="flex-1 rounded-lg h-12 font-black shadow-lg shadow-primary/10"
+                  className="flex-1 rounded-lg h-12 font-black shadow-lg shadow-primary/10 cursor-pointer"
                 >
                   Close
                 </Button>

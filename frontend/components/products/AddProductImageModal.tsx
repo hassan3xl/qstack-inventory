@@ -3,24 +3,27 @@
 import React, { useState } from "react";
 import BaseModal from "../modals/BaseModal";
 import { toast } from "sonner";
-import { useUploadProductImage } from "@/lib/hooks/product.hook";
+import { useUploadProductImage, useDeleteProductImage } from "@/lib/hooks/product.hook";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 interface AddProductImageModalProps {
   productId: string;
+  existingImageId?: string;
   isModalOpen: boolean;
   closeModal: () => void;
 }
 
 const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
   productId,
+  existingImageId,
   isModalOpen,
   closeModal,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const deleteImageMutation = useDeleteProductImage();
   const uploadImageMutation = useUploadProductImage();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +46,9 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
     formData.append("image", selectedFile);
 
     try {
+      if (existingImageId) {
+        await deleteImageMutation.mutateAsync({ productId, imageId: existingImageId });
+      }
       await uploadImageMutation.mutateAsync({ productId, formData });
       toast.success("Image uploaded successfully");
       setSelectedFile(null);
@@ -77,7 +83,7 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
                   setSelectedFile(null);
                   setPreview(null);
                 }}
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -101,14 +107,15 @@ const AddProductImageModal: React.FC<AddProductImageModalProps> = ({
           )}
         </div>
         <div className="flex gap-3 pt-4 justify-end">
-          <Button type="button" variant="outline" onClick={closeModal}>
+          <Button type="button" variant="outline" onClick={closeModal} className="cursor-pointer">
             Cancel
           </Button>
           <Button
             type="submit"
-            disabled={!selectedFile || uploadImageMutation.isPending}
+            disabled={!selectedFile || uploadImageMutation.isPending || deleteImageMutation.isPending}
+            className="cursor-pointer"
           >
-            {uploadImageMutation.isPending ? "Uploading..." : "Upload Image"}
+            {uploadImageMutation.isPending || deleteImageMutation.isPending ? "Uploading..." : "Upload Image"}
           </Button>
         </div>
       </form>

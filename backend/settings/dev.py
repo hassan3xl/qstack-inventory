@@ -76,4 +76,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'resend'
 # Try to get from environ, fallback to the one loaded by dotenv in config
 EMAIL_HOST_PASSWORD = os.environ.get('RESEND_API_KEY', RESEND_API_KEY)
-DEFAULT_FROM_EMAIL = 'Qstack Inventory <noreply@mail.qstack.com.ng>'
+DEFAULT_FROM_EMAIL = 'Quantum Stack Inventory <noreply@mail.qstack.com.ng>'

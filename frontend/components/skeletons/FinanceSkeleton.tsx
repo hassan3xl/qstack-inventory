@@ -5,8 +5,8 @@ export function FinanceSkeleton() {
     <div className="space-y-6 w-full animate-in fade-in duration-500">
       <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-96" />
+          <Skeleton className="h-8 w-full max-w-[256px] mb-2" />
+          <Skeleton className="h-4 w-full max-w-[384px]" />
         </div>
       </div>
 

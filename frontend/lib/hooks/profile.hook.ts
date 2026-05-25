@@ -6,6 +6,7 @@ export function useGetProfile() {
   return useQuery<Profile>({
     queryKey: ["profile"],
     queryFn: profileApi.getProfile,
+    staleTime: 1000 * 60 * 5,
   });
 }
 

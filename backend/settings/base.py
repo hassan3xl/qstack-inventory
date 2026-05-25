@@ -235,3 +235,9 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
+
+# Frontend configurations (Constant across development and production)
+FRONTEND_URL = "http://inventory.qstack.com.ng"
+FRONTEND_DOMAIN = "inventory.qstack.com.ng"
+FRONTEND_PROTOCOL = "http"
+

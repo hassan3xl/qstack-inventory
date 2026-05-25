@@ -6,6 +6,7 @@ export const useGetSales = () => {
   return useQuery({
     queryKey: QUERY_KEYS.SALES,
     queryFn: salesApi.getSales,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
@@ -14,6 +15,7 @@ export const useGetSale = (saleId: string) => {
     queryKey: QUERY_KEYS.SALE(saleId),
     queryFn: () => salesApi.getSale(saleId),
     enabled: !!saleId,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
@@ -34,6 +36,7 @@ export const useGetCustomers = (search?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.CUSTOMERS(search),
     queryFn: () => salesApi.getCustomers(search),
+    staleTime: 1000 * 60 * 5,
   });
 };
 

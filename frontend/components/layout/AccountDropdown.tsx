@@ -34,9 +34,14 @@ export function AccountDropdown() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 hover:bg-accent">
-                  <User className="h-4 w-4" />
-                  <span className="font-medium hidden sm:inline">
+                <Button
+                  variant="ghost"
+                  className="gap-2.5 hover:bg-accent/85 rounded-xl px-3 h-9 border border-border/50 hover:border-border transition-all duration-200 cursor-pointer"
+                >
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <User className="h-3 w-3" />
+                  </div>
+                  <span className="text-xs font-bold text-muted-foreground hover:text-foreground hidden sm:inline transition-colors">
                     {user.first_name?.split(" ")[0] || "Account"}
                   </span>
                 </Button>
@@ -44,7 +49,7 @@ export function AccountDropdown() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                    <p className="text-sm font-bold leading-none">
                       {user.first_name || "User"}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -95,10 +100,10 @@ export function AccountDropdown() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="outline"
-                  className="gap-2 hover:bg-accent rounded-md"
+                  variant="ghost"
+                  className="w-9 h-9 p-0 flex items-center justify-center hover:bg-accent/85 rounded-xl border border-border/50 hover:border-border transition-all duration-200 cursor-pointer"
                 >
-                  <User className=" " />
+                  <User className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -127,7 +132,7 @@ export function AccountDropdown() {
         </>
       )}
       {loading && (
-        <div className="h-10 w-24 bg-accent/50 rounded-md animate-pulse" />
+        <div className="h-9 w-24 bg-accent/40 rounded-xl animate-pulse" />
       )}
     </div>
   );

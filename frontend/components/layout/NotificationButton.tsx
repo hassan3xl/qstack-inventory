@@ -10,11 +10,11 @@ const NotificationButton = () => {
   return (
     <Link
       href="/notifications"
-      className="relative group rounded-md bg-background p-2"
+      className="relative group rounded-xl hover:bg-accent/80 p-2 h-9 w-9 flex items-center justify-center transition-all duration-200 border border-border/50 hover:border-border"
     >
-      <BellIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+      <BellIcon className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
       {unreadCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold animate-in fade-in zoom-in">
+        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold border-2 border-background animate-in fade-in zoom-in shadow-md shadow-red-500/20">
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       )}

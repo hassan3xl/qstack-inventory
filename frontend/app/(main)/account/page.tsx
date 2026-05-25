@@ -149,40 +149,43 @@ const AccountPage = () => {
       />
 
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Navigation Sidebar */}
-        <div className="w-full md:w-64 flex md:flex-col gap-2 bg-card p-3 rounded-[1.8rem] border border-border/40 shadow-sm h-fit">
+        {/* Navigation Tabs */}
+        <div className="w-full md:w-64 grid grid-cols-3 md:flex md:flex-col text-xs gap-1.5 bg-muted/60 md:bg-card p-1.5 md:p-3 rounded-2xl md:rounded-[1.8rem] border border-border/40 shadow-xs h-fit">
           <button
+            type="button"
             onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center justify-center md:justify-start gap-2 px-3 py-2.5 md:px-4 md:py-3 rounded-xl md:rounded-2xl transition-all duration-300 font-bold text-xs md:text-sm text-center md:text-left cursor-pointer ${
               activeTab === "profile"
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
+                ? "bg-background md:bg-primary text-foreground md:text-primary-foreground shadow-xs md:shadow-md md:shadow-primary/20"
+                : "hover:bg-accent/40 text-muted-foreground hover:text-foreground"
             }`}
           >
-            <User className="w-4 h-4" />
-            Profile
+            <User className="w-4 h-4 shrink-0" />
+            <span>Profile</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("security")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center justify-center md:justify-start gap-2 px-3 py-2.5 md:px-4 md:py-3 rounded-xl md:rounded-2xl transition-all duration-300 font-bold text-xs md:text-sm text-center md:text-left cursor-pointer ${
               activeTab === "security"
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
+                ? "bg-background md:bg-primary text-foreground md:text-primary-foreground shadow-xs md:shadow-md md:shadow-primary/20"
+                : "hover:bg-accent/40 text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Lock className="w-4 h-4" />
-            Security
+            <Lock className="w-4 h-4 shrink-0" />
+            <span>Security</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("appearance")}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-bold text-sm text-left ${
+            className={`flex items-center justify-center md:justify-start gap-2 px-3 py-2.5 md:px-4 md:py-3 rounded-xl md:rounded-2xl transition-all duration-300 font-bold text-xs md:text-sm text-center md:text-left cursor-pointer ${
               activeTab === "appearance"
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
+                ? "bg-background md:bg-primary text-foreground md:text-primary-foreground shadow-xs md:shadow-md md:shadow-primary/20"
+                : "hover:bg-accent/40 text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Moon className="w-4 h-4" />
-            Appearance
+            <Moon className="w-4 h-4 shrink-0" />
+            <span>Appearance</span>
           </button>
         </div>
 

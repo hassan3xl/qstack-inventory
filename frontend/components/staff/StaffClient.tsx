@@ -21,6 +21,7 @@ export default function StaffClient() {
   const { data: staff, isLoading } = useQuery({
     queryKey: QUERY_KEYS.STAFF_LIST,
     queryFn: () => apiService.get("/staff/list/"),
+    staleTime: 1000 * 60 * 5,
   });
 
   // Add Staff Mutation

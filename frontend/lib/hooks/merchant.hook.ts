@@ -9,6 +9,7 @@ export function useGetMerchants() {
   return useQuery({
     queryKey: ["merchants"],
     queryFn: merchantApi.getMerchants,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -18,5 +19,6 @@ export function useGetMerchant(MerchantId: string) {
     queryKey: ["merchant", MerchantId],
     queryFn: () => merchantApi.getMerchant(MerchantId),
     enabled: !!MerchantId,
+    staleTime: 1000 * 60 * 5,
   });
 }

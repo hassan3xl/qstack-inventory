@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import AddCategoryModal from "./AddCategoryModal";
 
 import Loader from "@/components/Loader";
+import Header from "../Header";
 
 const CategoriesInventoryClient: React.FC = () => {
   const { data: categories, isLoading, error } = useGetProductsCategories();
@@ -16,35 +17,29 @@ const CategoriesInventoryClient: React.FC = () => {
   const categoriesArray = Array.isArray(categories) ? categories : [];
 
   return (
-    <section className="my-4 relative min-h-[60vh]">
-      {(isLoading) && (
+    <section className=" relative min-h-[60vh]">
+      {/* {(isLoading) && (
         <div className="absolute inset-0 z-50 bg-background/50 flex items-center justify-center backdrop-blur-sm rounded-lg">
           <Loader title="Loading categories..." fullscreen={false} />
         </div>
-      )}
+      )} */}
 
       {error && !categories && (
         <div className="absolute inset-0 z-40 bg-background/50 flex flex-col items-center justify-center rounded-lg">
           <p className="text-red-500 font-bold">Failed to load categories.</p>
         </div>
       )}
-      <div className="flex items-center justify-between py-4 border-b border-border mb-6">
-        <div>
-          <h2 className="text-2xl font-black text-primary tracking-tight">
-            Shop by Category
-          </h2>
-          <p className="text-xs text-muted-foreground font-medium mt-1">
-            Manage your store's product classifications.
-          </p>
-        </div>
-        <Button
+
+      <Header title="Browse by Category" subtitle="Manage your store's product classifications." 
+      actions={<div className="flex items-center gap-4"> <Button
           onClick={() => setIsAddModalOpen(true)}
           className="rounded-lg font-bold flex items-center gap-1.5 shadow-md shadow-primary/10 transition-transform active:scale-95 duration-100"
         >
           <Plus size={18} />
           <span>Add Category</span>
-        </Button>
-      </div>
+        </Button></div>}
+      />
+      
 
       {categoriesArray.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[40vh] border border-dashed border-border rounded-lg p-8 bg-card">

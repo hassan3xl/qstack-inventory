@@ -80,6 +80,7 @@ class TenantRegisterAPIView(APIView):
                     )
                     
                     # Send login credentials email
+                    from django.conf import settings
                     EmailSender.send_notification(
                         to=admin_email,
                         name=user_name,
@@ -90,7 +91,7 @@ class TenantRegisterAPIView(APIView):
                                 f"Temporary Password: <code>{password}</code><br><br>"
                                 f"Please log in and change your password immediately for security.",
                         cta_text="Login to Your Account",
-                        cta_link="https://inventory.qstack.com.ng"
+                        cta_link=getattr(settings, "FRONTEND_URL", "http://inventory.qstack.com.ng")
                     )
                 except Exception as email_error:
                     print(f"Warning: Failed to send emails to {admin_email}: {str(email_error)}")

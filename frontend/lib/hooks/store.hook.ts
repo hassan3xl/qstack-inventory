@@ -8,6 +8,7 @@ export function useGetStore() {
   return useQuery({
     queryKey: ["store"],
     queryFn: StoreApi.getStore,
+    staleTime: 1000 * 60 * 5,
   });
 }
 

@@ -19,11 +19,17 @@ import { useGetProducts, useGetInventoryStats } from "@/lib/hooks/product.hook";
 import { formatCurrency, formatNaira } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Loader from "@/components/Loader";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/lib/hooks/queryKeys";
 
 const DashboardClient = () => {
   const { data: products, isLoading: isProductsLoading } = useGetProducts();
   const { data: invStats, isLoading: isStatsLoading } = useGetInventoryStats();
 
+  const queryClient = useQueryClient()
+
+  console.log("Cache state:", queryClient.getQueryState(QUERY_KEYS.PRODUCTS))
+  console.log("All cache keys:", queryClient.getQueryCache().getAll().map(q => q.queryKey))
   const isLoading = isProductsLoading || isStatsLoading;
 
   // Calculate real metrics

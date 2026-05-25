@@ -114,10 +114,13 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):
     def get_email_options(self):
+        from django.conf import settings
         return {
-            'email_template_name': 'auth/password_reset_email.html',
-            'subject_template_name': 'auth/password_reset_subject.txt',
-            'domain_override': 'inventory.qstack.com.ng',
+            'email_template_name': 'account/email/password_reset_key_message.txt',
+            'html_email_template_name': 'account/email/password_reset_key_message.html',
+            'subject_template_name': 'account/email/password_reset_key_subject.txt',
+            'domain_override': getattr(settings, 'FRONTEND_DOMAIN', 'inventory.qstack.com.ng'),
+            'use_https': getattr(settings, 'FRONTEND_PROTOCOL', 'http') == 'https',
             'extra_email_context': {
                 'site_name': 'Quantum Stack Inventory',
             }

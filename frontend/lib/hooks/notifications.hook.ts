@@ -8,6 +8,7 @@ export const useGetNotifications = () => {
       const response: any = await apiService.get("/notifications/");
       return response.results || response;
     },
+    staleTime: 1000 * 60 * 1,
   });
 };
 
@@ -18,6 +19,7 @@ export const useGetNotificationStats = () => {
       const response: any = await apiService.get("/notifications/stats/");
       return response;
     },
+    staleTime: 1000 * 60 * 1,
   });
 };
 

@@ -11,6 +11,7 @@ export function useGetProducts() {
   return useQuery<Product>({
     queryKey: QUERY_KEYS.PRODUCTS,
     queryFn: productApi.getProducts,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -33,6 +34,7 @@ export function useGetProduct(productId: string) {
     queryKey: ["product", productId],
     queryFn: () => productApi.getProduct(productId),
     enabled: !!productId,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -122,6 +124,7 @@ export function useGetProductsCategories() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: productApi.getProductsCategory,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -133,6 +136,7 @@ export function useGetCategoryDetail(name: string) {
     queryKey: ["category", name],
     queryFn: () => productApi.getCategoryDetail(name),
     enabled: !!name,
+    staleTime: 1000 * 60 * 5,
   });
 }
 

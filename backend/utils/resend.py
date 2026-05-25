@@ -5,7 +5,7 @@ from enum import Enum
 
 resend.api_key = RESEND_API_KEY
 
-SENDER_EMAIL = "Qstack Inventory <noreply@mail.qstack.com.ng>"
+SENDER_EMAIL = "Quantum Stack Inventory <noreply@mail.qstack.com.ng>"
 
 
 class EmailType(Enum):
@@ -38,7 +38,7 @@ class EmailTemplate:
                 <p style="color: #666; font-size: 14px;">This link will expire in {expiry_hours} hours.</p>
                 <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore this email.</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }
@@ -59,7 +59,7 @@ class EmailTemplate:
                 <p style="color: #666; font-size: 14px;">This link will expire in 24 hours.</p>
                 <p style="color: #999; font-size: 12px;">If you didn't create this account, please ignore this email.</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }
@@ -76,10 +76,10 @@ class EmailTemplate:
             """
         
         return {
-            "subject": "Welcome to Qstack Inventory!",
+            "subject": "Welcome to Quantum Stack Inventory!",
             "html": f"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #333;">Welcome to Qstack Inventory!</h2>
+                <h2 style="color: #333;">Welcome to Quantum Stack Inventory!</h2>
                 <p>Hi {name},</p>
                 <p>Your account has been successfully created. Here are your details:</p>
                 <ul style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; color: #333;">
@@ -89,7 +89,7 @@ class EmailTemplate:
                 {login_button}
                 <p style="color: #666; font-size: 14px;">If you have any questions, feel free to contact our support team.</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }
@@ -106,7 +106,7 @@ class EmailTemplate:
                 <p>Your password has been successfully changed.</p>
                 <p style="color: #666; font-size: 14px;">If you didn't make this change, please reset your password immediately.</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }
@@ -115,12 +115,12 @@ class EmailTemplate:
     def welcome(name: str) -> Dict[str, str]:
         """Template for welcome email"""
         return {
-            "subject": "Welcome to Qstack Inventory",
+            "subject": "Welcome to Quantum Stack Inventory",
             "html": f"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #333;">Welcome, {name}!</h2>
                 <p>We're excited to have you on board!</p>
-                <p>Qstack Inventory helps you manage your business inventory efficiently. Here's what you can do:</p>
+                <p>Quantum Stack Inventory helps you manage your business inventory efficiently. Here's what you can do:</p>
                 <ul style="color: #333;">
                     <li>Track product inventory</li>
                     <li>Manage sales and orders</li>
@@ -129,7 +129,7 @@ class EmailTemplate:
                 </ul>
                 <p>Happy managing!</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }
@@ -154,7 +154,7 @@ class EmailTemplate:
                 <p>{message}</p>
                 {cta_button}
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p style="color: #999; font-size: 12px;">© 2026 Qstack Inventory. All rights reserved.</p>
+                <p style="color: #999; font-size: 12px;">© 2026 Quantum Stack Inventory. All rights reserved.</p>
             </div>
             """,
         }

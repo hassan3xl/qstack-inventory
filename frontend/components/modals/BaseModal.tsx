@@ -58,7 +58,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
 
       {/* Modal container */}
       <div
-        className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-md sm:w-lg lg:w-xl mx-4 animate-in fade-in zoom-in-95 duration-200`}
+        className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full ${sizeClasses[size]} px-4 sm:px-0 animate-in fade-in zoom-in-95 duration-200`}
       >
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           {/* Header */}

@@ -16,6 +16,7 @@ class BusinessProfileAPIView(APIView):
             "id": tenant.id,
             "name": tenant.name,
             "logo": tenant.logo.url if tenant.logo else None,
+            "business_type": tenant.business_type,
             "category": tenant.get_business_type_display(),
             "is_active": tenant.is_active,
             "created_at": tenant.created_at
@@ -31,6 +32,7 @@ class BusinessProfileAPIView(APIView):
                 "name": tenant.name,
                 "subdomain": tenant.subdomain,
                 "logo": tenant.logo.url if tenant.logo else None,
+                "business_type": tenant.business_type,
                 "category": tenant.get_business_type_display(),
                 "is_active": tenant.is_active,
                 "created_at": tenant.created_at

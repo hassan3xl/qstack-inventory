@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import EditProductModal from "@/components/products/EditProductModal";
+import ProductForm from "@/components/forms/ProductForm";
 import AddProductImageModal from "@/components/products/AddProductImageModal";
 import ReceiveBatchModal from "@/components/products/ReceiveBatchModal";
 import EditBatchModal from "@/components/products/EditBatchModal";
@@ -165,7 +165,7 @@ const ProductDetailsClient = () => {
   const isActive = product?.is_active !== false;
 
 if (isProductLoading) {
-  return <div className="flex justify-center items-center h-64"><Loader title="Loading product..." fullscreen={false} /></div>;
+  return <Loader />
 }
 
   // Error state
@@ -740,7 +740,7 @@ if (isProductLoading) {
 
       {/* Modals */}
 
-      <EditProductModal
+      <ProductForm
         isModalOpen={showEditModal}
         closeModal={() => setShowEditModal(false)}
         productId={product.id}

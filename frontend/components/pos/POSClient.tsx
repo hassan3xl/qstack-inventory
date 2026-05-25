@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useGetProducts } from "@/lib/hooks/product.hook";
 import { useCreateSale, useGetCustomers } from "@/lib/hooks/sales.hook";
+import { useGetStore } from "@/lib/hooks/store.hook";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ export default function POSClient() {
     refetch,
   } = useGetProducts();
   const createSaleMutation = useCreateSale();
+  const { data: storeInfo } = useGetStore();
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -758,10 +760,39 @@ export default function POSClient() {
 
       {/* POS Receipt Modal */}
       {showReceipt && completedSale && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <Card className="w-full max-w-md rounded-lg overflow-hidden shadow-2xl border border-border/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 print:absolute print:inset-0 print:bg-white print:p-0">
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-receipt, #printable-receipt * {
+                visibility: visible !important;
+              }
+              #printable-receipt {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border: none !important;
+              }
+              .print-hide {
+                display: none !important;
+              }
+            }
+          `}</style>
+          <Card id="printable-receipt" className="w-full max-w-md rounded-lg overflow-hidden shadow-2xl border border-border/50">
             <div className="bg-primary/5 p-6 border-b border-border/50 text-center relative">
-              <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-2" />
+              <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-2 print:hidden" />
+              {storeInfo?.name && (
+                <div className="text-sm font-extrabold uppercase tracking-widest text-primary mb-1">
+                  {storeInfo.name}
+                </div>
+              )}
               <CardTitle className="text-xl font-black">
                 Transaction Receipt
               </CardTitle>
@@ -788,7 +819,7 @@ export default function POSClient() {
                 <div className="flex justify-between text-muted-foreground">
                   <span>Cashier Identity:</span>
                   <span className="font-semibold text-foreground">
-                    {completedSale.cashier_email || "System"}
+                    {completedSale.cashier_name || completedSale.cashier_email || "System"}
                   </span>
                 </div>
                 {completedSale.customer && (
@@ -812,7 +843,7 @@ export default function POSClient() {
                 <span className="text-[10px] font-black uppercase text-muted-foreground tracking-wider block">
                   Purchased Items
                 </span>
-                <div className="max-h-[160px] overflow-y-auto divide-y divide-border/20 text-xs">
+                <div className="max-h-[160px] overflow-y-auto divide-y divide-border/20 text-xs print:max-h-none print:overflow-visible">
                   {completedSale.items?.map((item: any) => (
                     <div
                       key={item.id}
@@ -861,7 +892,7 @@ export default function POSClient() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-2 print:hidden">
                 <Button
                   variant="outline"
                   onClick={() => window.print()}

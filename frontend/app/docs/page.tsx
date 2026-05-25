@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { apiService } from "@/lib/services/apiService";
 import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
 
 const sections = [
   { id: "getting-started", title: "Getting Started", icon: BookOpen },
@@ -27,33 +29,50 @@ const sections = [
   { id: "register-app", title: "Get the App", icon: Laptop },
 ];
 
+type FormValues = {
+  first_name: string;
+  last_name: string;
+  business_name: string;
+  business_type: string;
+  admin_email: string;
+};
+
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState("getting-started");
 
-  // Registration Form States
-  const [businessName, setBusinessName] = useState("");
-  const [businessType, setBusinessType] = useState("general");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  // Registration Form Status States
   const [statusMsg, setStatusMsg] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      business_name: "",
+      business_type: "general",
+      admin_email: "",
+    },
+  });
+
+  const handleRegister = async (data: FormValues) => {
     setIsLoading(true);
     setStatusMsg(null);
 
     try {
       const response: any = await apiService.post("/tenants/register/", {
-        business_name: businessName,
-        business_type: businessType,
-        admin_email: adminEmail,
-        first_name: firstName,
-        last_name: lastName,
+        business_name: data.business_name,
+        business_type: data.business_type,
+        admin_email: data.admin_email,
+        first_name: data.first_name,
+        last_name: data.last_name,
       });
 
       setStatusMsg({
@@ -61,12 +80,7 @@ export default function DocsPage() {
         text: response.message || "Registration received successfully!",
       });
 
-      // Clear form
-      setBusinessName("");
-      setAdminEmail("");
-      setFirstName("");
-      setLastName("");
-      setBusinessType("general");
+      reset();
     } catch (err: any) {
       const errorText =
         err?.response?.data?.error ||
@@ -106,7 +120,7 @@ export default function DocsPage() {
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left cursor-pointer ${
                     isActive
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "hover:bg-accent/50 text-foreground"
@@ -343,89 +357,78 @@ export default function DocsPage() {
               )}
 
               <form
-                onSubmit={handleRegister}
+                onSubmit={handleSubmit(handleRegister)}
                 className="space-y-4 max-w-lg mt-4"
               >
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="John"
-                      className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Doe"
-                      className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <Building2 size={12} className="text-muted-foreground" />{" "}
-                    Business / Store Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Acme Pharmacy"
-                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    name="first_name"
+                    label="First Name"
+                    register={register}
+                    error={errors.first_name}
+                    placeholder="John"
+                    validation={{ required: "First name is required" }}
+                  />
+                  <Input
+                    name="last_name"
+                    label="Last Name"
+                    register={register}
+                    error={errors.last_name}
+                    placeholder="Doe"
+                    validation={{ required: "Last name is required" }}
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">
-                    Business Type
-                  </label>
-                  <select
-                    value={businessType}
-                    onChange={(e) => setBusinessType(e.target.value)}
-                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-                  >
-                    <option value="general">General Retail</option>
-                    <option value="grocery">Grocery Store</option>
-                    <option value="pharmacy">Pharmacy</option>
-                    <option value="food_bakery">Food & Bakery</option>
-                  </select>
-                </div>
+                <Input
+                  name="business_name"
+                  label="Business / Store Name"
+                  register={register}
+                  error={errors.business_name}
+                  icon={Building2}
+                  placeholder="e.g. Acme Pharmacy"
+                  validation={{ required: "Business name is required" }}
+                />
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <Mail size={12} className="text-muted-foreground" /> Owner /
-                    Admin Email Address
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={adminEmail}
-                    onChange={(e) => setAdminEmail(e.target.value)}
-                    placeholder="e.g. owner@acmepharmacy.com"
-                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-                  />
-                </div>
+                <Input
+                  name="business_type"
+                  label="Business Type"
+                  field="select"
+                  register={register}
+                  error={errors.business_type}
+                  placeholder="Select Store Classification"
+                  options={[
+                    { value: "grocery", label: "Grocery Store" },
+                    { value: "pharmacy", label: "Pharmacy & Medicine" },
+                    { value: "electronics", label: "Electronics & Gadgets" },
+                    { value: "clothing", label: "Clothing & Apparel" },
+                    { value: "general", label: "General Retail" },
+                    { value: "other", label: "Other" },
+                  ]}
+                  validation={{ required: "Business type is required" }}
+                />
+
+                <Input
+                  name="admin_email"
+                  label="Owner / Admin Email Address"
+                  type="email"
+                  register={register}
+                  error={errors.admin_email}
+                  icon={Mail}
+                  placeholder="e.g. owner@acmepharmacy.com"
+                  validation={{
+                    required: "Admin email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  }}
+                />
 
                 <div className="pt-2">
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10 w-full sm:w-auto"
+                    className="rounded-lg px-8 h-11 text-xs font-bold shadow-lg shadow-primary/10 w-full sm:w-auto cursor-pointer"
                   >
                     {isLoading ? (
                       <>
@@ -438,6 +441,54 @@ export default function DocsPage() {
                   </Button>
                 </div>
               </form>
+
+              {/* Business Types Reference Card */}
+              <div className="mt-8 border border-border/50 rounded-xl bg-muted/20 p-6 space-y-4">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Info size={16} /> Store Classification Reference
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Choosing the correct classification ensures your workspace starts with configuration rules and layouts optimized for your specific trade.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">Grocery Store</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Optimized for supermarkets, supermarkets, fresh foods, bakeries, and fast-moving consumer retail.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">Pharmacy & Medicine</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Optimized for medicines, drugs, prescription tracking, and shelf-life expiration safety alerts.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">Electronics & Gadgets</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Optimized for serialized high-value items, appliances, tech devices, and brand classifications.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">Clothing & Apparel</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Optimized for boutique apparel, fashion items, footwear, and accessory size variations.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">General Retail</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      A versatile setup for general merchant stores, convenience shops, and multi-product retailers.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-card border border-border/30 rounded-lg space-y-1">
+                    <span className="text-xs font-black text-foreground block">Other</span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Standard settings for custom inventory segments not captured by major categories.
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

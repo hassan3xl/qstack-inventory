@@ -3,14 +3,16 @@ import { Button } from "../ui/button";
 import { Menu, Search, Package, X } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { AccountDropdown } from "./AccountDropdown";
-import { useGetStore } from "@/lib/hooks/store.hook";
+import { useBusinessConfig } from "@/lib/hooks/useBusinessConfig";
 import Link from "next/link";
 import Image from "next/image";
 import NotificationButton from "./NotificationButton";
 
 export function Navbar() {
   const { toggleSidebar, closeSidebar, isOpen } = useSidebar();
-  const { data: store, isLoading } = useGetStore();
+  const { config, storeInfo } = useBusinessConfig();
+  console.log("config", config);
+  console.log("storeInfo", storeInfo);
 
   return (
     <nav className="bg-muted border-b border-border fixed top-0 left-0 right-0 z-50">
@@ -41,11 +43,11 @@ export function Navbar() {
             )}
 
             <Link href="/" className="flex items-center gap-2">
-              {store?.logo ? (
+              {storeInfo?.logo ? (
                 <div className="relative w-8 h-8 rounded-md overflow-hidden border border-border shadow-xs">
                   <Image
-                    src={store.logo}
-                    alt={store.name || "Store Logo"}
+                    src={storeInfo.logo}
+                    alt={storeInfo.name || "Store Logo"}
                     fill
                     className="object-cover"
                     unoptimized
@@ -54,9 +56,16 @@ export function Navbar() {
               ) : (
                 <Package className="text-primary h-7 w-7" />
               )}
-              <h1 className="text-xl capitalize font-black text-foreground hidden sm:block tracking-tighter">
-                {store?.name} Inventory
-              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                <h1 className="text-xl capitalize font-black text-foreground hidden sm:block tracking-tighter">
+                  {storeInfo?.name} Inventory
+                </h1>
+                {storeInfo?.business_type && (
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/20 scale-95 origin-left shrink-0">
+                    {config.displayName}
+                  </span>
+                )}
+              </div>
             </Link>
           </div>
 

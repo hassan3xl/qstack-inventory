@@ -7,14 +7,13 @@ import React, { useState } from "react";
 import { productApi } from "@/lib/api/product.api";
 import { Settings2 } from "lucide-react";
 import { Button } from "../ui/button";
-import EditCategoryModal from "./EditCategoryModal";
+import CategoryForm from "@/components/forms/CategoryForm";
 
 const CategoryDetailsClient = () => {
   const params = useParams();
   const name = params.name as string;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // ✅ Use Query
   const {
     data: category,
     isLoading,
@@ -92,7 +91,8 @@ const CategoryDetailsClient = () => {
         ))}
       </div>
 
-      <EditCategoryModal
+      {/* Unified Edit CategoryForm */}
+      <CategoryForm
         isModalOpen={isEditModalOpen}
         closeModal={() => setIsEditModalOpen(false)}
         categoryName={name}

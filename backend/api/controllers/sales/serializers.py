@@ -22,6 +22,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
 class SaleSerializer(serializers.ModelSerializer):
     items = SaleItemSerializer(many=True)
     cashier_email = serializers.CharField(source='cashier.email', read_only=True)
+    cashier_name = serializers.SerializerMethodField()
     customer = CustomerSerializer(read_only=True)
     customer_id = serializers.UUIDField(required=False, write_only=True, allow_null=True)
     customer_name = serializers.CharField(required=False, write_only=True, allow_null=True)
@@ -30,12 +31,22 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = [
-            'id', 'sale_number', 'cashier_email', 'customer', 'customer_id', 
+            'id', 'sale_number', 'cashier_email', 'cashier_name', 'customer', 'customer_id', 
             'customer_name', 'customer_phone', 'subtotal', 'tax', 
             'discount', 'total_amount', 'payment_method', 
             'payment_status', 'items', 'created_at'
         ]
-        read_only_fields = ['id', 'sale_number', 'cashier_email', 'subtotal', 'total_amount', 'created_at']
+        read_only_fields = ['id', 'sale_number', 'cashier_email', 'cashier_name', 'subtotal', 'total_amount', 'created_at']
+
+    def get_cashier_name(self, obj):
+        if obj.cashier:
+            profile = getattr(obj.cashier, 'profile', None)
+            if profile:
+                full_name = f"{profile.first_name} {profile.last_name}".strip()
+                if full_name:
+                    return full_name
+            return obj.cashier.email
+        return "System"
 
     def validate_items(self, value):
         if not value:

@@ -4,7 +4,10 @@ import string
 from django.db import models, transaction
 from django.utils import timezone
 from django.conf import settings
+# pyrefly: ignore [missing-import]
 from apps.tenants.models import TenantBaseModel
+
+# pyrefly: ignore [missing-import]
 from apps.products.models import Product
 
 def generate_sale_number():
@@ -88,6 +91,8 @@ class SaleItem(TenantBaseModel):
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     total_price = models.DecimalField(max_digits=12, decimal_places=2)
+    variant = models.CharField(max_length=100, blank=True, null=True, help_text="Selected product variant")
+    capacity = models.CharField(max_length=100, blank=True, null=True, help_text="Selected product capacity")
 
     class Meta:
         db_table = "sale_items"

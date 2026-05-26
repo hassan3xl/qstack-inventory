@@ -24,9 +24,14 @@ class BusinessProfileAPIView(APIView):
 
     def patch(self, request):
         tenant = request.tenant
+        old_name = tenant.name
         serializer = TenantSerializer(tenant, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            new_name = tenant.name
+            if old_name != new_name:
+                from apps.notifications.triggers import NotificationTriggers
+                NotificationTriggers.on_tenant_name_changed(tenant, old_name, new_name, request.user)
             return Response({
                 "id": tenant.id,
                 "name": tenant.name,

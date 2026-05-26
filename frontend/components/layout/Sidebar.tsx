@@ -68,10 +68,10 @@ export default function Sidebar() {
           bg-card/80 border-r border-border/50 shadow-lg lg:shadow-none
           transition-transform duration-300 z-40
           ${isOpen ? "translate-x-0 mt-8" : "-translate-x-full lg:translate-x-0"}
-          w-64 flex flex-col
+          w-64 flex flex-col self-start
         `}
       >
-        <div className="flex-1 overflow-y-auto pt-8 px-4 space-y-8 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto overscroll-contain pt-8 px-4 space-y-8 scrollbar-hide">
           {/* Control Center */}
           <div>
             <div className="space-y-1 mt-2">

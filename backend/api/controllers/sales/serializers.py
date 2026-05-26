@@ -13,10 +13,12 @@ class CustomerSerializer(serializers.ModelSerializer):
 class SaleItemSerializer(serializers.ModelSerializer):
     product_id = serializers.UUIDField(write_only=True)
     product_name = serializers.CharField(source='product.name', read_only=True)
+    variant = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    capacity = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = SaleItem
-        fields = ['id', 'product_id', 'product_name', 'quantity', 'unit_price', 'total_price']
+        fields = ['id', 'product_id', 'product_name', 'quantity', 'unit_price', 'total_price', 'variant', 'capacity']
         read_only_fields = ['id', 'unit_price', 'total_price']
 
 class SaleSerializer(serializers.ModelSerializer):
@@ -97,6 +99,8 @@ class SaleSerializer(serializers.ModelSerializer):
             for item_data in items_data:
                 product_id = item_data['product_id']
                 qty = item_data['quantity']
+                variant = item_data.get('variant', None)
+                capacity = item_data.get('capacity', None)
 
                 product = get_object_or_404(Product, id=product_id)
 
@@ -139,7 +143,17 @@ class SaleSerializer(serializers.ModelSerializer):
                 # Force product total stock updates
                 product.update_stock_from_batches()
 
+                # Resolve unit price: use capacity-based price if applicable
                 unit_price = product.unit_price
+                if capacity and product.capacities:
+                    for cap in product.capacities:
+                        if isinstance(cap, dict) and cap.get('name') == capacity and cap.get('price'):
+                            try:
+                                unit_price = float(cap['price'])
+                            except (ValueError, TypeError):
+                                pass
+                            break
+
                 total_price = unit_price * qty
                 calculated_subtotal += total_price
 
@@ -148,7 +162,9 @@ class SaleSerializer(serializers.ModelSerializer):
                     product=product,
                     quantity=qty,
                     unit_price=unit_price,
-                    total_price=total_price
+                    total_price=total_price,
+                    variant=variant,
+                    capacity=capacity,
                 )
 
             sale.subtotal = calculated_subtotal

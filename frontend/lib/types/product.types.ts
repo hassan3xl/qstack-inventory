@@ -73,6 +73,11 @@ export type Product = {
     days_until_expiry: number | null;
     created_at: string;
   }>;
+  variants?: string[];
+  capacities?: Array<{
+    name: string;
+    price: number | null;
+  }>;
   created_at: string;
   updated_at: string;
 };

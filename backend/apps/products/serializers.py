@@ -122,7 +122,7 @@ class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'stock', 'unit_price',
+            'id', 'name', 'description', 'stock', 'unit_price', 'variants', 'capacities',
             'category', 'is_active', 'created_at',
             'production_date', 'expiry_date', 'best_before_days',
             'predicted_expiry_date', 'is_expired',
@@ -212,7 +212,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'stock', 'category_id',
             'unit_price', 'is_active',
-            'production_date', 'expiry_date', 'best_before_days'
+            'production_date', 'expiry_date', 'best_before_days',
+            'variants', 'capacities'
         ]
 
     def create(self, validated_data):

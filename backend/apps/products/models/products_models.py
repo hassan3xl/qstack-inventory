@@ -8,6 +8,7 @@ from .categories import Category
 
 
 
+# pyrefly: ignore [missing-import]
 from apps.tenants.models import TenantBaseModel
 
 
@@ -19,6 +20,8 @@ class Product(TenantBaseModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     stock = models.PositiveIntegerField(default=0, help_text="Total stock across all batches")
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    variants = models.JSONField(default=list, blank=True, null=True, help_text="Available variants/colors")
+    capacities = models.JSONField(default=list, blank=True, null=True, help_text="Available capacities and prices e.g. [{name:'1L', price:500}]")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

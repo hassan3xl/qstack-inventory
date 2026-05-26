@@ -265,3 +265,39 @@ class NotificationTriggers:
             action_url="https://qstack-inventory.com/inventory/low-stock",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
+
+    @staticmethod
+    def on_tenant_name_changed(tenant, old_name: str, new_name: str, updated_by: User):
+        """Send notification to admin, staff, and platform admins when store name is updated"""
+        from apps.notifications.services import NotificationService
+        from apps.notifications.models import NotificationChannel
+        from django.db.models import Q
+        
+        # 1. Store users (Owner, Admin, Managers, Cashiers, Staff)
+        tenant_users = User.objects.filter(
+            tenant_roles__tenant=tenant
+        ).distinct()
+        
+        # 2. Platform Admins
+        platform_admins = User.objects.filter(
+            Q(role=User.RoleChoices.PLATFORM_ADMIN) | Q(is_superuser=True)
+        ).distinct()
+        
+        # Send to tenant users (excluding the one who updated it, or send to all including owner)
+        NotificationService.send_bulk_notification(
+            users=tenant_users,
+            title="🏢 Store Renamed",
+            message=f"The store name has been updated from '{old_name}' to '{new_name}' by {updated_by.email}.",
+            category="store_renamed",
+            channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+        )
+        
+        # Send to platform admins
+        NotificationService.send_bulk_notification(
+            users=platform_admins,
+            title="🏢 Store Name Updated",
+            message=f"The tenant store '{old_name}' (ID: {tenant.id}) has been renamed to '{new_name}' by {updated_by.email}.",
+            category="store_renamed",
+            channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+        )
+

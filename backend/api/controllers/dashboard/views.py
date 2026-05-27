@@ -181,7 +181,7 @@ class StaffAddAPIView(APIView):
                                     f"Temporary Password: <code>{password}</code><br><br>"
                                     f"Please log in and change your password immediately for security.",
                             cta_text="Login Now",
-                            cta_link="https://qstack-inventory.com/login"  # Update with your frontend URL
+                            cta_link="https://inventory.qstack.com.ng/login"  # Update with your frontend URL
                         )
                     except Exception as email_error:
                         print(f"Warning: Failed to send email to {email}: {str(email_error)}")

@@ -35,7 +35,7 @@ const StatCard = ({ title, value, icon, trend, bg }: StatCardData) => {
         <div
           className={`p-3 rounded-lg ${bg || "bg-muted"} group-hover:scale-110 transition-transform duration-300 text-foreground`}
         >
-          {icon}
+          {value}
         </div>
         {trend && (
           <div
@@ -54,9 +54,6 @@ const StatCard = ({ title, value, icon, trend, bg }: StatCardData) => {
         <p className="text-sm font-medium text-muted-foreground mb-1">
           {title}
         </p>
-        <h3 className="text-2xl font-black text-foreground tracking-tight">
-          {value}
-        </h3>
       </div>
     </motion.div>
   );

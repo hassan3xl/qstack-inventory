@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from decimal import Decimal
 from apps.products.models import Product, StockBatch
 from apps.sales.models import Sale, SaleItem, Customer
 
@@ -86,15 +87,15 @@ class SaleSerializer(serializers.ModelSerializer):
             sale = Sale.objects.create(
                 cashier=user,
                 customer=customer,
-                subtotal=0,
-                tax=validated_data.get('tax', 0),
-                discount=validated_data.get('discount', 0),
-                total_amount=0,
+                subtotal=Decimal('0.00'),
+                tax=Decimal(str(validated_data.get('tax', '0.00'))),
+                discount=Decimal(str(validated_data.get('discount', '0.00'))),
+                total_amount=Decimal('0.00'),
                 payment_method=validated_data.get('payment_method', 'cash'),
                 payment_status=validated_data.get('payment_status', 'paid')
             )
 
-            calculated_subtotal = 0
+            calculated_subtotal = Decimal('0.00')
 
             for item_data in items_data:
                 product_id = item_data['product_id']
@@ -149,8 +150,8 @@ class SaleSerializer(serializers.ModelSerializer):
                     for cap in product.capacities:
                         if isinstance(cap, dict) and cap.get('name') == capacity and cap.get('price'):
                             try:
-                                unit_price = float(cap['price'])
-                            except (ValueError, TypeError):
+                                unit_price = Decimal(str(cap['price']))
+                            except Exception:
                                 pass
                             break
 

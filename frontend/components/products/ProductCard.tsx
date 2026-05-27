@@ -1,11 +1,13 @@
 "use client";
 
-import { Edit, Trash2, Eye, MoreVertical, Package } from "lucide-react";
+import { Edit, Trash2, Eye, MoreVertical, Package, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { apiService } from "@/lib/services/apiService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 
 import {
   AlertDialog,
@@ -27,12 +29,14 @@ interface ProductCardProps {
   merchantView?: boolean;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, merchantView = false }: ProductCardProps) => {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { user } = useAuth();
+  const { addToCart } = useCart();
   const deleteMutation = useDeleteProduct();
 
   const viewProductDetails = () => {
@@ -109,25 +113,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       {/* Image Container */}
       <div
-        onClick={viewProductDetails}
-        className="relative cursor-pointer overflow-hidden aspect-square bg-muted/30"
+        className="relative overflow-hidden aspect-square bg-muted/30"
       >
         <Image
           src={imageError ? "/default_product.png" : productImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover group-hover:scale-110 transition-transform duration-700"
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
           onError={() => setImageError(true)}
           unoptimized
         />
-
-        {/* Action Overlay */}
-        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-white shadow-2xl scale-50 group-hover:scale-100 transition-transform duration-500">
-            <Eye size={20} />
-          </div>
-        </div>
       </div>
 
       {/* Card Content */}
@@ -139,6 +135,42 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <h3 className="font-bold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">
             {product.name}
           </h3>
+
+          {/* Variants & Capacity Specs */}
+          {((product.variants && product.variants.length > 0) || (product.capacities && product.capacities.length > 0)) && (
+            <div className="space-y-1.5 pt-2 border-t border-border/30 mt-2">
+              {product.variants && product.variants.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider mr-1">
+                    Variants:
+                  </span>
+                  {product.variants.map((v) => (
+                    <span
+                      key={v}
+                      className="bg-muted text-muted-foreground px-1.5 py-0.5 rounded text-[9px] font-bold"
+                    >
+                      {v}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {product.capacities && product.capacities.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider mr-1">
+                    Specs:
+                  </span>
+                  {product.capacities.map((c) => (
+                    <span
+                      key={c.name}
+                      className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
+                    >
+                      {c.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Pricing Segment */}
@@ -169,6 +201,43 @@ const ProductCard = ({ product }: ProductCardProps) => {
             className={`h-full transition-all duration-1000 ${isOutOfStock ? "bg-red-500" : isLowStock ? "bg-orange-500" : "bg-emerald-500"}`}
             style={{ width: `${Math.min((stockCount / 20) * 100, 100)}%` }}
           />
+        </div>
+
+        {/* Actions section */}
+        <div className="flex gap-2 mt-4 pt-2 border-t border-border/30">
+          <Button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              viewProductDetails();
+            }}
+            variant="outline"
+            className="flex-1 rounded-xl py-2 h-10 font-bold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98] cursor-pointer text-xs"
+          >
+            <Eye size={14} />
+            View Info
+          </Button>
+          {(!!user?.permissions?.is_staff || !!user?.permissions?.store_role) && (
+            <Button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isOutOfStock) {
+                  toast.error("Product is out of stock!");
+                  return;
+                }
+                addToCart(product);
+                toast.success("Added to Cart", {
+                  description: `"${product.name}" added to terminal cart successfully.`,
+                });
+              }}
+              disabled={isOutOfStock}
+              className="flex-1 rounded-xl py-2 h-10 font-bold bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-1.5 shadow-sm transition-all duration-200 active:scale-[0.98] cursor-pointer text-xs"
+            >
+              <ShoppingCart size={14} />
+              Add to Cart
+            </Button>
+          )}
         </div>
       </div>
 

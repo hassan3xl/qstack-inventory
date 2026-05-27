@@ -61,7 +61,7 @@ def tenant_list_view(request):
                                 f"Temporary Password: <code>{password}</code><br><br>"
                                 f"Please log in and change your password immediately for security.",
                         cta_text="Login to Admin Panel",
-                        cta_link="https://qstack-inventory.com/admin/login"  # Update with your admin URL
+                        cta_link="https://inventory.qstack.com.ng/admin/login"  # Update with your admin URL
                     )
                 except Exception as email_error:
                     print(f"Warning: Failed to send emails to {admin_email}: {str(email_error)}")

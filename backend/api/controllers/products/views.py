@@ -65,6 +65,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = ProductCategorySerializer
     permission_classes = [IsAuthenticated, HasTenantAccess]
     lookup_field = 'name'
+    
+    from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get_queryset(self):
         tenant = getattr(self.request, 'tenant', None)

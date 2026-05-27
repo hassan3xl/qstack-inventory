@@ -25,7 +25,7 @@ class NotificationTriggers:
             message=f"Your business '{tenant.name}' has been successfully created. "
                    f"You can now start managing your inventory.",
             category="tenant_created",
-            action_url="https://qstack-inventory.com/dashboard",
+            action_url="https://inventory.qstack.com.ng/dashboard",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
     
@@ -38,7 +38,7 @@ class NotificationTriggers:
             message=f"Your business '{tenant.name}' has been approved and is now active. "
                    f"Your team members can now log in.",
             category="tenant_approved",
-            action_url="https://qstack-inventory.com/dashboard",
+            action_url="https://inventory.qstack.com.ng/dashboard",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
     
@@ -53,7 +53,7 @@ class NotificationTriggers:
             message=f"You have been added to {tenant.name} as a {role}. "
                    f"Log in to your dashboard to get started.",
             category="staff_added",
-            action_url="https://qstack-inventory.com/dashboard",
+            action_url="https://inventory.qstack.com.ng/dashboard",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
     
@@ -77,7 +77,7 @@ class NotificationTriggers:
             title=f"🔄 Role Updated in {tenant.name}",
             message=f"Your role in {tenant.name} has been updated to {new_role}.",
             category="staff_role_changed",
-            action_url="https://qstack-inventory.com/dashboard",
+            action_url="https://inventory.qstack.com.ng/dashboard",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
     
@@ -91,7 +91,7 @@ class NotificationTriggers:
             title="📦 New Product Added",
             message=f"New product '{product_name}' has been added by {added_by}.",
             category="product_added",
-            action_url="https://qstack-inventory.com/inventory/products",
+            action_url="https://inventory.qstack.com.ng/inventory/products",
             channels=[NotificationChannel.IN_APP],
         )
     
@@ -104,7 +104,7 @@ class NotificationTriggers:
             message=f"Product '{product_name}' has low stock (Current: {current_stock} units). "
                    f"Consider restocking soon.",
             category="stock_low",
-            action_url="https://qstack-inventory.com/inventory/products",
+            action_url="https://inventory.qstack.com.ng/inventory/products",
             channels=[NotificationChannel.IN_APP],
         )
     
@@ -117,7 +117,7 @@ class NotificationTriggers:
             message=f"Product '{product_name}' is now out of stock. "
                    f"Customers will not be able to purchase this item.",
             category="out_of_stock",
-            action_url="https://qstack-inventory.com/inventory/products",
+            action_url="https://inventory.qstack.com.ng/inventory/products",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
     
@@ -143,7 +143,7 @@ class NotificationTriggers:
             message=f"New order #{order_id} received (Total: ₦{total:,.2f}). "
                    f"Click to view details.",
             category="order_created",
-            action_url=f"https://qstack-inventory.com/sales/orders/{order_id}",
+            action_url=f"https://inventory.qstack.com.ng/sales/orders/{order_id}",
             channels=[NotificationChannel.IN_APP],
         )
     
@@ -155,7 +155,7 @@ class NotificationTriggers:
             title="✅ Order Completed",
             message=f"Order #{order_id} has been completed and delivered.",
             category="order_completed",
-            action_url=f"https://qstack-inventory.com/sales/orders/{order_id}",
+            action_url=f"https://inventory.qstack.com.ng/sales/orders/{order_id}",
             channels=[NotificationChannel.IN_APP],
         )
     
@@ -245,7 +245,7 @@ class NotificationTriggers:
             title="📊 Daily Summary",
             message=message,
             category="daily_summary",
-            action_url="https://qstack-inventory.com/analytics/dashboard",
+            action_url="https://inventory.qstack.com.ng/analytics/dashboard",
             channels=[NotificationChannel.IN_APP],
         )
     
@@ -262,7 +262,7 @@ class NotificationTriggers:
             title="📉 Low Inventory Alert",
             message=message,
             category="low_inventory_report",
-            action_url="https://qstack-inventory.com/inventory/low-stock",
+            action_url="https://inventory.qstack.com.ng/inventory/low-stock",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL],
         )
 

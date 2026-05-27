@@ -183,7 +183,7 @@ class NotificationService:
                 title=title,
                 message=message,
                 cta_text="View in Dashboard",
-                cta_link="https://qstack-inventory.com/dashboard"  # Update with your URL
+                cta_link="https://inventory.qstack.com.ng/dashboard"  # Update with your URL
             )
         except Exception as e:
             logger.error(f"Failed to send email via Resend: {e}")

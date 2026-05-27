@@ -119,6 +119,21 @@ export const apiService = {
     });
   },
 
+  patchFormData: async function (url: string, formData: FormData): Promise<any> {
+    const token = await getAccessToken();
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+    };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    return fetchWithCatch(url, {
+      method: "PATCH",
+      credentials: "include",
+      headers,
+      body: formData,
+    });
+  },
+
   put: async function (url: string, data: any): Promise<any> {
     const token = await getAccessToken();
     const headers: Record<string, string> = {

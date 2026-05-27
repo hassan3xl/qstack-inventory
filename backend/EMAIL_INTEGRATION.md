@@ -155,8 +155,8 @@ Ensure these are configured:
 
 1. `RESEND_API_KEY` - Your Resend API key in `.env`
 2. Frontend URLs - Update these in the code:
-   - `https://qstack-inventory.com/login` - User login
-   - `https://qstack-inventory.com/admin/login` - Admin login
+   - `https://inventory.qstack.com.ng/login` - User login
+   - `https://inventory.qstack.com.ng/admin/login` - Admin login
 
 ---
 
@@ -167,19 +167,19 @@ Find and update these URLs in the code with your actual frontend URLs:
 ### In `/api/controllers/tenants/views.py`:
 
 ```python
-cta_link="https://qstack-inventory.com/login"  # ← Update this
+cta_link="https://inventory.qstack.com.ng/login"  # ← Update this
 ```
 
 ### In `/api/controllers/dashboard/views.py`:
 
 ```python
-cta_link="https://qstack-inventory.com/login"  # ← Update this
+cta_link="https://inventory.qstack.com.ng/login"  # ← Update this
 ```
 
 ### In `/admin_panel/views/tenants.py`:
 
 ```python
-cta_link="https://qstack-inventory.com/admin/login"  # ← Update this
+cta_link="https://inventory.qstack.com.ng/admin/login"  # ← Update this
 ```
 
 ---

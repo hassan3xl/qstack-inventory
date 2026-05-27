@@ -112,18 +112,18 @@ All templates verified with actual Resend API
 1. **In `api/controllers/tenants/views.py`** (line ~64):
 
    ```python
-   cta_link="https://qstack-inventory.com/login"  # ← Change this
+   cta_link="https://inventory.qstack.com.ng/login"  # ← Change this
    ```
 
 2. **In `api/controllers/dashboard/views.py`** (line ~162):
 
    ```python
-   cta_link="https://qstack-inventory.com/login"  # ← Change this
+   cta_link="https://inventory.qstack.com.ng/login"  # ← Change this
    ```
 
 3. **In `admin_panel/views/tenants.py`** (line ~42):
    ```python
-   cta_link="https://qstack-inventory.com/admin/login"  # ← Change this
+   cta_link="https://inventory.qstack.com.ng/admin/login"  # ← Change this
    ```
 
 ---

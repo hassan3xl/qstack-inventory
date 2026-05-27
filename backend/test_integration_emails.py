@@ -67,7 +67,7 @@ def test_tenant_creation_emails():
                     f"Temporary Password: <code>{password}</code><br><br>"
                     f"Please log in and change your password immediately for security.",
             cta_text="Login to Your Account",
-            cta_link="https://qstack-inventory.com/login"
+            cta_link="https://inventory.qstack.com.ng/login"
         )
         print(f"  ✓ Login credentials email sent!")
         
@@ -114,7 +114,7 @@ def test_staff_creation_emails():
                     f"Temporary Password: <code>{password}</code><br><br>"
                     f"Please log in and change your password immediately for security.",
             cta_text="Login Now",
-            cta_link="https://qstack-inventory.com/login"
+            cta_link="https://inventory.qstack.com.ng/login"
         )
         print(f"  ✓ Staff welcome email sent!")
         
@@ -164,7 +164,7 @@ def test_admin_panel_tenant_creation():
                     f"Temporary Password: <code>{password}</code><br><br>"
                     f"Please log in and change your password immediately for security.",
             cta_text="Login to Admin Panel",
-            cta_link="https://qstack-inventory.com/admin/login"
+            cta_link="https://inventory.qstack.com.ng/admin/login"
         )
         print(f"  ✓ Admin account email sent!")
         

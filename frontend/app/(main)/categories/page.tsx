@@ -8,29 +8,19 @@ import { Plus } from "lucide-react";
 import CategoryForm from "@/components/forms/CategoryForm";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/Loader";
 
 const CategoriesInventoryClient: React.FC = () => {
   const { data: categories, isLoading, error } = useGetProductsCategories();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | undefined
+  >(undefined);
   const categoriesArray = Array.isArray(categories) ? categories : [];
 
   if (isLoading) {
-    return (
-      <section className="relative min-h-[60vh]">
-        <Header
-          title="Browse by Category"
-          subtitle="Manage your store's product classifications."
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-          {[...Array(8)].map((_, idx) => (
-            <div
-              key={idx}
-              className="h-32 rounded-xl bg-muted/60 animate-pulse border border-border/50"
-            />
-          ))}
-        </div>
-      </section>
-    );
+    return <Loading />;
   }
 
   return (
@@ -73,10 +63,16 @@ const CategoriesInventoryClient: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {categoriesArray.map((category: Category) => (
             <div key={category.id}>
-              <CategoryList category={category} />
+              <CategoryList
+                category={category}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setIsEditModalOpen(true);
+                }}
+              />
             </div>
           ))}
         </div>
@@ -86,6 +82,18 @@ const CategoriesInventoryClient: React.FC = () => {
         isModalOpen={isAddModalOpen}
         closeModal={() => setIsAddModalOpen(false)}
       />
+
+      {isEditModalOpen && selectedCategory && (
+        <CategoryForm
+          isModalOpen={isEditModalOpen}
+          closeModal={() => {
+            setIsEditModalOpen(false);
+            setSelectedCategory(undefined);
+          }}
+          categoryName={selectedCategory.name}
+          category={selectedCategory}
+        />
+      )}
     </section>
   );
 };

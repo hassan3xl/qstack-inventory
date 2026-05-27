@@ -43,6 +43,9 @@ export const productApi = {
 
   AddCategory: async (categoryData: any) => {
     try {
+      if (categoryData instanceof FormData) {
+        return await apiService.postFormData("/inventory/products/categories/", categoryData);
+      }
       const res = await apiService.post("/inventory/products/categories/", categoryData);
       return res;
     } catch (error) {
@@ -62,6 +65,12 @@ export const productApi = {
   },
   EditCategory: async (name: string, data: any) => {
     try {
+      if (data instanceof FormData) {
+        return await apiService.patchFormData(
+          `/inventory/products/categories/${name}/`,
+          data,
+        );
+      }
       const res = await apiService.patch(
         `/inventory/products/categories/${name}/`,
         data,

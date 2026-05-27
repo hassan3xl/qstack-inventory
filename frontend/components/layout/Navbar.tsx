@@ -7,6 +7,7 @@ import { useBusinessConfig } from "@/lib/hooks/useBusinessConfig";
 import Link from "next/link";
 import Image from "next/image";
 import NotificationButton from "./NotificationButton";
+import CartButton from "./CartButton";
 
 export function Navbar() {
   const { toggleSidebar, closeSidebar, isOpen } = useSidebar();
@@ -67,6 +68,7 @@ export function Navbar() {
 
           {/* RIGHT - Account & System */}
           <div className="flex items-center gap-3">
+            <CartButton />
             <NotificationButton />
             <div className="h-6 w-px bg-border mx-1" />
             <AccountDropdown />

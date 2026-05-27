@@ -10,7 +10,7 @@ import {
 } from "@/lib/hooks/product.hook";
 import { useBusinessConfig } from "@/lib/hooks/useBusinessConfig";
 import { toast } from "sonner";
-import { Tag, ShieldCheck, Trash2, AlertCircle } from "lucide-react";
+import { Tag, ShieldCheck, Trash2, AlertCircle, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,7 @@ interface CategoryFormProps {
   closeModal: () => void;
   /** When provided, form operates in Edit Mode using this category name. */
   categoryName?: string;
+  category?: any;
 }
 
 // ─── Expiry strategy options (shared) ────────────────────────────────────────
@@ -84,6 +85,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   isModalOpen,
   closeModal,
   categoryName,
+  category,
 }) => {
   const isEditMode = !!categoryName;
   const router = useRouter();
@@ -95,16 +97,21 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   const addMutation = useAddCategory();
   const editMutation = useEditCategory();
   const deleteMutation = useDeleteCategory();
-  const { data: category, isLoading: categoryLoading } = useGetCategoryDetail(
-    categoryName ?? ""
+  const { data: queriedCategory, isLoading: categoryLoading } = useGetCategoryDetail(
+    category ? "" : (categoryName ?? "")
   );
 
+  const activeCategory = category || queriedCategory;
+  const isLoadingActive = !category && categoryLoading;
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const isGlobal =
     isEditMode &&
-    category &&
-    (category.tenant === null || category.tenant === undefined);
+    activeCategory &&
+    (activeCategory.tenant === null || activeCategory.tenant === undefined);
 
   const {
     register,
@@ -125,15 +132,21 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
 
   // Populate form when editing
   useEffect(() => {
-    if (isEditMode && category) {
+    if (isEditMode && activeCategory) {
       reset({
-        name: category.name ?? "",
-        description: category.description ?? "",
-        default_best_before_days: category.default_best_before_days ?? 0,
-        expiry_strategy: category.expiry_strategy ?? "GENERAL",
+        name: activeCategory.name ?? "",
+        description: activeCategory.description ?? "",
+        default_best_before_days: activeCategory.default_best_before_days ?? 0,
+        expiry_strategy: activeCategory.expiry_strategy ?? "GENERAL",
       });
+      if (activeCategory.image) {
+        setImagePreview(activeCategory.image);
+      } else {
+        setImagePreview(null);
+      }
+      setSelectedFile(null);
     }
-  }, [category, isEditMode, reset]);
+  }, [activeCategory, isEditMode, reset]);
 
   // Reset on open/close for create mode
   useEffect(() => {
@@ -144,29 +157,35 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
         default_best_before_days: 0,
         expiry_strategy: "GENERAL",
       });
+      setSelectedFile(null);
+      setImagePreview(null);
     }
   }, [isModalOpen, isEditMode, reset]);
 
   // ── Submit handler ────────────────────────────────────────────────────────
 
   const onSubmit = async (data: CategoryFormValues) => {
-    const payload = {
-      ...data,
-      default_best_before_days: showExpirySection
-        ? Number(data.default_best_before_days) || 0
-        : 0,
-      expiry_strategy: showExpirySection ? data.expiry_strategy : "GENERAL",
-    };
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description || "");
+    formData.append(
+      "default_best_before_days",
+      showExpirySection ? String(data.default_best_before_days || 0) : "0"
+    );
+    formData.append(
+      "expiry_strategy",
+      showExpirySection ? data.expiry_strategy : "GENERAL"
+    );
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
 
     if (isEditMode) {
       if (isGlobal) return;
       try {
-        await editMutation.mutateAsync({ name: categoryName!, data: payload });
+        await editMutation.mutateAsync({ name: categoryName!, data: formData });
         toast.success("Category updated successfully!");
         closeModal();
-        if (data.name !== categoryName) {
-          router.push(`/categories/${encodeURIComponent(data.name)}`);
-        }
       } catch (error: any) {
         toast.error(
           error?.name?.[0] || error?.detail || "Failed to update category."
@@ -174,7 +193,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
       }
     } else {
       try {
-        await addMutation.mutateAsync(payload);
+        await addMutation.mutateAsync(formData);
         toast.success("Category created successfully!");
         reset();
         closeModal();
@@ -204,7 +223,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   };
 
   // Skip rendering modal content while edit data loads
-  if (isEditMode && categoryLoading) return null;
+  if (isEditMode && isLoadingActive) return null;
 
   const isPending = isEditMode ? editMutation.isPending : addMutation.isPending;
 
@@ -250,6 +269,55 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             <h4 className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-wider">
               <Tag size={16} /> Basic Information
             </h4>
+
+            {/* Image Upload Field */}
+            {!isGlobal && (
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground">Category Image</label>
+                <div className="flex items-center gap-4">
+                  {imagePreview ? (
+                    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group bg-muted">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setImagePreview(null);
+                        }}
+                        className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200 cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-20 h-20 rounded-lg border border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-muted/40">
+                      <Upload size={16} className="text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground mt-1">Upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setSelectedFile(file);
+                            setImagePreview(URL.createObjectURL(file));
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                  <div className="text-xs text-muted-foreground">
+                    <p className="font-semibold text-foreground">Upload a category picture</p>
+                    <p>PNG, JPG up to 5MB</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <Input
               name="name"

@@ -39,7 +39,7 @@ def test_single_notification():
             message="Your account has been set up successfully. "
                    "Start managing your inventory now!",
             category="welcome",
-            action_url="https://qstack-inventory.com/dashboard",
+            action_url="https://inventory.qstack.com.ng/dashboard",
             channels=[NotificationChannel.IN_APP, NotificationChannel.EMAIL]
         )
         

@@ -7,6 +7,7 @@ import { useGetStore } from "@/lib/hooks/store.hook";
 import { useBusinessConfig } from "@/lib/hooks/useBusinessConfig";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ProductCard from "@/components/products/ProductCard";
 import { toast } from "sonner";
 import { formatNaira } from "@/lib/utils";
 import { NormalInput } from "@/components/ui/input";
@@ -26,19 +27,7 @@ import {
 import Image from "next/image";
 import Loading from "@/components/Loader";
 
-type CartItem = {
-  id: string;
-  name: string;
-  unit_price: number;
-  base_unit_price: number;
-  quantity: number;
-  stock: number;
-  sku: string;
-  variants?: string[];
-  selectedVariant?: string;
-  capacities?: Array<{ name: string; price?: number }>;
-  selectedCapacity?: string;
-};
+import { useCart, CartItem } from "@/contexts/CartContext";
 
 export default function POSClient() {
   const {
@@ -50,7 +39,16 @@ export default function POSClient() {
   const { data: storeInfo } = useGetStore();
   const { config } = useBusinessConfig();
 
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const {
+    cart,
+    addToCart,
+    updateQuantity,
+    updateVariant,
+    updateCapacity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [barcodeInput, setBarcodeInput] = useState("");
@@ -128,108 +126,6 @@ export default function POSClient() {
     });
   }, [products, searchTerm, selectedCategory]);
 
-  // Add Product to Cart
-  const addToCart = (product: any) => {
-    if (product.stock <= 0) {
-      toast.error("Out of Stock", {
-        description: `"${product.name}" is currently unavailable.`,
-      });
-      return;
-    }
-
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
-        if (existing.quantity >= product.stock) {
-          toast.warning("Limit Reached", {
-            description: `Only ${product.stock} units of "${product.name}" are available in stock.`,
-          });
-          return prevCart;
-        }
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      const capacities = product.capacities || [];
-      const selectedCapacity = capacities.length > 0 ? capacities[0].name : undefined;
-      const initialCapacityObj = capacities.find((c: any) => c.name === selectedCapacity);
-      const base_unit_price = Number(product.unit_price);
-      const unit_price = (initialCapacityObj && initialCapacityObj.price) 
-        ? Number(initialCapacityObj.price) 
-        : base_unit_price;
-
-      return [
-        ...prevCart,
-        {
-          id: product.id,
-          name: product.name,
-          unit_price,
-          base_unit_price,
-          quantity: 1,
-          stock: product.stock,
-          sku: product.inventory?.sku || "N/A",
-          variants: product.variants || [],
-          selectedVariant: product.variants && product.variants.length > 0 ? product.variants[0] : undefined,
-          capacities,
-          selectedCapacity,
-        },
-      ];
-    });
-  };
-
-  // Remove / Decrease from Cart
-  const updateQuantity = (itemId: string, amount: number) => {
-    setCart((prevCart) => {
-      return prevCart
-        .map((item) => {
-          if (item.id === itemId) {
-            const nextQty = item.quantity + amount;
-            if (nextQty <= 0) return null;
-            if (nextQty > item.stock) {
-              toast.warning("Limit Reached", {
-                description: `Only ${item.stock} units available in stock.`,
-              });
-              return item;
-            }
-            return { ...item, quantity: nextQty };
-          }
-          return item;
-        })
-        .filter(Boolean) as CartItem[];
-    });
-  };
-
-  const updateVariant = (itemId: string, variant: string) => {
-    setCart((prevCart) => {
-      return prevCart.map((item) =>
-        item.id === itemId ? { ...item, selectedVariant: variant } : item
-      );
-    });
-  };
-
-  const updateCapacity = (itemId: string, variant: string) => {
-    setCart((prevCart) => {
-      return prevCart.map((item) => {
-        if (item.id === itemId) {
-          const capObj = item.capacities?.find((c) => c.name === variant);
-          const unit_price = (capObj && capObj.price) ? Number(capObj.price) : item.base_unit_price;
-          return {
-            ...item,
-            selectedCapacity: variant,
-            unit_price
-          };
-        }
-        return item;
-      });
-    });
-  };
-
-  const removeFromCart = (itemId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
-  };
-
   // Handle Simulated Barcode Scan Submission
   const handleBarcodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,7 +197,7 @@ export default function POSClient() {
       const result = await createSaleMutation.mutateAsync(payload);
       setCompletedSale(result);
       setShowReceipt(true);
-      setCart([]);
+      clearCart();
       setDiscount(0);
       setTax(0);
 
@@ -417,74 +313,10 @@ export default function POSClient() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {filteredProducts.map((product: any) => {
-                const isOutOfStock = product.stock <= 0;
-                const isLowStock = product.stock > 0 && product.stock <= 5;
-                const pImage =
-                  product.images && product.images.length > 0
-                    ? product.images[0].image
-                    : "/default_product.png";
-
-                return (
-                  <Card
-                    key={product.id}
-                    onClick={() => !isOutOfStock && addToCart(product)}
-                    className={`rounded-lg overflow-hidden border border-border/50 hover:shadow-lg transition-all duration-300 cursor-pointer group relative ${
-                      isOutOfStock
-                        ? "opacity-60 bg-muted/30 pointer-events-none"
-                        : ""
-                    }`}
-                  >
-                    <div className="relative w-full bg-muted/40 overflow-hidden">
-                      <Image
-                        src={pImage}
-                        alt={product.name}
-                        width={500}
-                        height={500}
-                        className="object-contain group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {isOutOfStock ? (
-                        <div className="absolute inset-0 bg-background/80 backdrop-blur-xs flex items-center justify-center">
-                          <span className="bg-red-50 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-                            Out of Stock
-                          </span>
-                        </div>
-                      ) : isLowStock ? (
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-orange-500 text-white px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider">
-                            Only {product.stock} left
-                          </span>
-                        </div>
-                      ) : null}
-                    </div>
-                    <CardContent className="p-4">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-primary/60">
-                        {product.category?.name || "Product"}
-                      </p>
-                      <h3 className="font-bold text-sm leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5">
-                        {product.name}
-                      </h3>
-                      <div className="flex flex-col items-start justify-between mt-2.5 pt-2 border-t border-border/30">
-                        <span className="font-black text-foreground text-sm">
-                          {formatNaira(product.unit_price)}
-                        </span>
-                        <div className="flex flex-col items-end">
-                          <span
-                            className={`text-[10px] font-black mt-0.5 ${
-                              product.stock <= 5
-                                ? "text-orange-500 animate-pulse"
-                                : "text-emerald-600 dark:text-emerald-400"
-                            }`}
-                          >
-                            Stock: {product.stock} units
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 :grid-cols-3 gap-4">
+              {filteredProducts.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
           )}
         </div>
@@ -497,9 +329,7 @@ export default function POSClient() {
               <div className="px-5 py-4 border-b border-border/40 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4 text-primary" />
-                  <span className="font-black text-sm">
-                    Active Cart
-                  </span>
+                  <span className="font-black text-sm">Active Cart</span>
                   {cart.length > 0 && (
                     <span className="bg-primary text-primary-foreground text-[10px] font-black px-2 py-0.5 rounded-full">
                       {cart.reduce((s, i) => s + i.quantity, 0)}
@@ -508,7 +338,7 @@ export default function POSClient() {
                 </div>
                 {cart.length > 0 && (
                   <button
-                    onClick={() => setCart([])}
+                    onClick={() => clearCart()}
                     className="text-[10px] font-bold text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 px-2 py-1 rounded-lg transition-all cursor-pointer"
                   >
                     Clear All
@@ -522,14 +352,15 @@ export default function POSClient() {
                   <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
                     <ShoppingCart className="w-8 h-8 text-muted-foreground/30" />
                   </div>
-                  <p className="font-bold text-sm text-muted-foreground">Cart is empty</p>
+                  <p className="font-bold text-sm text-muted-foreground">
+                    Cart is empty
+                  </p>
                   <p className="text-[11px] text-muted-foreground/60 mt-1">
                     Tap any product to add it here.
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col min-h-0">
-
                   {/* ── Cart Items ────────────────── */}
                   <div className="overflow-y-auto divide-y divide-border/30 max-h-[340px] scroll-smooth">
                     {cart.map((item) => (
@@ -544,7 +375,10 @@ export default function POSClient() {
                               {item.name}
                             </p>
                             <p className="text-[10px] text-muted-foreground mt-0.5">
-                              Unit: <span className="font-semibold text-foreground">{formatNaira(item.unit_price)}</span>
+                              Unit:{" "}
+                              <span className="font-semibold text-foreground">
+                                {formatNaira(item.unit_price)}
+                              </span>
                               {item.selectedCapacity && (
                                 <span className="ml-1.5 bg-primary/10 text-primary text-[9px] font-black px-1.5 py-0.5 rounded uppercase">
                                   {item.selectedCapacity}
@@ -568,11 +402,15 @@ export default function POSClient() {
                             </span>
                             <select
                               value={item.selectedVariant || ""}
-                              onChange={(e) => updateVariant(item.id, e.target.value)}
+                              onChange={(e) =>
+                                updateVariant(item.id, e.target.value)
+                              }
                               className="flex-1 min-w-0 text-[10px] font-semibold bg-muted/40 border border-border/40 rounded-md px-2 py-1 outline-none focus:border-primary/50 focus:bg-background text-foreground cursor-pointer transition-all"
                             >
                               {item.variants.map((v) => (
-                                <option key={v} value={v}>{v}</option>
+                                <option key={v} value={v}>
+                                  {v}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -582,16 +420,23 @@ export default function POSClient() {
                         {item.capacities && item.capacities.length > 0 && (
                           <div className="flex items-center gap-1.5 mb-1.5">
                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider w-14 flex-shrink-0">
-                              {config?.businessType === "electronics" ? "Config:" : "Size:"}
+                              {config?.businessType === "electronics"
+                                ? "Config:"
+                                : "Size:"}
                             </span>
                             <select
                               value={item.selectedCapacity || ""}
-                              onChange={(e) => updateCapacity(item.id, e.target.value)}
+                              onChange={(e) =>
+                                updateCapacity(item.id, e.target.value)
+                              }
                               className="flex-1 min-w-0 text-[10px] font-semibold bg-muted/40 border border-border/40 rounded-md px-2 py-1 outline-none focus:border-primary/50 focus:bg-background text-foreground cursor-pointer transition-all"
                             >
                               {item.capacities.map((c) => (
                                 <option key={c.name} value={c.name}>
-                                  {c.name}{c.price ? ` — ₦${Number(c.price).toLocaleString()}` : " (base price)"}
+                                  {c.name}
+                                  {c.price
+                                    ? ` — ₦${Number(c.price).toLocaleString()}`
+                                    : " (base price)"}
                                 </option>
                               ))}
                             </select>
@@ -642,7 +487,10 @@ export default function POSClient() {
                           </p>
                         </div>
                         <button
-                          onClick={() => { setSelectedCustomer(null); setCustomerSearch(""); }}
+                          onClick={() => {
+                            setSelectedCustomer(null);
+                            setCustomerSearch("");
+                          }}
                           className="text-emerald-600 hover:text-red-500 text-xs font-bold cursor-pointer px-2 py-1 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all"
                         >
                           ✕
@@ -651,10 +499,16 @@ export default function POSClient() {
                     ) : isAddingNewCustomer ? (
                       <div className="bg-card border border-border rounded-lg p-3 space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-[9px] font-black text-primary uppercase tracking-wider">New Customer</span>
+                          <span className="text-[9px] font-black text-primary uppercase tracking-wider">
+                            New Customer
+                          </span>
                           <button
                             type="button"
-                            onClick={() => { setIsAddingNewCustomer(false); setNewCustomerName(""); setNewCustomerPhone(""); }}
+                            onClick={() => {
+                              setIsAddingNewCustomer(false);
+                              setNewCustomerName("");
+                              setNewCustomerPhone("");
+                            }}
                             className="text-[10px] font-bold text-muted-foreground hover:text-foreground cursor-pointer"
                           >
                             Cancel
@@ -684,30 +538,46 @@ export default function POSClient() {
                           value={customerSearch}
                           onChange={(e) => setCustomerSearch(e.target.value)}
                           onFocus={() => setIsSearchFocused(true)}
-                          onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
+                          onBlur={() =>
+                            setTimeout(() => setIsSearchFocused(false), 250)
+                          }
                           className="w-full text-xs"
                         />
-                        {(isSearchFocused || customerSearch.trim().length > 0) && (
+                        {(isSearchFocused ||
+                          customerSearch.trim().length > 0) && (
                           <div className="absolute left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-xl max-h-40 overflow-y-auto z-20 divide-y divide-border/50">
-                            {customerSuggestions && customerSuggestions.length > 0 ? (
+                            {customerSuggestions &&
+                            customerSuggestions.length > 0 ? (
                               customerSuggestions.slice(0, 8).map((c: any) => (
                                 <button
                                   key={c.id}
                                   type="button"
-                                  onClick={() => { setSelectedCustomer(c); setCustomerSearch(""); setIsSearchFocused(false); }}
+                                  onClick={() => {
+                                    setSelectedCustomer(c);
+                                    setCustomerSearch("");
+                                    setIsSearchFocused(false);
+                                  }}
                                   className="w-full text-left px-3 py-2 text-xs hover:bg-muted font-semibold transition-colors flex justify-between items-center cursor-pointer"
                                 >
                                   <span>{c.name}</span>
-                                  <span className="text-muted-foreground text-[10px]">{c.phone}</span>
+                                  <span className="text-muted-foreground text-[10px]">
+                                    {c.phone}
+                                  </span>
                                 </button>
                               ))
                             ) : (
-                              <div className="px-3 py-2 text-xs text-muted-foreground">No customers found.</div>
+                              <div className="px-3 py-2 text-xs text-muted-foreground">
+                                No customers found.
+                              </div>
                             )}
                             {customerSearch.trim().length > 0 && (
                               <button
                                 type="button"
-                                onClick={() => { setIsAddingNewCustomer(true); setNewCustomerName(customerSearch); setIsSearchFocused(false); }}
+                                onClick={() => {
+                                  setIsAddingNewCustomer(true);
+                                  setNewCustomerName(customerSearch);
+                                  setIsSearchFocused(false);
+                                }}
                                 className="w-full text-left px-3 py-2 text-xs hover:bg-primary/5 text-primary font-bold transition-colors cursor-pointer"
                               >
                                 + Register &quot;{customerSearch}&quot;
@@ -770,23 +640,31 @@ export default function POSClient() {
                     <div className="bg-muted/30 rounded-xl p-3 space-y-1.5">
                       <div className="flex justify-between text-[11px] text-muted-foreground">
                         <span>Subtotal</span>
-                        <span className="font-semibold">{formatNaira(subtotal)}</span>
+                        <span className="font-semibold">
+                          {formatNaira(subtotal)}
+                        </span>
                       </div>
                       {Number(tax) > 0 && (
                         <div className="flex justify-between text-[11px] text-muted-foreground">
                           <span>Tax</span>
-                          <span className="font-semibold">+ {formatNaira(tax)}</span>
+                          <span className="font-semibold">
+                            + {formatNaira(tax)}
+                          </span>
                         </div>
                       )}
                       {Number(discount) > 0 && (
                         <div className="flex justify-between text-[11px] text-emerald-600 dark:text-emerald-400">
                           <span>Discount</span>
-                          <span className="font-semibold">− {formatNaira(discount)}</span>
+                          <span className="font-semibold">
+                            − {formatNaira(discount)}
+                          </span>
                         </div>
                       )}
                       <div className="flex justify-between items-center pt-2 border-t border-border/40">
                         <span className="font-black text-sm">Total</span>
-                        <span className="font-black text-xl text-primary">{formatNaira(grandTotal)}</span>
+                        <span className="font-black text-xl text-primary">
+                          {formatNaira(grandTotal)}
+                        </span>
                       </div>
                     </div>
 
@@ -806,7 +684,6 @@ export default function POSClient() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* POS Receipt Modal */}
@@ -912,7 +789,8 @@ export default function POSClient() {
                         </span>
                         <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                           <span className="text-muted-foreground text-[10px]">
-                            {item.quantity} units @ {formatNaira(item.unit_price)}
+                            {item.quantity} units @{" "}
+                            {formatNaira(item.unit_price)}
                           </span>
                           {item.variant && (
                             <span className="bg-primary/10 text-primary text-[9px] font-black uppercase px-1 rounded-sm">

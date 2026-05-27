@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import ModalProvider from "@/providers/ModalProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import { SidebarProvider } from "@/contexts/SidebarContext";
@@ -28,12 +29,14 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
             <AuthProvider>
-              <ModalProvider>
-                <SidebarProvider>
-                  <>{children}</>
-                  <Toaster richColors position="top-right" closeButton />
-                </SidebarProvider>
-              </ModalProvider>
+              <CartProvider>
+                <ModalProvider>
+                  <SidebarProvider>
+                    <>{children}</>
+                    <Toaster richColors position="top-right" closeButton />
+                  </SidebarProvider>
+                </ModalProvider>
+              </CartProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>

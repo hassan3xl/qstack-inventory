@@ -53,7 +53,7 @@ class HasTenantAccess(permissions.BasePermission):
 
 class _RequiresMinRole(HasTenantAccess):
     """Internal base that checks a minimum role rank."""
-    minimum_role = TenantUser.Role.STAFF
+    minimum_role = TenantUser.Role.CASHIER
 
     def has_permission(self, request, view):
         if not super().has_permission(request, view):

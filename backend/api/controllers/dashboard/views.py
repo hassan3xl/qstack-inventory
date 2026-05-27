@@ -115,7 +115,7 @@ class StaffAddAPIView(APIView):
     def post(self, request):
         tenant = request.tenant
         email = request.data.get('email')
-        store_role = request.data.get('role', TenantUser.Role.STAFF)
+        store_role = request.data.get('role', TenantUser.Role.CASHIER)
         first_name = request.data.get('first_name', '')
         last_name = request.data.get('last_name', '')
 

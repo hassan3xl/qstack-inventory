@@ -109,7 +109,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "is_admin":   rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.ADMIN,   40),
             "is_manager": rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.MANAGER, 30),
             "is_cashier": rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.CASHIER, 20),
-            "is_staff":   rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.STAFF,   10),
+            "is_staff":   rank >= TenantUser.ROLE_RANK.get(TenantUser.Role.CASHIER, 20),
         }
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):

@@ -56,7 +56,6 @@ class TenantUser(models.Model):
         ADMIN   = 'admin',   'Administrator'
         MANAGER = 'manager', 'Manager'
         CASHIER = 'cashier', 'Cashier'
-        STAFF   = 'staff',   'Staff'
 
     # Maps role → numeric rank so you can compare authority with >=
     ROLE_RANK = {
@@ -64,13 +63,12 @@ class TenantUser(models.Model):
         Role.ADMIN:   40,
         Role.MANAGER: 30,
         Role.CASHIER: 20,
-        Role.STAFF:   10,
     }
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='users')
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='tenant_roles')
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.STAFF)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CASHIER)
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

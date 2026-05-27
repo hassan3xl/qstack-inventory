@@ -53,7 +53,7 @@ const StaffForm: React.FC<StaffFormProps> = ({
       first_name: "",
       last_name: "",
       email: "",
-      role: "staff",
+      role: "cashier",
     },
   });
 
@@ -65,14 +65,14 @@ const StaffForm: React.FC<StaffFormProps> = ({
         first_name: parts[0] || "",
         last_name: parts.slice(1).join(" ") || "",
         email: selectedStaff.email || "",
-        role: selectedStaff.role || "staff",
+        role: selectedStaff.role || "cashier",
       });
     } else if (!isModalOpen) {
       reset({
         first_name: "",
         last_name: "",
         email: "",
-        role: "staff",
+        role: "cashier",
       });
     }
   }, [selectedStaff, isEditMode, isModalOpen, reset]);
@@ -211,7 +211,6 @@ const StaffForm: React.FC<StaffFormProps> = ({
               ...(selectedStaff?.role === "owner"
                 ? [{ value: "owner", label: "Owner" }]
                 : []),
-              { value: "staff", label: "Staff Member" },
               { value: "cashier", label: "Cashier" },
               { value: "manager", label: "Manager" },
               { value: "admin", label: "Co-Admin" },

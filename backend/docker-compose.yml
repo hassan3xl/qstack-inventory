@@ -29,7 +29,7 @@ services:
       - DB_PORT=5432
       - DATABASE_URL=postgresql://devuser:dev_password@db:5432/inventory_db
       - DJANGO_ENV=development
-      - DJANGO_SETTINGS_MODULE=settings.dev
+      - DJANGO_SETTINGS_MODULE=src.settings.dev
     ports:
       - "8000:8000"
     depends_on:
